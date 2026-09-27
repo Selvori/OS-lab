@@ -1,12 +1,10 @@
 #include <kernel/arch.h>
+#include <kernel/page.h>
 #include <kernel/print.h>
+#include <kernel/vm.h>
 #include <platform.h>
 
-// TODO(lab-1): 主核初始化并启动其他核，以原子操作同步；每核打印一次。
-
-/*
- * 位于 BSS，_entry 会在冷启动时将它清零。
- */ 
+/* 位于 BSS，_entry 会在冷启动时将它清零。 */
 static uint32 started;
 
 void main(void)
@@ -14,17 +12,25 @@ void main(void)
     int cpuid = (int)arch_cpu_id();
 
     if (arch_is_boot_cpu()) {
-        /*
-         * UART 和打印锁只能由主核初始化一次。
-         */
         print_init();
-
         printf("cpu %d is booting!\n", cpuid);
 
-        /*
-         * arch_start_cpu() 接收内核 CPU 编号。
-         * 它会在内部加上 HART_FIRST，转换成硬件 hartid。
-         */
+        page_allocator_init();
+        printf("memory: kernel %p-%p, %d free pages\n",
+               (void *)page_zone_start(PAGE_ZONE_KERNEL),
+               (void *)page_zone_end(PAGE_ZONE_KERNEL),
+               (int)page_free_count(PAGE_ZONE_KERNEL));
+        printf("memory: user   %p-%p, %d free pages\n",
+               (void *)page_zone_start(PAGE_ZONE_USER),
+               (void *)page_zone_end(PAGE_ZONE_USER),
+               (int)page_free_count(PAGE_ZONE_USER));
+
+        kernel_vm_init();
+        kernel_vm_activate();
+        printf("cpu %d enabled Sv39 with root %p\n", cpuid,
+               (void *)kernel_vm_root());
+
+        /* arch_start_cpu() 接收内核 CPU 编号。 */
         for (int cpu = 0; cpu < NCPU; ++cpu) {
             if (cpu == cpuid)
                 continue;
@@ -33,24 +39,17 @@ void main(void)
                 panic("start_cpu failed");
         }
 
-        /*
-         * 发布初始化结果，允许从核继续执行。
-         */
+        /* 发布页表和其他启动核初始化结果。 */
         __atomic_store_n(&started, 1, __ATOMIC_RELEASE);
     } else {
-        /*
-         * 从核可能在主核完成 print_init() 前进入 main，
-         * 因此必须先等待。
-         */
         while (__atomic_load_n(&started, __ATOMIC_ACQUIRE) == 0) {
         }
 
-        printf("cpu %d is booting!\n", cpuid);
+        kernel_vm_activate();
+        printf("cpu %d enabled Sv39 with root %p\n", cpuid,
+               (void *)kernel_vm_root());
     }
 
-    /*
-     * 当前实验没有调度器。完成启动信息输出后，
-     * 让每个 CPU 停在 wfi 循环中。
-     */
+    /* 当前实验没有调度器，完成初始化后停在 wfi 循环中。 */
     arch_park();
 }

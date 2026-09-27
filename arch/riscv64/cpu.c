@@ -18,6 +18,7 @@ void arch_early_init(void)
     arch_irq_disable();
     csr_write(sie, 0);
     csr_write(satp, 0);
+    sfence_vma();
     csr_write(stvec, early_trap);
 }
 void arch_park(void) { for (;;) __asm__ volatile("wfi"); }

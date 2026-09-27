@@ -1,4 +1,5 @@
-KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c kernel/lock/spinlock.c
+KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
+	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c
 SOURCES := $(KERNEL_C) $(ARCH_C) $(PLATFORM_C)
 OBJECTS := $(addprefix $(BUILD)/,$(SOURCES:.c=.o) $(ARCH_S:.S=.o))
 -include $(OBJECTS:.o=.d)
