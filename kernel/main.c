@@ -2,7 +2,12 @@
 #include <kernel/page.h>
 #include <kernel/print.h>
 #include <kernel/vm.h>
+#include <kernel/trap.h>
+#include <kernel/timer.h>
 #include <platform.h>
+#include <asm/csr.h>
+#include <drivers/irq/plic.h>
+#include <drivers/serial/uart16550.h>
 
 /* 位于 BSS，_entry 会在冷启动时将它清零。 */
 static uint32 started;
@@ -27,6 +32,9 @@ void main(void)
 
         kernel_vm_init();
         kernel_vm_activate();
+        trap_kernel_inithart();
+        plic_init();
+        uart_rx_intr_enable(UART_BASE, UART_SHIFT);
         printf("cpu %d enabled Sv39 with root %p\n", cpuid,
                (void *)kernel_vm_root());
 
@@ -46,10 +54,19 @@ void main(void)
         }
 
         kernel_vm_activate();
+        trap_kernel_inithart();
         printf("cpu %d enabled Sv39 with root %p\n", cpuid,
                (void *)kernel_vm_root());
     }
 
-    /* 当前实验没有调度器，完成初始化后停在 wfi 循环中。 */
+    /* 全局设备已就绪；每核设置自己的路由后，最后才开总开关。 */
+    plic_inithart();
+    timer_inithart();
+    csr_write(sie, SIE_SEIE | SIE_STIE);
+    printf("cpu %d SBI timer ready: %d Hz\n", cpuid, (int)TIMER_HZ);
+    printf("cpu %d UART external interrupt route ready\n", cpuid);
+    arch_irq_enable();
+
+    /* wfi 等待串口或定时事件；处理后返回，继续等待。 */
     arch_park();
 }

@@ -1,0 +1,33 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -kernel build/riscv64-qemu-virt-sbi/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x000000008020c000-0x0000000082189000, 8061 free pages
+memory: user   0x0000000082189000-0x0000000088000000, 24183 free pages
+cpu 1 enabled Sv39 with root 0x000000008020c000
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+cpu 0 enabled Sv39 with root 0x000000008020c000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+Lab3 acceptance PASS

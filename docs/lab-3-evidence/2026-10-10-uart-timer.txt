@@ -1,0 +1,11 @@
+cpu 0 is booting!
+memory: kernel 0x000000008020c000-0x0000000082189000, 8061 free pages
+memory: user   0x0000000082189000-0x0000000088000000, 24183 free pages
+cpu 0 enabled Sv39 with root 0x000000008020c000
+cpu 0 SBI timer ready: 100 Hz
+cpu 1 enabled Sv39 with root 0x000000008020c000
+cpu 0 UART external interrupt route ready
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+timer counters before/after UART: [36, 36] [336, 336] idle snapshots: [[336, 336], [440, 440], [543, 543], [647, 647]]
+final: PASS single byte, 64 batches, 4096-byte burst, NUL/high bytes, CR/LF, idle/resume; exact byte comparison

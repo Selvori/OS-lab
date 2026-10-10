@@ -1,90 +1,106 @@
-# Lab 2：物理页管理与 Sv39 内核页表
+# Lab 3：中断异常初步
 
-本分支在 Lab 1 的启动、串口输出和自旋锁基础上，实现 4 KiB 物理页分配器、Sv39 三级页表和所有 CPU 共享的内核页表。
+本实验在 Lab 2 的物理页管理和 Sv39 内核页表基础上，建立 S-mode 陷阱处理框架，实现 UART 接收中断和基于 OpenSBI 的周期时钟中断。
+
+详细实现与验证记录见 [Lab 3 详细实验报告](docs/lab-3-report.md)。
 
 ## 实验目标
 
-- 将可分配 DRAM 划分为内核页池和用户页池。
-- 使用带锁单链表完成物理页的常数时间分配与释放。
-- 实现 Sv39 页表遍历、映射、查询和 `satp` 切换。
-- 使用恒等映射保护内核代码、只读数据和可写数据。
-- 让每个 CPU 分别启用同一张内核页表。
+- 建立内核陷阱入口，完成整数寄存器现场的保存与恢复。
+- 根据 scause 区分中断原因，调用对应处理函数。
+- 配置 PLIC 和 UART，实现串口输入的中断回显。
+- 通过 SBI 设置定时事件，使每个 CPU 接收周期时钟中断。
+- 在双核环境下正确配合初始化、自旋锁和中断开关。
 
-本实验尚不包含用户进程、用户页表、缺页处理、大页、交换、COW、ASID 和页表销毁。
+本实验不包含用户态陷阱、进程调度、软件 IPI 和异常恢复。无法处理的陷阱输出诊断信息后停止故障 CPU。
 
-## 物理内存布局
+## 内核陷阱框架
 
-QEMU 使用 `0x80000000` 开始的 128 MiB DRAM：
+每个 CPU 将自己的 stvec 设置为 kernel_vector，使用 Direct 模式。发生中断后，硬件记录 sepc、scause 等状态并关闭本核中断，再跳转到汇编入口。
 
-| 区域 | 范围 | 用途 |
-| --- | --- | --- |
-| OpenSBI | `0x80000000` 至 `0x80200000` | 固件保留，不映射也不分配 |
-| 内核映像 | `0x80200000` 至 `kernel_end` | 代码、只读数据、数据、BSS 和启动栈 |
-| 内核页池 | `PGROUNDUP(kernel_end)` 后 25% 的可用页 | 页表页和内核动态页 |
-| 用户页池 | 剩余 75% 的可用页 | 为后续用户进程保留 |
-| DRAM 上界 | `0x88000000` | 不可分配的排他上界 |
+硬件不会自动保存通用寄存器，因此 kernel_vector 在当前内核栈上建立 288 字节的陷阱帧：
 
-两个页池各自保存空闲链表、空闲页计数和自旋锁。空闲页本身的第一个机器字用于保存下一节点地址，因此分配器不依赖堆或额外元数据区。
-
-`page_alloc()` 从指定页池移除链表头并将整个页面清零；`page_free()` 检查页对齐和地址范围，以 `0xa5` 填充页面后放回所属页池。页表页只从内核页池分配。
-
-## Sv39 页表
-
-Sv39 将低 39 位虚拟地址划分为三级 9 位 VPN 和 12 位页内偏移。当前实现只使用低地址规范区和 4 KiB 叶子页：
-
-```text
-VPN[2]  VPN[1]  VPN[0]  OFFSET
- 9 bit   9 bit   9 bit   12 bit
-```
-
-`sv39_walk()` 按 VPN[2]、VPN[1]、VPN[0] 遍历三级页表，并按需从内核页池申请中间页表。`sv39_map()` 拒绝未对齐范围、重复映射、越界地址以及只有 W 没有 R 的非法权限组合。叶子页预置 A 位，可写页同时预置 D 位，使内核在尚无缺页处理时也能运行。
-
-## 内核映射
-
-内核使用虚拟地址等于物理地址的恒等映射：
-
-| 区域 | 权限 |
+| 偏移 | 保存内容 |
 | --- | --- |
-| UART | R/W |
-| PLIC | R/W |
-| `.text` | R/X |
-| `.rodata` | R |
-| `.data`、BSS、启动栈和其余 DRAM | R/W |
-| OpenSBI 固件区域 | 未映射 |
-| CLINT | 未映射，由 OpenSBI 管理 |
+| 0–248 | x0–x31，其中 x0 槽为零，x2 保存原 sp |
+| 256 | sstatus |
+| 264 | sepc |
+| 272 | scause |
+| 280 | stval |
 
-链接脚本导出页对齐的 `kernel_text_start`、`kernel_text_end`、`kernel_rodata_start`、`kernel_rodata_end`、`kernel_data_start` 和 `kernel_end`。建立页表时会用软件查询逐项检查恒等关系和权限，并确认 OpenSBI、CLINT 地址没有映射。
+保存现场后，将陷阱帧地址传给 trap_kernel_handler。scause 最高位表示是否为中断，低位编号 5 和 9 分别对应 S-mode 时钟中断与外部中断。
 
-## 启动流程
+处理结束后，汇编恢复 CSR 和整数寄存器，通过 sret 返回原执行流。恢复过程中保持 SIE=0，由 sret 根据 SPIE 恢复此前的中断状态。普通中断保留原 sepc，不统一增加 4。
+
+当前陷阱帧沿用内核栈和页表，只保存整数上下文，不支持用户栈切换、浮点/向量状态或嵌套中断。
+
+## 串口接收中断
+
+PLIC 负责将外设中断路由到 CPU。启动核设置 UART 中断优先级，各 CPU 分别配置自己的 S-mode context，使能 UART 并设置响应阈值。
 
 ```text
-_entry
-  -> start
-      -> arch_early_init：保持 satp 为 Bare
-      -> main
-          -> 启动核
-              -> print_init
-              -> page_allocator_init
-              -> kernel_vm_init
-              -> kernel_vm_activate
-              -> SBI HSM 启动其他 CPU
-              -> release-store started
-          -> 从核
-              -> acquire-load 等待 started
-              -> kernel_vm_activate
-          -> arch_park
+输入字节 → UART FIFO → PLIC → kernel_vector
+        → trap_kernel_handler → plic_claim
+        → uart_intr → uart_getc → console_intr → printf
+        → plic_complete → 恢复现场 → sret
 ```
 
-`kernel_vm_init()` 只由启动核执行。每个 CPU 都会把共享根页表的物理页号写入自己的 `satp`，随后执行 `sfence.vma`。恒等映射保证切换前后的 PC、栈、全局变量以及传给 OpenSBI 的从核入口地址保持不变。
+plic_claim 读取待处理设备编号。若编号为 UART，则循环读取接收 FIFO，直到 uart_getc 返回 -1；字符经 console_intr 回显，最后执行 plic_complete，允许后续请求继续到达。双核竞争时 claim 可能返回 0，表示已无可领取的请求，此时直接返回。
+
+UART 接收使用中断，发送仍采用轮询。uart_getc 返回 int，使有效字节 0–255 与无数据的 -1 区分。控制台将 CR 转换为换行，输出换行时发送 CRLF；当前没有行编辑和软件输入队列。
+
+设备访问通过 asm/io.h 封装，使用 volatile 保证实际读写，并通过 fence 约束 UART 操作与 PLIC complete 的顺序。
+
+## 时钟中断
+
+内核运行在 S-mode，底层定时器由 OpenSBI 管理。每个 CPU 通过 SBI TIME 接口预约下一次事件，无须直接访问 CLINT，也不经过 PLIC。
+
+```c
+TIMER_INTERVAL = TIMEBASE_HZ / TIMER_HZ;
+sbi_set_timer(csr_read(time) + TIMER_INTERVAL);
+```
+
+SBI 接收绝对到期时间。当前目标频率为 100 Hz：QEMU 的 time 计数频率为 10 MHz，对应间隔 100000；VisionFive2 为 4 MHz，对应间隔 40000。
+
+```text
+定时事件到期 → OpenSBI → S-mode 时钟中断
+            → kernel_vector → trap_kernel_handler
+            → timer_interrupt_handler
+            → 预约下一次事件、本核 ticks 加一 → sret
+```
+
+周期性由每次处理后重新预约实现。timer_ticks(cpu) 查询指定 CPU 已处理的中断次数，采用原子操作支持跨核读取。发生处理延迟时，不补发错过的节拍，因此计数不能直接作为精确运行时间。
+
+## 启动流程与多核同步
+
+```text
+_entry → start → arch_early_init → main
+  启动核：print_init → page_allocator_init → kernel_vm_init
+          → kernel_vm_activate → trap_kernel_inithart
+          → plic_init → uart_rx_intr_enable
+          → SBI HSM 启动从核 → release-store started
+  从核：acquire-load started → kernel_vm_activate → trap_kernel_inithart
+  每核：plic_inithart → timer_inithart
+        → 设置 sie.SEIE/STIE → 开启 sstatus.SIE → arch_park
+```
+
+started 的 release/acquire 配合保证从核能够使用已完成的共享初始化结果。各 CPU 随后分别配置自己的陷阱入口、中断路由和定时事件，最后开启中断。
+
+串口回显复用打印锁。自旋锁提供跨核互斥，push_off/pop_off 防止持锁期间发生本核中断重入。释放锁时先解锁再恢复中断；在中断处理器内调用 printf 不会提前开启中断。
 
 ## 代码结构
 
 ```text
-kernel/mm/page.c                 物理页池、分配和释放
-kernel/mm/vm.c                   内核映射策略和运行时校验
-arch/riscv64/mm/sv39.c          Sv39 walk、map、lookup 和 satp
-arch/riscv64/include/asm/sv39.h PTE、VPN 和 satp 定义
-kernel/lib/string.c             freestanding memset
+arch/riscv64/kernel_vector.S       陷阱入口、现场保存与恢复
+arch/riscv64/include/asm/trap.h     陷阱帧布局与偏移定义
+arch/riscv64/trap.c                每核入口初始化与中断分发
+arch/riscv64/timer.c               SBI 时钟预约与每核计数
+arch/riscv64/boot/sbi.c            SBI 调用封装
+arch/riscv64/include/asm/io.h       MMIO 访问与顺序约束
+drivers/irq/plic.c                 PLIC 配置、claim 与 complete
+drivers/serial/uart16550.c         UART 接收与发送
+kernel/lib/console.c               控制台回显
+kernel/main.c                      全局与每核初始化流程
 ```
 
 ## 构建和运行
@@ -95,32 +111,34 @@ make CONFIG=riscv64-qemu-virt-sbi build
 make CONFIG=riscv64-qemu-virt-sbi run
 ```
 
-退出 QEMU：先按 `Ctrl-A`，松开后按 `X`。
+退出 QEMU：先按 Ctrl-A，松开后按 X。
 
-一次实际运行输出如下。OpenSBI 选择的启动 hart 可能不是 CPU 0，因此两条 CPU 信息的顺序不固定。
+运行时两个 CPU 均输出时钟和串口就绪信息，输入字符后可以看到回显。启动核与输出先后顺序可能不同。
 
 ```text
-cpu 1 is booting!
-memory: kernel 0x000000008020c000-0x0000000082189000, 8061 free pages
-memory: user   0x0000000082189000-0x0000000088000000, 24183 free pages
-cpu 1 enabled Sv39 with root 0x000000008020c000
-cpu 0 enabled Sv39 with root 0x000000008020c000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
 ```
 
-两个 CPU 输出相同的根页表地址，说明它们分别启用了同一张共享内核页表。
+## 实验结果
 
-## 验证记录
-
-- QEMU 版本：5.1.0。
-- QEMU 配置使用 `-m 128M -smp 2 -bios default`。
-- QEMU 内核构建在 `-Wall -Wextra -Werror` 下通过。
-- ELF 入口保持为 `0x80200000`，各链接边界均为 4 KiB 对齐。
-- 双核在 Sv39 模式下继续执行和串口输出，无 `PANIC`。
-- 临时双核压力测试让每个 CPU 对两个页池执行 512 轮、每轮 16 页的并发分配和释放；页面对齐、范围、唯一性、全页清零和最终计数恢复均通过。测试代码验证后已删除。
-- 临时耗尽测试分别取空两个页池，确认空池返回 `NULL`，随后释放全部页面并恢复原计数。测试代码验证后已删除。
-- 临时向 `.text` 页写入并用 GDB 捕获 `early_trap`，确认 `scause=15`、`satp=0x800000000008020c`，硬件实际执行了 Sv39 的 R/X 写保护；测试代码验证后已删除。
-- VisionFive2 内核 ELF 构建通过；生成 `kernel.itb` 所需的 `dtc` 当前未安装，因此镜像打包和开发板运行尚未验证。
+- QEMU 5.1.0 双核构建与运行通过，ELF 入口保持为 0x80200000。
+- 两核均能够处理时钟中断，串口输入能够正常回显。
+- 陷阱现场恢复、连续输入、多核并发和关中断后恢复测试通过。
+- UART、时钟与打印、页分配同时运行时未发现本轮测试中的死锁或数据错误。
+- 临时测试代码已恢复，正式版本重新构建运行通过。
+- VisionFive2 ELF 构建通过；FIT 镜像和开发板运行尚未验证。
 
 ## 平台说明
 
-QEMU 5.1.0 的 `virt` 机器把 PLIC 放在 `0x0c000000`，区域长度为 `0x04000000`。VisionFive2 的 JH7110 设备树使用相同的 PLIC 和 CLINT 基址；实际开发板运行仍需在安装 `dtc`、生成 FIT 镜像后验证。
+| 参数 | QEMU virt | VisionFive2/JH7110 |
+| --- | --- | --- |
+| UART IRQ | 10 | 32 |
+| UART 访问宽度 | 8 位 | 32 位 |
+| UART 寄存器间隔 | 1 字节 | 4 字节 |
+| PLIC S-context | 2×hart+1 | 2×hart |
+| time 计数频率 | 10 MHz | 4 MHz |
+
+平台配置使用真实 hart ID 计算 PLIC context。当前 timebase 为平台常量，尚未解析设备树获取频率。同步回显适用于本次教学实验，未保证持续满速硬件输入下的无丢字能力。

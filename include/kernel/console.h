@@ -4,4 +4,5 @@
 void console_init(void);
 void console_putc(char c);
 void emergency_puts(const char *s);
+void console_intr(int c);
 #endif

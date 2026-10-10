@@ -1,0 +1,57 @@
+[
+  {
+    "cold_boots": 12,
+    "boot_harts": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "delayed_cpu": 0,
+    "during": [
+      0,
+      19
+    ],
+    "after": [
+      18,
+      117
+    ],
+    "early_uart": "PASS"
+  },
+  {
+    "delayed_cpu": 1,
+    "during": [
+      19,
+      0
+    ],
+    "after": [
+      120,
+      21
+    ],
+    "early_uart": "PASS"
+  },
+  {
+    "stress_bytes": 25600,
+    "intact_print_lines": 32,
+    "shared_count": 256,
+    "page_operations": 512,
+    "after_stress_ticks": [
+      261,
+      262
+    ],
+    "later_ticks": [
+      290,
+      291
+    ]
+  }
+]

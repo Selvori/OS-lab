@@ -12,6 +12,11 @@ long sbi_call(uint64 extension, uint64 function, uint64 x, uint64 y, uint64 z)
     __asm__ volatile("ecall" : "+r"(a0), "+r"(a1) : "r"(a2), "r"(a6), "r"(a7) : "memory");
     return (long)a0;
 }
+/* SBI v0.2 TIME，RV64 在 a0 中传递完整的 64 位截止时间。 */
+long sbi_set_timer(uint64 deadline)
+{
+    return sbi_call(0x54494d45, 0, deadline, 0, 0);
+}
 void sbi_putchar(char c) { (void)sbi_call(1, 0, (uint8)c, 0, 0); }
 int arch_start_cpu(uint64 cpu)
 {
