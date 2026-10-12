@@ -173,13 +173,6 @@ git diff --check
 
 综合负载为重复 @ 字节的数量与打印完整性检查，不等同于任意字节序列的顺序验证；任意测试载荷由 5777 字节回归进行逐字节比较。[综合测试摘要](lab-3-evidence/2026-10-09-multicore.json)
 
-临时 main.c、trap.c 已恢复，当前 SHA-256：
-
-```text
-main.c efd4bec9f74be274bb4724d04ef8ae500ea96cfb68e03a89c4da0c9d36e03ebd
-trap.c 033421b16bcd8061e146f0842d0829d9808819acf5ec06c383a5b9247b1e3251
-```
-
 ## 八、平台差异与未验证项
 
 | 参数 | QEMU virt | VisionFive2/JH7110 |
