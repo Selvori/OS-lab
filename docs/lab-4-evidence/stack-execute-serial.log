@@ -1,0 +1,37 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -kernel build/riscv64-qemu-virt-sbi/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 0
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 0 is booting!
+memory: kernel 0x000000008020e000-0x000000008218a000, 8060 free pages
+memory: user   0x000000008218a000-0x0000000088000000, 24182 free pages
+cpu 0 enabled Sv39 with root 0x000000008020e000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+cpu 1 enabled Sv39 with root 0x000000008020e000
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+process 1 entering U-mode: entry=0x0000000000001000 stack=0x0000003fffffe000
+USER FAULT pid=1 scause=0x000000000000000c epc=0x0000003fffffdff0 stval=0x0000003fffffdff0
+process 1 faulted: status=-1 syscalls=0 user-timer=0 user-external=0
+process resources reclaimed; kernel remains alive
+fault-recoveredQEMU: Terminated

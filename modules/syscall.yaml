@@ -11,7 +11,7 @@ functions:
     pre: Current user ecall frame, saved epc advanced, IRQ off, kernel stvec/satp
     effects: Validate and dispatch bounded write/getpid/ticks/exit
     post: Set saved a0 result or finish process; never access raw user pointers
-  user_start:
+  _start:
     pre: U-mode entry USER_BASE; sp=TRAPFRAME; registers initialized
     effects: Check getpid, repeat round trips, test data/stack and error results, observe ticks, write PASS, exit
     post: Kernel reports exit 0 or failure; no user runtime or filesystem needed

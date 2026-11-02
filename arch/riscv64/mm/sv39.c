@@ -97,3 +97,14 @@ uint64 sv39_read_satp(void)
 {
     return csr_read(satp);
 }
+
+/* Free only private table nodes. The caller separately owns every leaf frame. */
+void sv39_free_tables(pagetable_t root)
+{
+    for (unsigned i = 0; i < 512; ++i) {
+        pte_t pte = root[i];
+        if ((pte & PTE_V) && !pte_is_leaf(pte))
+            sv39_free_tables((pagetable_t)sv39_pte_to_pa(pte));
+    }
+    page_free(root);
+}

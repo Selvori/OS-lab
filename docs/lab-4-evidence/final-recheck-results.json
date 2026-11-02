@@ -1,0 +1,16 @@
+{
+  "normal": {
+    "syscalls": 189097,
+    "user_timers": 103,
+    "user_external": 5,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0
+  },
+  "final": {
+    "syscalls": 203455,
+    "user_timers": 103,
+    "user_external": 5,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0
+  }
+}

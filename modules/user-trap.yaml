@@ -1,5 +1,5 @@
 module: user_trap
-owns: [arch/riscv64/trampoline.S, arch/riscv64/user_trap.c, arch/riscv64/include/asm/usertrap.h]
+owns: [arch/riscv64/trampoline.S, arch/riscv64/user_trap.c, arch/riscv64/include/asm/usertrap.h, arch/riscv64/trap.c, include/kernel/trap.h]
 state: PCB trapframe with x0-x31, epc, kernel satp/sp/handler/hart/gp
 rules:
   - C and assembly offsets are shared and checked statically
@@ -24,3 +24,7 @@ functions:
     pre: a0=TRAPFRAME, a1=user satp, SIE=0, shared trampoline
     effects: Switch satp with TLB fences; restore user integers and sscratch; sret
     post: U-mode at epc with user stack and interrupts enabled
+  trap_device_interrupt:
+    pre: Kernel satp/gp/tp, SIE off, complete user or kernel frame saved by caller
+    effects: Service SBI timer or PLIC/UART; does not alter saved epc
+    post: Return true for serviced interrupt, false for unsupported cause; unknown device panics

@@ -1,5 +1,6 @@
 #include <kernel/arch.h>
 #include <kernel/page.h>
+#include <kernel/proc.h>
 #include <kernel/print.h>
 #include <kernel/vm.h>
 #include <kernel/trap.h>
@@ -66,6 +67,20 @@ void main(void)
     printf("cpu %d SBI timer ready: %d Hz\n", cpuid, (int)TIMER_HZ);
     printf("cpu %d UART external interrupt route ready\n", cpuid);
     arch_irq_enable();
+
+    if (arch_is_boot_cpu()) {
+        arch_irq_disable();
+        uint64 kernel_free = page_free_count(PAGE_ZONE_KERNEL);
+        uint64 user_free = page_free_count(PAGE_ZONE_USER);
+        if (proc_make_first() != 0)
+            panic("first process allocation failed");
+        proc_run();
+        proc_destroy();
+        assert(page_free_count(PAGE_ZONE_KERNEL) == kernel_free &&
+               page_free_count(PAGE_ZONE_USER) == user_free, "process page leak");
+        printf("process resources reclaimed; kernel remains alive\n");
+        arch_irq_enable();
+    }
 
     /* wfi 等待串口或定时事件；处理后返回，继续等待。 */
     arch_park();

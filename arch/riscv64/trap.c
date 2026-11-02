@@ -51,7 +51,7 @@ void trap_kernel_inithart(void)
     csr_write(stvec, (uint64)kernel_vector);
 }
 
-static void external_interrupt_handler(struct kernel_trapframe *frame)
+static void external_interrupt_handler(void)
 {
     uint32 irq = plic_claim();
     /* 通知可能已经被其他 hart 领取；0 不是需要 complete 的 IRQ。 */
@@ -64,7 +64,7 @@ static void external_interrupt_handler(struct kernel_trapframe *frame)
     }
     plic_complete(irq);
     trap_hex("unexpected PLIC irq=", irq);
-    trap_fatal(frame, "unknown external interrupt source");
+    panic("unknown external interrupt source");
 }
 
 void trap_kernel_handler(struct kernel_trapframe *frame)
@@ -76,17 +76,23 @@ void trap_kernel_handler(struct kernel_trapframe *frame)
     if (!(frame->scause & SCAUSE_INTERRUPT))
         trap_fatal(frame, "synchronous exception");
 
-    /* 时钟与 UART 已接入；软件中断仍保持关闭。 */
-    switch (frame->scause & ~SCAUSE_INTERRUPT) {
-    case IRQ_S_SOFT:
-        trap_fatal(frame, "software interrupt not installed");
+    if (!trap_device_interrupt(frame->scause))
+        trap_fatal(frame, "unknown interrupt");
+}
+
+/* Shared device service, called with kernel satp/tp/gp and SIE=0. */
+bool trap_device_interrupt(uint64 cause)
+{
+    if (!(cause & SCAUSE_INTERRUPT))
+        return false;
+    switch (cause & ~SCAUSE_INTERRUPT) {
     case IRQ_S_TIMER:
         timer_interrupt_handler();
-        return;
+        return true;
     case IRQ_S_EXT:
-        external_interrupt_handler(frame);
-        return; /* 普通中断保持 sepc 不变，由汇编恢复并 sret。 */
+        external_interrupt_handler();
+        return true;
     default:
-        trap_fatal(frame, "unknown interrupt");
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 #include <asm/sv39.h>
 #include <kernel/page.h>
+#include <kernel/user.h>
 #include <kernel/print.h>
 #include <kernel/vm.h>
 #include <platform.h>
@@ -69,6 +70,11 @@ void kernel_vm_init(void)
     map_region(text_start, text_end, PTE_R | PTE_X);
     map_region(rodata_start, rodata_end, PTE_R);
     map_region(data_start, DRAM_END, PTE_R | PTE_W);
+
+    extern char trampoline[];
+    if (sv39_map(kernel_pagetable, TRAMPOLINE, (uintptr_t)trampoline,
+                 PAGE_SIZE, PTE_R | PTE_X) != 0)
+        panic("trampoline kernel mapping failed");
 
     verify_mapping(UART_BASE, PTE_R | PTE_W, PTE_X | PTE_U);
     verify_mapping(PLIC_BASE, PTE_R | PTE_W, PTE_X | PTE_U);

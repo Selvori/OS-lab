@@ -1,0 +1,73 @@
+{
+  "normal": {
+    "syscalls": 209743,
+    "user_timers": 102,
+    "user_external": 4,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0
+  },
+  "extended": {
+    "owner_uart": {
+      "syscalls": 212478,
+      "user_timers": 102,
+      "user_external": 16,
+      "uart_after_exit_bytes": 5777,
+      "exit_status": 0
+    },
+    "null-read": {
+      "cause": 13,
+      "recovered": true
+    },
+    "kernel-read": {
+      "cause": 13,
+      "recovered": true
+    },
+    "trapframe-read": {
+      "cause": 13,
+      "recovered": true
+    },
+    "kstack-read": {
+      "cause": 13,
+      "recovered": true
+    },
+    "trampoline-read": {
+      "cause": 13,
+      "recovered": true
+    },
+    "text-write": {
+      "cause": 15,
+      "recovered": true
+    },
+    "stack-execute": {
+      "cause": 12,
+      "recovered": true
+    },
+    "stack-overflow": {
+      "cause": 15,
+      "recovered": true
+    },
+    "supervisor-csr": {
+      "cause": 2,
+      "recovered": true
+    },
+    "illegal-instruction": {
+      "cause": 2,
+      "recovered": true
+    },
+    "allocation": {
+      "syscalls": 195529,
+      "user_timers": 103,
+      "user_external": 5,
+      "uart_after_exit_bytes": 5777,
+      "exit_status": 0,
+      "failed_points": 10
+    }
+  },
+  "final": {
+    "syscalls": 208845,
+    "user_timers": 102,
+    "user_external": 6,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0
+  }
+}

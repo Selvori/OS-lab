@@ -23,6 +23,6 @@ rules:
   - Ordinary interrupts preserve epc; user ecall advances epc by exactly 4
   - stvec is kernel_vector during kernel handlers; interrupts off during page-table transitions
   - Copy user buffers by validating PTE_U and PTE_R and reading their physical aliases
-  - Publish shared page tables before starting secondary harts
+  - Publish shared table topology before secondary harts; only the owner accesses the mutable process-stack leaf
   - Destroy inactive user tables only; shared kernel table structure persists
 non_goals: [scheduler, multiple processes, fork, exec, filesystem, heap growth, demand paging, floating point, vectors]

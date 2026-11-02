@@ -8,7 +8,7 @@ rules:
   - Creation failure frees all allocations and table nodes
 functions:
   proc_make_first:
-    pre: Boot hart, page allocator and kernel VM initialized; no existing process
+    pre: Boot hart with IRQ off; allocator and kernel VM initialized; no existing process
     effects: Allocate private resources; map user image/data/stack/tf/trampoline and kernel stack alias
     post: Return 0 with READY process, or -1 with all resources reclaimed
   proc_run:

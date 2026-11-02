@@ -1,5 +1,6 @@
 #ifndef OSLAB_TRAP_H
 #define OSLAB_TRAP_H
+#include <kernel/types.h>
 
 struct kernel_trapframe;
 
@@ -8,4 +9,5 @@ void trap_kernel_inithart(void);
 /* 仅由汇编入口调用；参数指向被打断执行流在本核栈上的现场。 */
 void trap_kernel_handler(struct kernel_trapframe *frame);
 
+bool trap_device_interrupt(uint64 cause);
 #endif

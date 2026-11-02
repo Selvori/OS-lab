@@ -7,9 +7,12 @@ SECTIONS {
     kernel_text_start = .;
     .text : { KEEP(*(.text.entry)) *(.text .text.*) }
     . = ALIGN(4096);
+    .trampoline : { KEEP(*(.trampoline)) }
+    ASSERT(SIZEOF(.trampoline) <= 4096, "trampoline exceeds page")
+    . = ALIGN(4096);
     kernel_text_end = .;
     kernel_rodata_start = .;
-    .rodata : { *(.rodata .rodata.*) }
+    .rodata : { *(.rodata .rodata.*) KEEP(*(.user_image)) }
     . = ALIGN(4096);
     kernel_rodata_end = .;
     kernel_data_start = .;
