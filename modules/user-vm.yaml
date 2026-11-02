@@ -1,0 +1,21 @@
+module: user_vm
+owns: [include/kernel/user.h, kernel/mm/user.c, arch/riscv64/mm/sv39.c]
+state: Private Sv39 root and owned physical frames
+rules:
+  - VA_MAX=1<<38; TRAMPOLINE=VA_MAX-4096; TRAPFRAME=TRAMPOLINE-4096
+  - User stack below trapframe; supervisor kernel stack below user stack; guard below kernel stack
+  - USER_BASE=4096; one RXU code page then one RWU data page; heap_top after data
+  - Private root has no broad kernel identity mappings
+functions:
+  user_copyin:
+    pre: Valid inactive or current user root; kernel identity aliases accessible
+    effects: Validate length/overflow and all readable user leaves before copying
+    post: Return 0 with full copy or -1 without touching destination
+  sv39_free_tables:
+    pre: Inactive private root, exclusively owned page-table nodes
+    effects: Recursively free nonleaf table pages only
+    post: Root freed; leaf physical frames remain owned by caller
+  user_vm_create:
+    pre: Allocated process frames and valid embedded image of at most one page
+    effects: Map code/data/stack and supervisor special pages
+    post: Valid layout or failure; caller owns rollback of all private resources

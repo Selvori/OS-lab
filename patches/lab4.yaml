@@ -1,0 +1,34 @@
+lab: 4
+goal: Create, enter and return from the first isolated user process
+requires: [page allocator, Sv39, kernel trap, UART PLIC, SBI TIME, boot publication]
+changes:
+  process: PCB, context switch, ownership, create/run/finish/destroy
+  user_vm: Fixed layout, permission checks, table-only destruction and bounded copyin
+  user_trap: Shared trampoline, user register frame, ecall and interrupt dispatch
+  user_program: Embedded linked RV64 integer program and minimal syscall ABI
+  build: Page-aligned trampoline and user image dependencies
+acceptance:
+  - scenario: Baseline and build
+    input: Build QEMU and VisionFive2; run QEMU with two harts
+    expected: Strict compile, entry 0x80200000 or 0x40200000, both timer/UART ready
+  - scenario: First process
+    input: Boot the production user program
+    expected: swtch enters trap_user_return; real U-mode ecall SPP=0; pid 1; exit 0
+  - scenario: Repeated round trips
+    input: Repeated getpid with register and user stack checks
+    expected: Correct return values, registers and writable data survive; code is unchanged
+  - scenario: User interrupts
+    input: Wait in user mode for ticks, send UART during execution
+    expected: User-origin timer count advances and UART echoes; sepc preserved on interrupts
+  - scenario: Invalid syscall and pointer
+    input: Unknown syscall, null/kernel/trapframe/cross-page/overflow buffer
+    expected: Defined negative error, no kernel dereference or partial write
+  - scenario: Protection
+    input: Separate temporary user images read protected pages, write text, execute stack or illegal instructions
+    expected: Process fault diagnostic and return to kernel, no kernel panic
+  - scenario: Allocation failure and cleanup
+    input: Fail each process-creation allocation and repeat create/destroy
+    expected: No published partial process; both page counts return to baseline
+  - scenario: Restore
+    input: Restore temporary sources and rebuild/run official image
+    expected: Production program passes; git diff --check; no test probe in final kernel

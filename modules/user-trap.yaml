@@ -1,0 +1,26 @@
+module: user_trap
+owns: [arch/riscv64/trampoline.S, arch/riscv64/user_trap.c, arch/riscv64/include/asm/usertrap.h]
+state: PCB trapframe with x0-x31, epc, kernel satp/sp/handler/hart/gp
+rules:
+  - C and assembly offsets are shared and checked statically
+  - user_vector saves every user integer register before loading kernel execution state
+  - sscratch holds TRAPFRAME in U-mode; user tp/gp never determine kernel identity
+  - Kernel and user page tables map trampoline to same PA at same VA
+  - Never dereference user stack in supervisor mode
+functions:
+  user_vector:
+    pre: User trap, SIE=0, stvec points here, sscratch=TRAPFRAME
+    effects: Save user integers; load kernel stack/gp/tp; fence and switch satp; jump handler
+    post: Handler runs on kernel mapping with complete frame
+  trap_user_handler:
+    pre: Current process, kernel satp/tp/gp, SIE=0, saved SPP=0
+    effects: Set kernel stvec; save sepc; dispatch ecall/timer/external or terminate on fault
+    post: Valid trap returns via trap_user_return; unknown syscall returns -38; faults end process
+  trap_user_return:
+    pre: Current live process, kernel satp and stack, no locks
+    effects: Disable IRQ; fill kernel fields; set user stvec/sepc; clear SPP/SUM/MXR/FS/VS and set SPIE
+    post: Jump shared user_return; no C access after user satp activation
+  user_return:
+    pre: a0=TRAPFRAME, a1=user satp, SIE=0, shared trampoline
+    effects: Switch satp with TLB fences; restore user integers and sscratch; sret
+    post: U-mode at epc with user stack and interrupts enabled
