@@ -45,6 +45,7 @@ bool sv39_lookup(pagetable_t root, uintptr_t va,
                  uintptr_t *pa, uint64 *flags);
 void sv39_activate(pagetable_t root);
 uint64 sv39_read_satp(void);
+void sv39_prune_empty(pagetable_t root, uintptr_t va);
 void sv39_free_tables(pagetable_t root);
 
 #endif

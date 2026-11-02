@@ -1,0 +1,96 @@
+{
+  "normal": {
+    "syscalls": 173995,
+    "user_timers": 105,
+    "user_external": 2,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0,
+    "heap_cycles": 256
+  },
+  "extended": {
+    "probe": {
+      "failure_points": 8,
+      "model_steps": 1024,
+      "arena_pages": 4096,
+      "lifecycles": 32,
+      "pool_nodes": 128
+    },
+    "heap-after-free-load": {
+      "cause": 13,
+      "recovered": true
+    },
+    "heap-after-free-store": {
+      "cause": 15,
+      "recovered": true
+    },
+    "heap-nx": {
+      "cause": 12,
+      "recovered": true
+    },
+    "lab4": {
+      "owner_uart": {
+        "syscalls": 166831,
+        "user_timers": 105,
+        "user_external": 16,
+        "uart_after_exit_bytes": 5777,
+        "exit_status": 0
+      },
+      "null-read": {
+        "cause": 13,
+        "recovered": true
+      },
+      "kernel-read": {
+        "cause": 13,
+        "recovered": true
+      },
+      "trapframe-read": {
+        "cause": 13,
+        "recovered": true
+      },
+      "kstack-read": {
+        "cause": 13,
+        "recovered": true
+      },
+      "trampoline-read": {
+        "cause": 13,
+        "recovered": true
+      },
+      "text-write": {
+        "cause": 15,
+        "recovered": true
+      },
+      "stack-execute": {
+        "cause": 12,
+        "recovered": true
+      },
+      "stack-overflow": {
+        "cause": 15,
+        "recovered": true
+      },
+      "supervisor-csr": {
+        "cause": 2,
+        "recovered": true
+      },
+      "illegal-instruction": {
+        "cause": 2,
+        "recovered": true
+      },
+      "allocation": {
+        "syscalls": 239658,
+        "user_timers": 103,
+        "user_external": 7,
+        "uart_after_exit_bytes": 5777,
+        "exit_status": 0,
+        "failed_points": 10
+      }
+    }
+  },
+  "final": {
+    "syscalls": 122303,
+    "user_timers": 109,
+    "user_external": 5,
+    "uart_after_exit_bytes": 5777,
+    "exit_status": 0,
+    "heap_cycles": 256
+  }
+}

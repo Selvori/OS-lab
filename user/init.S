@@ -24,6 +24,7 @@
     bne a0, a1, fail
 .endm
 _start:
+    call heap_demo
     write hello
     bne a0, a2, fail
     addi sp, sp, -16
@@ -149,3 +150,161 @@ passed: .ascii "USER PASS: 4096 round trips, registers, stack, data, errors, tim
 passed_end:
 failed: .ascii "USER FAIL\n"
 failed_end:
+
+# New calls use ordinary register arguments; all memory below is U-mode memory.
+heap_demo:
+    addi sp, sp, -16
+    sd ra, 0(sp)
+    li a0, 0
+    li a1, 3
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x3000
+    bne a0, t0, fail
+    mv s0, a0
+    mv t0, a0
+    li t1, 12288
+heap_zero:
+    lbu t2, 0(t0)
+    bnez t2, fail
+    addi t0, t0, 1
+    addi t1, t1, -1
+    bnez t1, heap_zero
+    li t0, 0x12345678
+    sd t0, 0(s0)
+    li t1, 12280
+    add t1, t1, s0
+    sd t0, 0(t1)
+    # Copy a message across two independently backed virtual pages.
+    li s1, 0x3ff8
+    mv t0, s1
+    la t1, heap_message
+    la t2, heap_message_end
+heap_copy:
+    lbu t3, 0(t1)
+    sb t3, 0(t0)
+    addi t0, t0, 1
+    addi t1, t1, 1
+    bne t1, t2, heap_copy
+    li a0, 1
+    mv a1, s1
+    la a2, heap_message_end
+    la t0, heap_message
+    sub a2, a2, t0
+    li a7, SYS_WRITE
+    ecall
+    bne a0, a2, fail
+    # A middle free splits live pages; first-fit must reuse this exact hole.
+    li a0, 0x4000
+    li a1, 1
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    li a0, 0
+    li a1, 1
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x4000
+    bne a0, t0, fail
+    ld t0, 0(a0)
+    bnez t0, fail
+    ld t0, 0(s0)
+    li t1, 0x12345678
+    bne t0, t1, fail
+    li a0, 0x3000
+    li a1, 1
+    li a7, SYS_MMAP
+    ecall
+    li t0, -12
+    bne a0, t0, fail
+    # Overflow, zero pages, invalid alignment and nonheap frees are rejected.
+    li a0, 0
+    li a1, 0
+    li a7, SYS_MMAP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    li a0, -4096
+    li a1, -1
+    li a7, SYS_MMAP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    li a0, 0x3001
+    li a1, 1
+    li a7, SYS_MUNMAP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    li a0, 0x1000
+    li a1, 1
+    li a7, SYS_MUNMAP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    li a0, 0x3000
+    li a1, 3
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    li a0, 0x3000
+    li a1, 1
+    li a7, SYS_MUNMAP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    # Explicit address exercises middle allocation, then bridging free.
+    li a0, 0x7000
+    li a1, 2
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x7000
+    bne a0, t0, fail
+    li a0, 0
+    li a1, 4
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x3000
+    bne a0, t0, fail
+    li a0, 0x3000
+    li a1, 4
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    li a0, 0x7000
+    li a1, 2
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    li s2, 256
+heap_repeat:
+    li a0, 0
+    li a1, 2
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x3000
+    bne a0, t0, fail
+    ld t0, 0(a0)
+    bnez t0, fail
+    sd s2, 0(a0)
+    li a1, 2
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    addi s2, s2, -1
+    bnez s2, heap_repeat
+    # Leave live mappings deliberately: exit must reclaim them too.
+    li a0, 0
+    li a1, 3
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x3000
+    bne a0, t0, fail
+    write heap_pass
+    ld ra, 0(sp)
+    addi sp, sp, 16
+    ret
+heap_message: .ascii "HEAP cross-page write OK\n"
+heap_message_end:
+heap_pass: .ascii "HEAP PASS: zero, split, merge, reuse, errors, 256 cycles\n"
+heap_pass_end:

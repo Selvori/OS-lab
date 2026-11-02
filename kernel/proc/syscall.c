@@ -22,6 +22,12 @@ void syscall_dispatch(struct proc *p)
         result = (long)count;
         break;
     }
+    case SYS_MMAP:
+        result = user_heap_alloc(p, tf->x[10], tf->x[11]);
+        break;
+    case SYS_MUNMAP:
+        result = user_heap_free(p, tf->x[10], tf->x[11]);
+        break;
     case SYS_GETPID:
         result = p->pid;
         break;

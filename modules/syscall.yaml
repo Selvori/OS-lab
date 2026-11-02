@@ -14,5 +14,5 @@ functions:
     post: Set saved a0 result or finish process; never access raw user pointers
   _start:
     pre: U-mode entry USER_BASE; sp=TRAPFRAME; registers initialized
-    effects: Check getpid, repeat round trips, test data/stack and error results, observe ticks, write PASS, exit
+    effects: Check page heap allocation/free/zero/reuse, cross-page write, getpid and registers, data/stack, errors and ticks, then exit with live heap
     post: Kernel reports exit 0 or failure; no user runtime or filesystem needed

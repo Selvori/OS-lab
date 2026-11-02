@@ -9,5 +9,6 @@
 #define USER_KSTACK (USER_STACK - PAGE_SIZE)
 struct proc;
 int user_vm_create(struct proc *p);
+int vm_unmappages(pagetable_t root, uintptr_t begin, size_t npages);
 int user_copyin(pagetable_t root, void *dst, uintptr_t src, size_t count);
 #endif

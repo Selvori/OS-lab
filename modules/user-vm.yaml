@@ -4,7 +4,7 @@ state: Private Sv39 root and owned physical frames
 rules:
   - VA_MAX=1<<38; TRAMPOLINE=VA_MAX-4096; TRAPFRAME=TRAMPOLINE-4096
   - User stack below trapframe; supervisor kernel stack below user stack; guard below kernel stack
-  - USER_BASE=4096; one RXU code page then one RWU data page; heap_top after data
+  - USER_BASE=4096; one RXU code page then one RWU data page; heap starts after data; heap_top is the arena limit
   - Private root has no broad kernel identity mappings
 functions:
   user_copyin:

@@ -22,6 +22,7 @@ void main(void)
         printf("cpu %d is booting!\n", cpuid);
 
         page_allocator_init();
+        mmap_pool_init();
         printf("memory: kernel %p-%p, %d free pages\n",
                (void *)page_zone_start(PAGE_ZONE_KERNEL),
                (void *)page_zone_end(PAGE_ZONE_KERNEL),
@@ -72,12 +73,14 @@ void main(void)
         arch_irq_disable();
         uint64 kernel_free = page_free_count(PAGE_ZONE_KERNEL);
         uint64 user_free = page_free_count(PAGE_ZONE_USER);
+        size_t mmap_free = mmap_pool_free_count();
         if (proc_make_first() != 0)
             panic("first process allocation failed");
         proc_run();
         proc_destroy();
         assert(page_free_count(PAGE_ZONE_KERNEL) == kernel_free &&
                page_free_count(PAGE_ZONE_USER) == user_free, "process page leak");
+        assert(mmap_pool_free_count() == mmap_free, "process mmap node leak");
         printf("process resources reclaimed; kernel remains alive\n");
         arch_irq_enable();
     }

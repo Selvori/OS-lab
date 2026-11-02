@@ -4,6 +4,8 @@
 #define SYS_GETPID 2
 #define SYS_TICKS 3
 #define SYS_EXIT 4
+#define SYS_MMAP 5
+#define SYS_MUNMAP 6
 #define SYS_WRITE_MAX 256
 #ifndef __ASSEMBLER__
 #include <kernel/proc.h>

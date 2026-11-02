@@ -19,6 +19,7 @@ void proc_destroy(void)
 {
     struct proc *p = &first;
     assert(!arch_irq_enabled() && proc_current() == NULL, "destroy active process");
+    user_heap_destroy(p);
     if (p->stack_mapped) {
         pte_t *pte = sv39_walk(kernel_vm_root(), p->kstack, false);
         assert(pte != NULL, "kernel stack leaf missing");
@@ -42,7 +43,7 @@ int proc_make_first(void)
     p->pid = 1;
     p->owner = arch_cpu_id();
     p->kstack = USER_KSTACK;
-    p->heap_top = USER_BASE + 2 * PAGE_SIZE;
+    p->heap_top = 0;
     p->ustack_pages = 1;
     p->pgtbl = page_alloc(PAGE_ZONE_KERNEL);
     p->tf = page_alloc(PAGE_ZONE_KERNEL);
@@ -53,6 +54,8 @@ int proc_make_first(void)
     if (!p->pgtbl || !p->tf || !p->stack_page || !p->code || !p->data || !p->ustack)
         goto fail;
     if (user_vm_create(p) != 0)
+        goto fail;
+    if (user_heap_init(p) != 0)
         goto fail;
     /* The trampoline mapping already created these shared kernel table nodes.
      * Secondary harts never use this stack alias or modify its leaf. */

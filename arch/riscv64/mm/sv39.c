@@ -108,3 +108,28 @@ void sv39_free_tables(pagetable_t root)
     }
     page_free(root);
 }
+
+/* Reclaim empty private tables after removing a leaf or a failed walk. */
+void sv39_prune_empty(pagetable_t root, uintptr_t va)
+{
+    if (!root || va >= SV39_MAX_LOW_VA) return;
+    pagetable_t tables[3];
+    pte_t *parents[2];
+    unsigned depth = 0;
+    tables[0] = root;
+    for (int level = 2; level > 0; --level) {
+        pte_t *pte = &tables[depth][sv39_index((unsigned)level, va)];
+        if (!(*pte & PTE_V) || pte_is_leaf(*pte)) break;
+        parents[depth] = pte;
+        tables[depth + 1] = (pagetable_t)sv39_pte_to_pa(*pte);
+        ++depth;
+    }
+    while (depth) {
+        for (unsigned i = 0; i < 512; ++i)
+            if (tables[depth][i] != 0) return;
+        *parents[depth - 1] = 0;
+        sfence_vma();
+        page_free(tables[depth]);
+        --depth;
+    }
+}

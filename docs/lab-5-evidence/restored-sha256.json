@@ -1,0 +1,6 @@
+{
+  "kernel/main.c": "c77ef6b5f7d9f7389a8ff72cb06ebccd372de44624ed610c8ce4be49db607b78",
+  "kernel/proc/proc.c": "089fc00f2887c77f2e6af0c217a1b5cd2b78d2397311b8ece599826d89393c2d",
+  "kernel/mm/page.c": "0ef6afca9cf78cc6e8c71a34bc88abf9dcb0e4c6070804e7e21a3c57e9f8a453",
+  "user/init.S": "3161fef5d5af2fb02b465fcbe5428f24084cec2243bf864675a8177d429546cf"
+}

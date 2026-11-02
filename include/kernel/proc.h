@@ -1,7 +1,7 @@
 #ifndef SEELE_PROC_H
 #define SEELE_PROC_H
 #include <asm/usertrap.h>
-#include <kernel/user.h>
+#include <kernel/heap.h>
 struct context {
     uint64 ra, sp, s[12];
 };
@@ -11,7 +11,8 @@ enum proc_state { PROC_EMPTY, PROC_READY, PROC_RUNNING, PROC_EXITED, PROC_FAULTE
 struct proc {
     int pid;
     pagetable_t pgtbl;
-    uintptr_t heap_top;
+    uintptr_t heap_top; /* Exclusive arena limit; mmap lists reusable holes. */
+    mmap_region_t *mmap;
     unsigned ustack_pages;
     struct user_trapframe *tf;
     uintptr_t kstack;
