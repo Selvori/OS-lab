@@ -3,13 +3,14 @@ owns: [include/kernel/syscall.h, kernel/proc/syscall.c, user/init.S, user/user.l
 state: User ABI a7=number, a0-a2=args, a0=signed result
 rules:
   - Self-designed minimal ABI; course slides specify no syscall IDs
-  - write=1, getpid=2, ticks=3, exit=4
+  - write=1, getpid=2, ticks=3, exit=4, mmap=5, munmap=6
   - write supports fd 1 only, max 256 bytes, prevalidates entire buffer
-  - Errors are -9 bad fd, -14 invalid memory, -22 invalid size, -38 unknown call
+  - mmap takes page hint and page count; munmap takes page address and page count
+  - Errors are -9 bad fd, -14 invalid memory, -22 invalid size, -38 unknown call, -12 out of heap resources
 functions:
   syscall_dispatch:
     pre: Current user ecall frame, saved epc advanced, IRQ off, kernel stvec/satp
-    effects: Validate and dispatch bounded write/getpid/ticks/exit
+    effects: Validate and dispatch bounded write/getpid/ticks/exit/mmap/munmap
     post: Set saved a0 result or finish process; never access raw user pointers
   _start:
     pre: U-mode entry USER_BASE; sp=TRAPFRAME; registers initialized

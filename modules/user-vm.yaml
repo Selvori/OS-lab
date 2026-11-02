@@ -19,3 +19,11 @@ functions:
     pre: Allocated process frames and valid embedded image of at most one page
     effects: Map code/data/stack and supervisor special pages
     post: Valid layout or failure; caller owns rollback of all private resources
+  vm_unmappages:
+    pre: Owner-private heap root; kernel satp with IRQ off
+    effects: Validate all owned user leaves before unmapping, local TLB flush, free and prune
+    post: Whole range removed or error with no mutation
+  sv39_prune_empty:
+    pre: Owner-private tables with absent leaf; no stale translation using freed frame
+    effects: Reclaim empty child tables on the path, excluding root
+    post: Remaining mappings intact

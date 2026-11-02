@@ -1,7 +1,7 @@
 system:
   name: Seele
-  scope: Lab 4 first user process, based on Labs 1-3
-  provenance: Self-authored from lab-4.pptx; no course YAML was supplied
+  scope: Lab 5 user heap and syscalls, based on Labs 1-4
+  provenance: Self-authored from lab-4.pptx and lab-5.pdf; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
   firmware: OpenSBI S-mode entry; SBI HSM and TIME
@@ -25,4 +25,8 @@ rules:
   - Copy user buffers by validating PTE_U and PTE_R and reading their physical aliases
   - Publish shared table topology before secondary harts; only the owner accesses the mutable process-stack leaf
   - Destroy inactive user tables only; shared kernel table structure persists
-non_goals: [scheduler, multiple processes, fork, exec, filesystem, heap growth, demand paging, floating point, vectors]
+  - Heap free intervals are sorted, disjoint and coalesced; mapped RWU pages are their complement
+  - Heap mutation is owner-only with IRQ off, kernel satp active and no concurrent table walkers
+  - Flush local TLB before reusing removed frames; prune empty private table nodes
+  - Failures preserve mappings, free intervals and resource counts
+non_goals: [scheduler, multiple processes, fork, exec, filesystem, demand paging, floating point, vectors]

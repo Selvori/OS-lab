@@ -1,0 +1,26 @@
+lab: 5
+goal: Reusable page heap and parameterized syscall services
+source: lab-5.pdf pages 3-7; exact arena, limits, IDs and errors are project choices
+requires: [Lab 4 user process, private Sv39, trampoline, page pools, ecall ABI]
+abi:
+  mmap: 'ID 5, a0=address (0 first-fit), a1=npages; returns VA or negative errno'
+  munmap: 'ID 6, a0=page VA, a1=npages; returns 0 or negative errno'
+  errors: '-22 invalid argument/range or not fully mapped, -12 no resource/free interval'
+contracts:
+  vm_unmappages:
+    pre: Owner-private root, kernel satp and IRQ off; VA/pages identify heap-only owned user frames
+    effects: Prevalidate every leaf, then clear PTE, flush TLB, free frame and prune empty tables
+    post: Return 0 with whole range removed or -1 with no changes
+  sv39_prune_empty:
+    pre: Private root, kernel satp and IRQ off; removed or absent leaf at VA
+    effects: Free only empty nonroot child tables along VA path
+    post: Root and nonempty tables preserved; caller flushes before frame reuse
+acceptance:
+  - Real U-mode zeroed multipage mapping, boundary read/write, cross-page write syscall
+  - Front, middle and whole interval allocations; left, right, isolated and bridging frees
+  - First-fit reuse, fixed collision, partial release, double release and overflow rejection
+  - Global node exhaustion and every allocation failure point preserve resource counts and list
+  - Exit with live heap reclaims pages and metadata; repeated lifecycle has no leaks
+  - User load/store after unmap faults; heap instruction fetch faults (NX)
+  - Existing register ABI, timer and UART remain working; QEMU and VF2 strict build
+  - Temporary probes restored byte-for-byte; production image rebuilt; actual QEMU screenshot

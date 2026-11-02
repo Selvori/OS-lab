@@ -2,7 +2,7 @@ module: process
 owns: [include/kernel/proc.h, kernel/proc/proc.c, arch/riscv64/switch.S]
 state: Single PCB, boot context, owner CPU, per-owner current pointer
 rules:
-  - PCB fields include pid, pgtbl, heap_top, ustack_pages, tf, kstack, ctx
+  - PCB fields include pid, pgtbl, heap_top, mmap, ustack_pages, tf, kstack, ctx
   - Run on boot hart only; no locks held across swtch; IRQ disabled at switches
   - Never free a live kernel stack or active user page table
   - Creation failure frees all allocations and table nodes
@@ -25,7 +25,7 @@ functions:
     post: Does not return to terminated user execution
   proc_destroy:
     pre: Process inactive, running on boot stack with IRQ off
-    effects: Unmap kernel stack leaf; free private frames and table nodes
+    effects: Destroy heap pages/nodes; unmap kernel stack leaf; free private frames and table nodes
     post: PCB empty; page counts restored except persistent shared kernel mapping topology
   swtch:
     pre: IRQ off, old/new valid nonoverlapping contexts, new sp aligned, no locks

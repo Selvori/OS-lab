@@ -1,0 +1,35 @@
+module: user_heap
+owns: [include/kernel/heap.h, kernel/mm/heap.c]
+state: Per-PCB sorted free intervals and a locked global pool of 128 region nodes
+layout: Fixed page arena [0x3000, 0x1003000); heap_top is its exclusive upper bound
+rules:
+  - Free intervals describe virtual holes, never allocated physical memory
+  - First fit for address zero; otherwise strict fixed-address allocation without replacement
+  - Eager zeroed user-pool pages, RWU and NX; no lazy faults or shared mappings
+  - No raw user pointers or dynamically allocated metadata
+  - Pool lock protects node pop/push only; per-process lists belong to owner hart with IRQ off
+functions:
+  mmap_pool_init:
+    pre: Boot hart, before secondary publication and process creation
+    effects: Initialize global node freelist and spinlock
+    post: All 128 nodes available
+  mmap_pool_free_count:
+    pre: Initialized pool
+    effects: Snapshot count under pool lock
+    post: Return available metadata nodes
+  user_heap_init:
+    pre: Empty PCB heap, owner hart with IRQ off
+    effects: Reserve one node representing the entire arena
+    post: Return 0 with free arena, or -12 without allocated nodes
+  user_heap_alloc:
+    pre: Private initialized heap and root, owner hart with IRQ off and kernel satp
+    effects: Validate hint/pages; find interval; reserve split metadata; allocate and map pages; commit interval split
+    post: Return page VA or -22/-12; failure restores pages, tables, nodes and list exactly
+  user_heap_free:
+    pre: Private initialized heap and root, owner hart with IRQ off and kernel satp
+    effects: Validate full live page range and metadata availability; unmap/free/prune; insert or coalesce neighbors
+    post: Return 0 or -22/-12; failure has no externally visible mutation
+  user_heap_destroy:
+    pre: Inactive process on boot stack with IRQ off, partial initialization allowed
+    effects: Free remaining mapped heap pages and all region nodes
+    post: No heap frames or metadata owned by PCB
