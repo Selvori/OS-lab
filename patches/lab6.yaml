@@ -1,0 +1,19 @@
+lab: 6
+source: lab-6.pptx pages 2-8; policies and capacities are project choices
+abi:
+  fork: '7, no args; parent child PID, child 0; -11 table/ID full, -12 memory'
+  wait: '8, a0 optional writable int32 status VA; child PID, -10 no children, -14 bad pointer'
+  sleep: '9, a0 ticks in [0, 0x7fffffff]; 0 success, -22 invalid; zero yields'
+  yield: '10, no args, 0 success'
+  exit: '4, a0 int32 status; child never returns; init returns -1'
+  retained: '1 write, 2 getpid, 3 ticks (owner clock), 5 mmap, 6 munmap'
+acceptance:
+  - Real fork has independent code, data, stack, trapframe, kernel stack, heap frames and interval nodes
+  - Child starts after fork ecall with saved a0 zero, parent receives child PID
+  - wait handles early or late child exit, no children, invalid and boundary status buffers
+  - sleep zero, invalid, staggered deadlines and all-sleeping scheduler idle work
+  - Exit retains zombie until parent wait; faults use same lifecycle; orphan adoption
+  - CPU-only users cannot monopolize owner hart; interrupted registers and PC survive
+  - Repeated reap, slot exhaustion, all fork allocation failure points and heap-node exhaustion rollback
+  - UART and owner timer survive blocked and CPU-bound workloads; QEMU and VF2 build image
+  - Production init PID 0 stays alive; test probes restored byte-for-byte

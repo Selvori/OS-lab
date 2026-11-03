@@ -1,0 +1,14 @@
+module: process-memory
+functions:
+  user_heap_clone:
+    pre: Owner IRQ off; empty destination, stable source
+    effects: Deep copy free interval nodes and every mapped heap frame with RWU/NX permissions
+    post: Independent identical heap or caller may destroy partial destination; source unchanged
+  user_copyout:
+    pre: Owner private root, IRQ off, kernel satp; trusted source
+    effects: Validate entire user U/W range before copying by physical aliases
+    post: Return 0 or -1 without partial writes on invalid range
+  user_vm_create:
+    pre: Private allocated frames and root
+    effects: Map code/data/one user stack/tf/trampoline and unique supervisor kstack alias
+    post: Success or caller frees all partial private table nodes

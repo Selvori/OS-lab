@@ -1,33 +1,56 @@
 module: process
 owns: [include/kernel/proc.h, kernel/proc/proc.c, arch/riscv64/switch.S]
-state: Single PCB, boot context, owner CPU, per-owner current pointer
-rules:
-  - PCB fields include pid, pgtbl, heap_top, mmap, ustack_pages, tf, kstack, ctx
-  - Run on boot hart only; no locks held across swtch; IRQ disabled at switches
-  - Never free a live kernel stack or active user page table
-  - Creation failure frees all allocations and table nodes
+state: 16 PCB slots, init pointer, boot scheduler context, owner current pointer
 functions:
+  proc_init:
+    pre: Boot hart, IRQ off, no processes
+    effects: Initialize table and identify owner
+    post: All slots UNUSED
   proc_make_first:
-    pre: Boot hart with IRQ off; allocator and kernel VM initialized; no existing process
-    effects: Allocate private resources; map user image/data/stack/tf/trampoline and kernel stack alias
-    post: Return 0 with READY process, or -1 with all resources reclaimed
-  proc_run:
-    pre: READY process owned by current hart; normal boot stack; no locks
-    effects: Disable IRQ, publish current, swtch from boot context into process context
-    post: On exit/fault resume boot context, clear current, report status; IRQ remains off
-  proc_current:
-    pre: Valid kernel tp and CPU ID
-    effects: Read current hart process pointer
-    post: Return current PCB or NULL
+    pre: Owner, IRQ off, initialized VM and pools
+    effects: Allocate init PID 0, private user resources and guarded kernel stack
+    post: RUNNABLE init or full rollback
+  proc_scheduler:
+    pre: Owner on boot stack, IRQ off, no spinlocks
+    effects: Forever cycle slots; dispatch RUNNABLE; enable IRQ and wfi when idle
+    post: Never returns; current is NULL outside a dispatch
+  proc_yield:
+    pre: RUNNING owner process in kernel satp, IRQ off, no locks
+    effects: Set RUNNABLE and swtch to scheduler
+    post: Resumes same kernel continuation when dispatched again, IRQ off
+  proc_sleep:
+    pre: RUNNING owner, IRQ off, channel valid, no locks
+    effects: Atomically publish SLEEPING and channel then switch
+    post: Resumes RUNNING after wakeup; clears channel
+  proc_wakeup:
+    pre: Owner with IRQ off
+    effects: Mark all sleepers on channel RUNNABLE
+    post: No context switches
+  proc_fork:
+    pre: RUNNING owner process, IRQ off
+    effects: Allocate private image/data/stack/tf/kstack/heap and free-list nodes; copy integer user frame
+    post: Parent gets child PID, child saved a0=0 at post-ecall PC; failure negative with parent unchanged
+  proc_wait:
+    pre: RUNNING owner, IRQ off, status VA zero or complete writable user int
+    effects: Reap zombie child, or sleep on parent channel and recheck
+    post: Child PID and optional status, -10 if no children, -14 bad pointer
+  proc_sleep_ticks:
+    pre: RUNNING owner, IRQ off; unsigned duration <= 0x7fffffff
+    effects: Set modular deadline and sleep on owner tick channel; zero yields
+    post: Return 0 no earlier than duration processed ticks, or -22 invalid
+  proc_tick:
+    pre: Timer service on any hart, IRQ off
+    effects: Owner advances shared sleep tick and wakes due sleepers; other harts do not access PCB
+    post: No switches; user trap explicitly calls yield after device service
   proc_finish:
-    pre: Owner process running in kernel with IRQ off and kernel stvec/satp
-    effects: Save exit or fault status; swtch to boot context
-    post: Does not return to terminated user execution
+    pre: RUNNING owner with IRQ off
+    effects: Reject init exit; reparent children to init; set ZOMBIE and wake parent; switch away
+    post: Child never resumes; init syscall returns -1
   proc_destroy:
-    pre: Process inactive, running on boot stack with IRQ off
-    effects: Destroy heap pages/nodes; unmap kernel stack leaf; free private frames and table nodes
-    post: PCB empty; page counts restored except persistent shared kernel mapping topology
+    pre: Owner IRQ off; target inactive UNUSED partial allocation or ZOMBIE; not current
+    effects: Free heap, private frames/tables, revoke kernel stack alias and local TLB
+    post: Slot UNUSED with all per-process resources returned
   swtch:
-    pre: IRQ off, old/new valid nonoverlapping contexts, new sp aligned, no locks
-    effects: Save ra/sp/s0-s11 to old and restore from new
-    post: ret resumes new.ra on new.sp; caller-saved registers unspecified
+    pre: Kernel satp, IRQ off, no locks; distinct valid contexts and aligned new sp
+    effects: Save ra/sp/s0-s11 to old and restore new
+    post: ret resumes new ra on new stack; other registers caller-saved

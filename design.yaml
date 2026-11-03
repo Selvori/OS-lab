@@ -1,17 +1,17 @@
 system:
   name: Seele
-  scope: Lab 5 user heap and syscalls, based on Labs 1-4
-  provenance: Self-authored from lab-4.pptx and lab-5.pdf; no course YAML was supplied
+  scope: Lab 6 process management, based on Labs 1-5
+  provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
   firmware: OpenSBI S-mode entry; SBI HSM and TIME
   memory: 128 MiB platform DRAM; kernel identity mapping; separate page pools
-  harts: Boot hart owns the single process; others service kernel interrupts
+  harts: Boot hart owns all user processes and scheduler; others service kernel interrupts
 mechanisms:
   paging: Sv39, 4 KiB pages, ASID 0, sfence.vma around satp changes
   context: Integer registers only; FS/VS off in user mode
   traps: Separate kernel_vector and shared high trampoline user_vector
-  interrupts: Existing per-hart SBI timer and UART/PLIC; no preemption
+  interrupts: Existing per-hart SBI timer and UART/PLIC; user timer preemption; kernel handlers remain nonpreemptible
 rules:
   - Complete contracts before implementation; sign off separate spec and code commits
   - Never modify xv6 or QEMU reference repositories
@@ -29,4 +29,17 @@ rules:
   - Heap mutation is owner-only with IRQ off, kernel satp active and no concurrent table walkers
   - Flush local TLB before reusing removed frames; prune empty private table nodes
   - Failures preserve mappings, free intervals and resource counts
-non_goals: [scheduler, multiple processes, fork, exec, filesystem, demand paging, floating point, vectors]
+non_goals: [SMP user scheduling, migration, kernel preemption, COW, exec, filesystem, demand paging, floating point, vectors]
+
+lab6_invariants:
+  - Sixteen PCB slots; init PID 0 never exits; IDs are not slot numbers
+  - Only boot hart reads or writes process state, parent, channel and scheduler tick
+  - Condition check, sleep publication, wakeup and switches all have IRQ off
+  - No spinlocks or push_off nesting across swtch; scheduler runs on boot stack
+  - Each private kernel stack has a unique shared-kernel alias and guard page
+  - All kernel contexts share kernel satp; trampoline selects user root on return
+  - Only RUNNABLE processes are dispatched; timer preemption uses one tick quantum
+  - Exit keeps a ZOMBIE; parent wait reclaims from a different kernel stack
+  - Orphans are adopted by init and init is awakened for already-zombie adoptees
+  - Fork publishes RUNNABLE only after all allocations, copies and metadata succeed
+  - wait status pointer is fully validated writable before reaping any child
