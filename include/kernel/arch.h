@@ -11,6 +11,7 @@ void arch_irq_disable(void);
 void arch_irq_enable(void);
 void arch_early_init(void);
 void arch_park(void) __attribute__((noreturn));
+unsigned arch_irq_depth(void);
 void push_off(void);
 void pop_off(void);
 #endif

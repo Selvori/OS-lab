@@ -1,0 +1,22 @@
+{
+  "normal": {
+    "init_pid": 0,
+    "heap_cycles": 256,
+    "register_roundtrips": 4096,
+    "fork_wait_cycles": 32,
+    "cpu_iterations": 200000000,
+    "parent_progress_before_cpu_exit": true,
+    "uart_bytes": 5777,
+    "owner_only_uart": false
+  },
+  "final": {
+    "init_pid": 0,
+    "heap_cycles": 256,
+    "register_roundtrips": 4096,
+    "fork_wait_cycles": 32,
+    "cpu_iterations": 200000000,
+    "parent_progress_before_cpu_exit": true,
+    "uart_bytes": 5777,
+    "owner_only_uart": false
+  }
+}

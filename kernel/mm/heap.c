@@ -192,3 +192,31 @@ void user_heap_destroy(struct proc *p)
     }
     p->heap_top = 0;
 }
+
+/* Caller destroys the unpublished child on failure; the source never changes. */
+int user_heap_clone(struct proc *dst, const struct proc *src)
+{
+    heap_context(dst);
+    dst->heap_top = src->heap_top;
+    mmap_region_t **link = &dst->mmap;
+    for (const mmap_region_t *r = src->mmap; r; r = r->next) {
+        mmap_region_t *copy = region_alloc();
+        if (!copy) return -12;
+        *copy = (mmap_region_t){r->begin, r->npages, NULL};
+        *link = copy;
+        link = &copy->next;
+    }
+    for (uintptr_t va = USER_HEAP_START; va < src->heap_top; va += PAGE_SIZE) {
+        uintptr_t pa;
+        if (!sv39_lookup(src->pgtbl, va, &pa, NULL)) continue;
+        void *frame = page_alloc(PAGE_ZONE_USER);
+        if (!frame) return -12;
+        if (sv39_map(dst->pgtbl, va, (uintptr_t)frame, PAGE_SIZE,
+                     PTE_R | PTE_W | PTE_U) != 0) {
+            page_free(frame);
+            return -12;
+        }
+        for (size_t i = 0; i < PAGE_SIZE; ++i) ((uint8 *)frame)[i] = ((const uint8 *)pa)[i];
+    }
+    return 0;
+}

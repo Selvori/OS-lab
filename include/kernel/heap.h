@@ -20,5 +20,6 @@ size_t mmap_pool_free_count(void);
 int user_heap_init(struct proc *p);
 long user_heap_alloc(struct proc *p, uintptr_t hint, size_t npages);
 int user_heap_free(struct proc *p, uintptr_t begin, size_t npages);
+int user_heap_clone(struct proc *dst, const struct proc *src);
 void user_heap_destroy(struct proc *p);
 #endif

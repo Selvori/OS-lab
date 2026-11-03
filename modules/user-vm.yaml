@@ -3,7 +3,7 @@ owns: [include/kernel/user.h, kernel/mm/user.c, arch/riscv64/mm/sv39.c]
 state: Private Sv39 root and owned physical frames
 rules:
   - VA_MAX=1<<38; TRAMPOLINE=VA_MAX-4096; TRAPFRAME=TRAMPOLINE-4096
-  - User stack below trapframe; supervisor kernel stack below user stack; guard below kernel stack
+  - User stack below trapframe; per-slot supervisor kernel stack alias below user stack; guard below each alias
   - USER_BASE=4096; one RXU code page then one RWU data page; heap starts after data; heap_top is the arena limit
   - Private root has no broad kernel identity mappings
 functions:

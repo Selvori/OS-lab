@@ -23,6 +23,7 @@ void main(void)
 
         page_allocator_init();
         mmap_pool_init();
+        proc_init();
         printf("memory: kernel %p-%p, %d free pages\n",
                (void *)page_zone_start(PAGE_ZONE_KERNEL),
                (void *)page_zone_end(PAGE_ZONE_KERNEL),
@@ -71,18 +72,9 @@ void main(void)
 
     if (arch_is_boot_cpu()) {
         arch_irq_disable();
-        uint64 kernel_free = page_free_count(PAGE_ZONE_KERNEL);
-        uint64 user_free = page_free_count(PAGE_ZONE_USER);
-        size_t mmap_free = mmap_pool_free_count();
-        if (proc_make_first() != 0)
-            panic("first process allocation failed");
-        proc_run();
-        proc_destroy();
-        assert(page_free_count(PAGE_ZONE_KERNEL) == kernel_free &&
-               page_free_count(PAGE_ZONE_USER) == user_free, "process page leak");
-        assert(mmap_pool_free_count() == mmap_free, "process mmap node leak");
-        printf("process resources reclaimed; kernel remains alive\n");
-        arch_irq_enable();
+        if (proc_make_first() != 0) panic("first process allocation failed");
+        printf("scheduler ready: init pid=0, slots=%d, owner cpu=%d\n", NPROC, cpuid);
+        proc_scheduler();
     }
 
     /* wfi 等待串口或定时事件；处理后返回，继续等待。 */

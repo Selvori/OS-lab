@@ -14,8 +14,8 @@ functions:
     post: Handler runs on kernel mapping with complete frame
   trap_user_handler:
     pre: Current process, kernel satp/tp/gp, SIE=0, saved SPP=0
-    effects: Set kernel stvec; save sepc; dispatch ecall/timer/external or terminate on fault
-    post: Valid trap returns via trap_user_return; unknown syscall returns -38; faults end process
+    effects: Set kernel stvec; save sepc; dispatch ecall/timer/external; after user timer service yield to scheduler; fault creates zombie
+    post: Valid trap returns via trap_user_return; unknown syscall returns -38; child faults end process; init fault panics
   trap_user_return:
     pre: Current live process, kernel satp and stack, no locks
     effects: Disable IRQ; fill kernel fields; set user stvec/sepc; clear SPP/SUM/MXR/FS/VS and set SPIE

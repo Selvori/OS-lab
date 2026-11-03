@@ -23,7 +23,10 @@ void trap_user_handler(void)
     } else if (cause & SCAUSE_INTERRUPT) {
         if (!trap_device_interrupt(cause))
             goto fault;
-        if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_TIMER) p->user_timers++;
+        if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_TIMER) {
+            p->user_timers++;
+            proc_yield();
+        }
         if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_EXT) p->user_external++;
     } else {
 fault:

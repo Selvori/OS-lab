@@ -61,7 +61,6 @@ _start:
 round_trip:
     li a7, SYS_GETPID
     ecall
-    addi a0, a0, -1
     bnez a0, fail
     expect ra, 0x111
     expect gp, 0x333
@@ -133,16 +132,20 @@ wait_ticks:
     li t1, 100
     bltu t0, t1, wait_ticks
     write passed
-    li a0, 0
-    li a7, SYS_EXIT
+    call process_demo
+    write lab6_pass
+init_idle:
+    li a0, 100
+    li a7, SYS_SLEEP
     ecall
+    j init_idle
 fail:
     write failed
     li a0, 1
     li a7, SYS_EXIT
     ecall
 1:  j 1b
-hello: .ascii "Hello from Seele U-mode, pid 1!\n"
+hello: .ascii "Hello from Seele U-mode, pid 0!\n"
 hello_end:
 waiting: .ascii "USER WAIT: timer and UART active\n"
 waiting_end:
@@ -308,3 +311,178 @@ heap_message: .ascii "HEAP cross-page write OK\n"
 heap_message_end:
 heap_pass: .ascii "HEAP PASS: zero, split, merge, reuse, errors, 256 cycles\n"
 heap_pass_end:
+
+# All descendants are ordinary fork copies of this code and private memory.
+process_demo:
+    addi sp, sp, -32
+    sd ra, 24(sp)
+    li t0, 0x4567
+    sd t0, 8(sp)
+    li t1, 0x3000
+    sd t0, 0(t1)
+    li a7, SYS_FORK
+    ecall
+    bltz a0, fail
+    beqz a0, isolated_child
+    mv s0, a0
+    # Status pointer must be writable, including across a page boundary.
+    li a0, 0x1ffe
+    li a7, SYS_WAIT
+    ecall
+    li t0, -14
+    bne a0, t0, fail
+    mv a0, sp
+    li a7, SYS_WAIT
+    ecall
+    bne a0, s0, fail
+    lw t0, 0(sp)
+    li t1, 37
+    bne t0, t1, fail
+    ld t0, 8(sp)
+    li t1, 0x4567
+    bne t0, t1, fail
+    li t2, 0x3000
+    ld t0, 0(t2)
+    bne t0, t1, fail
+    li t2, 0x2000
+    ld t0, 0(t2)
+    li t1, 0x12345678
+    bne t0, t1, fail
+    li t2, 0x4000
+    sd t1, 0(t2)
+    li a0, 0
+    li a7, SYS_WAIT
+    ecall
+    li t0, -10
+    bne a0, t0, fail
+    li a0, -1
+    li a7, SYS_SLEEP
+    ecall
+    li t0, -22
+    bne a0, t0, fail
+    li a0, 0
+    li a7, SYS_EXIT
+    ecall
+    li t0, -1
+    bne a0, t0, fail
+    write fork_pass
+    # No runnable process during this sleep: owner scheduler must idle/wake.
+    li a7, SYS_TICKS
+    ecall
+    mv s1, a0
+    li a0, 5
+    li a7, SYS_SLEEP
+    ecall
+    bnez a0, fail
+    li a7, SYS_TICKS
+    ecall
+    sub t0, a0, s1
+    li t1, 5
+    bltu t0, t1, fail
+    write sleep_pass
+    li a7, SYS_FORK
+    ecall
+    bltz a0, fail
+    beqz a0, cpu_child
+    mv s0, a0
+    li a0, 3
+    li a7, SYS_SLEEP
+    ecall
+    write parent_progress
+    mv a0, sp
+    li a7, SYS_WAIT
+    ecall
+    bne a0, s0, fail
+    lw t0, 0(sp)
+    li t1, 19
+    bne t0, t1, fail
+    # Repeated fork/wait exercises slot reuse and leaves heap to exit cleanup.
+    li s2, 32
+lifecycle:
+    li a7, SYS_FORK
+    ecall
+    bltz a0, fail
+    beqz a0, short_child
+    mv s0, a0
+    mv a0, sp
+    li a7, SYS_WAIT
+    ecall
+    bne a0, s0, fail
+    lw t0, 0(sp)
+    bne t0, s2, fail
+    addi s2, s2, -1
+    bnez s2, lifecycle
+    write lifecycle_pass
+    ld ra, 24(sp)
+    addi sp, sp, 32
+    ret
+isolated_child:
+    ld t0, 8(sp)
+    li t1, 0x4567
+    bne t0, t1, fail
+    li t2, 0x3000
+    ld t0, 0(t2)
+    bne t0, t1, fail
+    sd zero, 0(t2)
+    sd zero, 8(sp)
+    li t2, 0x2000
+    sd zero, 0(t2)
+    li a0, 0x4000
+    li a1, 1
+    li a7, SYS_MUNMAP
+    ecall
+    bnez a0, fail
+    li a0, 0
+    li a1, 1
+    li a7, SYS_MMAP
+    ecall
+    li t0, 0x4000
+    bne a0, t0, fail
+    li a0, 3
+    li a7, SYS_SLEEP
+    ecall
+    li a0, 37
+    li a7, SYS_EXIT
+    ecall
+    j fail
+cpu_child:
+    write cpu_begin
+    li gp, 0x333
+    li tp, 0x444
+    li t0, 200000000
+    li t1, 0
+    li t2, 7
+cpu_loop:
+    add t1, t1, t2
+    addi t0, t0, -1
+    bnez t0, cpu_loop
+    li t0, 1400000000
+    bne t1, t0, fail
+    li t0, 0x333
+    bne gp, t0, fail
+    li t0, 0x444
+    bne tp, t0, fail
+    write cpu_end
+    li a0, 19
+    li a7, SYS_EXIT
+    ecall
+    j fail
+short_child:
+    mv a0, s2
+    li a7, SYS_EXIT
+    ecall
+    j fail
+fork_pass: .ascii "FORK/WAIT PASS: independent data, stack, heap, status, errors\n"
+fork_pass_end:
+sleep_pass: .ascii "SLEEP PASS: deadline and idle wakeup\n"
+sleep_pass_end:
+cpu_begin: .ascii "CPU child: begin loop without syscalls\n"
+cpu_begin_end:
+parent_progress: .ascii "PREEMPT PASS: parent ran while CPU child busy\n"
+parent_progress_end:
+cpu_end: .ascii "CPU child: registers and loop result preserved\n"
+cpu_end_end:
+lifecycle_pass: .ascii "LIFECYCLE PASS: 32 fork/wait cycles\n"
+lifecycle_pass_end:
+lab6_pass: .ascii "LAB6 PASS: init pid 0 remains alive\n"
+lab6_pass_end:

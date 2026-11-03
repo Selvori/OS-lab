@@ -6,6 +6,10 @@
 #define SYS_EXIT 4
 #define SYS_MMAP 5
 #define SYS_MUNMAP 6
+#define SYS_FORK 7
+#define SYS_WAIT 8
+#define SYS_SLEEP 9
+#define SYS_YIELD 10
 #define SYS_WRITE_MAX 256
 #ifndef __ASSEMBLER__
 #include <kernel/proc.h>

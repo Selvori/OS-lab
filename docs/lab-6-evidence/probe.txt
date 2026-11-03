@@ -1,0 +1,48 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -kernel build/riscv64-qemu-virt-sbi/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 0
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 0 is booting!
+memory: kernel 0x000000008021b000-0x0000000082194000, 8057 free pages
+memory: user   0x0000000082194000-0x0000000088000000, 24172 free pages
+cpu 0 enabled Sv39 with root 0x000000008021b000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+cpu 1 enabled Sv39 with root 0x000000008021b000
+scheduler ready: init pid=0, slots=16, owner cpu=0
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+FORK PROBE PASS: allocation points=16 slots=16 nodes=128 deep-copy/copyout/rollback
+HEAP cross-page write OK
+HEAP PASS: zero, split, merge, reuse, errors, 256 cycles
+Hello from Seele U-mode, pid 0!
+USER WAIT: timer and UART active
+USER-UART-00;USER-UART-01;USER-UART-02;USER-UART-03;USER-UART-04;USER-UART-05;USER-UART-06;USER-UART-07;USER-UART-08;USER-UART-09;USER-UART-10;USER-UART-11;USER-UART-12;USER-UART-13;USER-UART-14;USER-UART-15;USER PASS: 4096 round trips, registers, stack, data, errors, timer
+FORK/WAIT PASS: independent data, stack, heap, status, errors
+SLEEP PASS: deadline and idle wakeup
+CPU child: begin loop without syscalls
+CPU-UART-ACTIVE;PREEMPT PASS: parent ran while CPU child busy
+CPU child: registers and loop result preserved
+LIFECYCLE PASS: 32 fork/wait cycles
+LAB6 PASS: init pid 0 remains alive
+
+[Host checks] 5777 UART input bytes matched expected output; Ctrl-A/X exit=0.

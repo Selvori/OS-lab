@@ -19,7 +19,7 @@ int user_vm_create(struct proc *p)
         sv39_map(p->pgtbl, USER_STACK, (uintptr_t)p->ustack, PAGE_SIZE,
                  PTE_R | PTE_W | PTE_U) ||
         sv39_map(p->pgtbl, TRAPFRAME, (uintptr_t)p->tf, PAGE_SIZE, PTE_R | PTE_W) ||
-        sv39_map(p->pgtbl, USER_KSTACK, (uintptr_t)p->stack_page, PAGE_SIZE, PTE_R | PTE_W) ||
+        sv39_map(p->pgtbl, p->kstack, (uintptr_t)p->stack_page, PAGE_SIZE, PTE_R | PTE_W) ||
         sv39_map(p->pgtbl, TRAMPOLINE, (uintptr_t)trampoline, PAGE_SIZE, PTE_R | PTE_X))
         return -1;
     /* Newly copied executable bytes must be visible to instruction fetch. */
@@ -72,6 +72,29 @@ int vm_unmappages(pagetable_t root, uintptr_t begin, size_t npages)
         sfence_vma(); /* Revoke translations before the frame can be reused. */
         page_free((void *)pa);
         sv39_prune_empty(root, va);
+    }
+    return 0;
+}
+
+bool user_writable(pagetable_t root, uintptr_t dst, size_t count)
+{
+    if (!count) return true;
+    if (dst >= VA_MAX || count > VA_MAX - dst) return false;
+    for (uintptr_t va = PAGE_ROUND_DOWN(dst); va < dst + count; va += PAGE_SIZE) {
+        uint64 flags;
+        if (!sv39_lookup(root, va, NULL, &flags) ||
+            (flags & (PTE_U | PTE_W)) != (PTE_U | PTE_W)) return false;
+    }
+    return true;
+}
+
+int user_copyout(pagetable_t root, uintptr_t dst, const void *src, size_t count)
+{
+    if (!user_writable(root, dst, count)) return -1;
+    for (size_t i = 0; i < count; ++i) {
+        uintptr_t pa;
+        if (!sv39_lookup(root, dst + i, &pa, NULL)) return -1;
+        *(uint8 *)pa = ((const uint8 *)src)[i];
     }
     return 0;
 }

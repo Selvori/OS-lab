@@ -34,8 +34,22 @@ void syscall_dispatch(struct proc *p)
     case SYS_TICKS:
         result = (long)timer_ticks(p->owner);
         break;
+    case SYS_FORK:
+        result = proc_fork();
+        break;
+    case SYS_WAIT:
+        result = proc_wait(tf->x[10]);
+        break;
+    case SYS_SLEEP:
+        result = proc_sleep_ticks(tf->x[10]);
+        break;
+    case SYS_YIELD:
+        proc_yield();
+        result = 0;
+        break;
     case SYS_EXIT:
-        proc_finish((int)tf->x[10], false);
+        result = proc_finish((int)tf->x[10], false);
+        break;
     default:
         result = -38;
         break;

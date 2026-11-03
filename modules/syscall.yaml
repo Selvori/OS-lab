@@ -3,16 +3,22 @@ owns: [include/kernel/syscall.h, kernel/proc/syscall.c, user/init.S, user/user.l
 state: User ABI a7=number, a0-a2=args, a0=signed result
 rules:
   - Self-designed minimal ABI; course slides specify no syscall IDs
-  - write=1, getpid=2, ticks=3, exit=4, mmap=5, munmap=6
+  - write=1, getpid=2, ticks=3, exit=4, mmap=5, munmap=6, fork=7, wait=8, sleep=9, yield=10
   - write supports fd 1 only, max 256 bytes, prevalidates entire buffer
   - mmap takes page hint and page count; munmap takes page address and page count
   - Errors are -9 bad fd, -14 invalid memory, -22 invalid size, -38 unknown call, -12 out of heap resources
 functions:
   syscall_dispatch:
     pre: Current user ecall frame, saved epc advanced, IRQ off, kernel stvec/satp
-    effects: Validate and dispatch bounded write/getpid/ticks/exit/mmap/munmap
+    effects: Validate and dispatch write/getpid/ticks/exit/mmap/munmap/fork/wait/sleep/yield
     post: Set saved a0 result or finish process; never access raw user pointers
   _start:
     pre: U-mode entry USER_BASE; sp=TRAPFRAME; registers initialized
-    effects: Check page heap allocation/free/zero/reuse, cross-page write, getpid and registers, data/stack, errors and ticks, then exit with live heap
-    post: Kernel reports exit 0 or failure; no user runtime or filesystem needed
+    effects: Check page heap allocation/free/zero/reuse, cross-page write, getpid and registers, data/stack, errors and ticks, then fork/wait/sleep/preemption/lifecycle checks; init stays alive
+    post: Init prints LAB6 PASS then sleeps forever; child status is collected by wait
+
+lab6_errors:
+  - fork -11 table/ID capacity, -12 allocation or node failure
+  - wait -10 no children, -14 invalid optional writable int32 buffer
+  - sleep -22 duration exceeds signed 32-bit positive range
+  - init exit returns -1; child exit does not return

@@ -3,6 +3,7 @@
 #include <kernel/arch.h>
 #include <kernel/print.h>
 #include <kernel/timer.h>
+#include <kernel/proc.h>
 #include <platform.h>
 
 #define TIMER_INTERVAL (TIMEBASE_HZ / TIMER_HZ)
@@ -29,6 +30,7 @@ void timer_interrupt_handler(void)
     /* 重新预约同时由固件清除当前 pending；时钟中断不经过 PLIC。 */
     timer_rearm();
     __atomic_fetch_add(&ticks[arch_cpu_id()], 1, __ATOMIC_RELAXED);
+    proc_tick();
 }
 
 uint64 timer_ticks(uint64 cpu)

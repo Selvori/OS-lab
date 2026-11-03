@@ -30,6 +30,6 @@ functions:
     effects: Validate full live page range and metadata availability; unmap/free/prune; insert or coalesce neighbors
     post: Return 0 or -22/-12; failure has no externally visible mutation
   user_heap_destroy:
-    pre: Inactive process on boot stack with IRQ off, partial initialization allowed
+    pre: Inactive target from another kernel stack with IRQ off, partial initialization allowed
     effects: Free remaining mapped heap pages and all region nodes
     post: No heap frames or metadata owned by PCB

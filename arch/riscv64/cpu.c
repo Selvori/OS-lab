@@ -44,3 +44,5 @@ void pop_off(void)
     if (arch_irq_enabled() || irq_state[cpu].depth == 0) panic("unbalanced pop_off");
     if (--irq_state[cpu].depth == 0 && irq_state[cpu].enabled) arch_irq_enable();
 }
+
+unsigned arch_irq_depth(void) { return irq_state[arch_cpu_id()].depth; }
