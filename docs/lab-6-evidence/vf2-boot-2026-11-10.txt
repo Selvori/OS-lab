@@ -1,0 +1,59 @@
+U-Boot 2021.10 (Feb 28 2023 - 21:44:53 +0800), Build: jenkins-VF2_515_Branch_SDK_Release-31
+bootcmd=run vf2_sdboot
+relocaddr   = 0x00000000fff44000
+## Total Size      = 0x0000674B = 26443 Bytes
+crc32 for 50000000 ... 5000674a ==> 7abd513f
+58144 bytes read in 14 ms (4 MiB/s)
+model = "StarFive VisionFive 2 v1.3B"
+
+bootm 0x50000000 - 0x51000000
+## Loading kernel from FIT Image at 50000000 ...
+   Using 'conf' configuration
+   Trying 'kernel' kernel subimage
+     Description:  kernel
+     Type:         Kernel Image
+     Compression:  uncompressed
+     Data Start:   0x500000ac
+     Data Size:    24972 Bytes = 24.4 KiB
+     Architecture: RISC-V
+     OS:           Linux
+     Load Address: 0x40200000
+     Entry Point:  0x40200000
+   Verifying Hash Integrity ... OK
+## Flattened Device Tree blob at 51000000
+   Booting using the fdt blob at 0x51000000
+   Loading Kernel Image
+   Using Device Tree in place at 0000000051000000, end 000000005101131f
+
+Starting kernel ...
+
+clk u5_dw_i2c_clk_core already disabled
+clk u5_dw_i2c_clk_apb already disabled
+cpu 0 is booting!
+memory: kernel 0x000000004021a000-0x0000000042193000, 8057 free pages
+memory: user   0x0000000042193000-0x0000000048000000, 24173 free pages
+cpu 0 enabled Sv39 with root 0x000000004021a000
+cpu 0 SBI timer ready: 100 Hz
+cpu 2 enabled Sv39 with root 0x000000004021a000
+cpu 3 enabled Sv39 with root 0x000000004021a000
+cpu 1 enabled Sv39 with root 0x000000004021a000
+cpu 0 UART external interrupt route ready
+cpu 2 SBI timer ready: 100 Hz
+cpu 1 SBI timer ready: 100 Hz
+cpu 3 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+cpu 3 UART external interrupt route ready
+cpu 2 UART external interrupt route ready
+scheduler ready: init pid=0, slots=16, owner cpu=0
+HEAP cross-page write OK
+HEAP PASS: zero, split, merge, reuse, errors, 256 cycles
+Hello from Seele U-mode, pid 0!
+USER WAIT: timer and UART active
+USER PASS: 4096 round trips, registers, stack, data, errors, timer
+FORK/WAIT PASS: independent data, stack, heap, status, errors
+SLEEP PASS: deadline and idle wakeup
+CPU child: begin loop without syscalls
+PREEMPT PASS: parent ran while CPU child busy
+CPU child: registers and loop result preserved
+LIFECYCLE PASS: 32 fork/wait cycles
+LAB6 PASS: init pid 0 remains alive

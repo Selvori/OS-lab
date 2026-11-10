@@ -249,4 +249,20 @@ dumpimage -l build/riscv64-visionfive2-uboot/kernel.itb
 
 本次形成了进程状态机、独立内核context、用户地址空间生命周期和条件等待接口，为后续进程服务提供基础。SMP用户调度需要进程表/父子关系/条件锁以及一致的锁顺序；迁移与并发页表访问需要远程TLB shootdown；内核抢占还需区分不可抢占区域并管理中断嵌套。COW、exec、文件系统、浮点/向量上下文沿后续课程扩展。
 
-本次硬件验证范围为VisionFive2 ELF/FIT构建与镜像识别；QEMU完成了运行验收。
+## 10. VisionFive 2 实机验收（2026-11-10）
+
+在 VisionFive 2 V1.3B 上启动正式 `lab-6/ea652c5`。板端 Ubuntu 正常重启后，串口截停 U-Boot 自动启动。用 `make -B CONFIG=riscv64-visionfive2-uboot build image` 重建 FIT，再将其转换成 S-record，用 `loads 0` 装入 RAM `0x50000000`。U-Boot 对 26443 字节的 FIT 计算出的 CRC32 为 `7abd513f`，与主机一致。`iminfo` 识别内核载荷 24972 字节，加载地址与入口均为 `0x40200000`。
+
+从 SD 第 3 分区读取已有的 V1.3B DTB 到 `0x51000000`，执行 `bootm 0x50000000 - 0x51000000`。Lab 6 镜像仅传入 RAM。启动前的 `bootcmd` 为 `run vf2_sdboot`。验收后开发板保持运行 Lab 6，下次复位按现有启动配置启动 Ubuntu。
+
+| 实机项目 | 观察结果 |
+| --- | --- |
+| 四核启动 | CPU 0–3 均启用 Sv39，共享根 `0x4021a000`，均报告 100 Hz SBI 时钟和 UART 外部中断路由就绪 |
+| 正式用户程序 | 256 轮堆操作、4096 次寄存器往返、fork/wait 的数据隔离与退出状态、睡眠期限与 idle 唤醒通过 |
+| 抢占 | 子进程开始无系统调用的两亿轮计算后，父进程先恢复，随后子进程验证寄存器和结果 |
+| 生命周期 | 32 轮 fork/wait 通过，最终输出 `LAB6 PASS: init pid 0 remains alive` |
+| 串口 | 32 字节分批输入 1153 字节，覆盖二进制与 CR/LF，预期的 1155 字节逐字节匹配，空闲一秒后仍能回显 |
+
+本轮实机验收覆盖正式用户程序和串口。第 8 节的故障注入、资源耗尽等扩展结果来自 QEMU。
+
+实机证据见 [启动日志](lab-6-evidence/vf2-boot-2026-11-10.txt) 和 [校验结果](lab-6-evidence/vf2-result-2026-11-10.json)。

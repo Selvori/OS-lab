@@ -1,0 +1,21 @@
+{
+  "pass": true,
+  "fit_bytes": 26443,
+  "fit_sha256": "9666e674305170fada188b8b0c09a74164ad02c977ef966c207a117163d06962",
+  "ram_crc32": "7abd513f",
+  "root": "0x000000004021a000",
+  "cpu_count": 4,
+  "uart_input_bytes": 1153,
+  "uart_output_bytes": 1155,
+  "uart_chunk_bytes": 32,
+  "uart_chunk_interval_ms": 25,
+  "idle_seconds": 1,
+  "echo_after_idle": true,
+  "date": "2026-11-10",
+  "kernel_commit": "ea652c52669b8826a9fe1640f4eb44f6637dfb82",
+  "board": "StarFive VisionFive 2 v1.3B",
+  "boot_mode": "U-Boot loads (S-record to RAM), bootm with existing SD DTB",
+  "bootcmd_before_boot": "run vf2_sdboot",
+  "load_address": "0x40200000",
+  "entry_address": "0x40200000"
+}
