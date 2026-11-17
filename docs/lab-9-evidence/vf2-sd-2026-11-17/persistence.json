@@ -1,0 +1,16 @@
+{
+  "tested_commit": "47e0155d32436fb30dab03cab5a17b62ca6c8ab9",
+  "board": "VisionFive 2 V1.3B",
+  "fit_sha256": "d9a3401efd48dcb3833ed385f4cb84162f3fcfeec87887735dc91ab3780e035d",
+  "ram_crc32": "4d8598cc",
+  "partition_first_lba": 112263168,
+  "partition_sectors": 8192,
+  "board_reset_observed": true,
+  "ubuntu_boot_after_reset": true,
+  "remounted_seelefs": true,
+  "disk_shell_pass": true,
+  "file": "/vf2-check/data",
+  "file_bytes": 1000,
+  "file_sha256": "449b26d3a6438e28382c17f0612b9b04fbf941386ec2e4aa220744fd0f4c6d6f",
+  "bytes_match_before_and_after_reset": true
+}

@@ -22,8 +22,10 @@ python3 tools/test_lab9.py
 
 首次实机识别控制器版本 `0x290a`，挂载测试分区并从卡加载 Shell。`cat /etc/motd` 与磁盘中的 `/bin/echo` 通过；使用 `write`、`append` 写入 1000 字节文件，跨越 512 字节扇区边界。`sync` 后首次读回逐字节一致。
 
-同一镜像的复位后读回仍待进行。首轮结束后已开放 COM7 等待 RST，监听未观察到复位倒计时，板端保留 RAM 中的 Seele Shell。
+同一镜像的复位后持久化验收通过。用户按 RST 后，板卡按原配置进入 SD 上的 Ubuntu，随后通过串口正常重启并截停 U-Boot。重新加载同一 FIT 后，SeeleFS 再次挂载并进入 Shell。只读打开 /vf2-check/data，1000 字节与首轮数据及主机期望逐字节一致，SHA-256 为 449b26d3a6438e28382c17f0612b9b04fbf941386ec2e4aa220744fd0f4c6d6f。板端最后运行 RAM 中的 Seele Shell。
 
 块层额外回归沿用 Lab 7 的 LRU、索引回绕和 128 个扇区读写测试，把计数检查改为增量以容纳文件系统启动期的缓存访问。实测通过，包括 QEMU 重启后的扇区回读。
 
 [原 GPT](gpt-before.sfdisk) · [板端分区操作](provision.txt) · [首次启动](first-boot.txt) · [首次读写](first-shell.txt) · [GPT 主机测试](gpt-test.txt) · [QEMU Lab 7 回归](qemu-block-regression.txt) · [QEMU Lab 9 回归](qemu-regression.txt)
+
+[复位后启动](restart-boot.txt) · [复位后读回](restart-shell.txt) · [持久化验收结果](persistence.json)
