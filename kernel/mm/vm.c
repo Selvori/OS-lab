@@ -68,6 +68,9 @@ void kernel_vm_init(void)
 #ifdef VIRTIO_BASE
     map_region(VIRTIO_BASE, VIRTIO_BASE + VIRTIO_SIZE, PTE_R | PTE_W);
 #endif
+#ifdef SD_MMC_BASE
+    map_region(SD_MMC_BASE, SD_MMC_BASE + SD_MMC_SIZE, PTE_R | PTE_W);
+#endif
     map_region(UART_BASE, UART_BASE + PAGE_SIZE, PTE_R | PTE_W);
     map_region(PLIC_BASE, PLIC_BASE + PLIC_SIZE, PTE_R | PTE_W);
     map_region(text_start, text_end, PTE_R | PTE_X);

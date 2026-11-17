@@ -1,0 +1,1 @@
+GPT PASS: unique bounded partition; missing, overlap, duplicate, size and CRC rejection

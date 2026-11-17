@@ -13,3 +13,11 @@ acceptance:
   - Run a separate disk-backed program with argc/argv; invalid exec preserves process image
   - Verify restart persistence and retained Lab 6 fallback; QEMU and VF2 build image
 non_goals: [pipes, job control, signals, general ELF loader, permissions, POSIX unlink of open files]
+
+vf2_storage:
+  controller: JH7110 SDIO1 with clocks and pins configured by U-Boot
+  transport: 512-byte single-sector SDHC/SDXC PIO; bounded polling
+  partition: Unique 8192-sector GPT entry of type 9ea193f1-66ec-4307-a879-474c515e4e45 named seelefs
+  validation: Check primary and backup GPT headers and entry checksums, ranges, size and overlap
+  effects: Export only the validated partition to the block cache; wait for the card to complete writes
+  failure: Keep the existing embedded init fallback when the partition cannot be mounted

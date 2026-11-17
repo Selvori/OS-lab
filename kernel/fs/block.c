@@ -1,7 +1,7 @@
 #include <kernel/block.h>
 #include <kernel/lock.h>
 #include <kernel/string.h>
-#include <drivers/block/virtio.h>
+#include <drivers/block/backend.h>
 
 struct cache_entry {
     bool valid;
@@ -19,7 +19,7 @@ static uint64 sequence;
 void block_init(void)
 {
     spinlock_init(&block_lock, "block");
-    capacity = virtio_blk_init();
+    capacity = disk_init();
 }
 
 uint64 block_capacity(void)
@@ -70,7 +70,7 @@ int block_read(uint64 sector, void *data)
         memcpy(data, entry->data, BLOCK_SIZE);
     } else {
         ++stats.misses;
-        result = virtio_blk_read(sector, data);
+        result = disk_read(sector, data);
         if (result == 0) {
             entry = replace(sector);
             memcpy(entry->data, data, BLOCK_SIZE);
@@ -91,7 +91,7 @@ int block_write(uint64 sector, const void *data)
 
     spinlock_acquire(&block_lock);
     struct cache_entry *entry = find(sector);
-    int result = virtio_blk_write(sector, data);
+    int result = disk_write(sector, data);
     if (result == 0) {
         if (entry == NULL)
             entry = replace(sector);
@@ -109,7 +109,7 @@ int block_flush(void)
     if (capacity == 0)
         return -19;
     spinlock_acquire(&block_lock);
-    int result = virtio_blk_flush();
+    int result = disk_flush();
     spinlock_release(&block_lock);
     return result;
 }

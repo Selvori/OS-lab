@@ -1,0 +1,42 @@
+cd ~/seele-vf2-sd-20261117 && python3 provision.py; echo VF2_STATUS=$?
+[?2004l
+Disk /dev/mmcblk1: 59.48 GiB, 63864569856 bytes, 124735488 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: B3B9A0AF-526C-4188-97F4-EC57DA21F351
+
+Old situation:
+
+Device          Start       End   Sectors  Size Type
+/dev/mmcblk1p1   4096      8191      4096    2M HiFive BBL
+/dev/mmcblk1p2   8192     16383      8192    4M unknown
+/dev/mmcblk1p3  16384    221183    204800  100M EFI System
+/dev/mmcblk1p4 221184 112261939 112040756 53.4G Linux filesystem
+
+/dev/mmcblk1p5: Created a new partition 5 of type 'unknown' and of size 4 MiB.
+/dev/mmcblk1p6: Done.
+
+New situation:
+Disklabel type: gpt
+Disk identifier: B3B9A0AF-526C-4188-97F4-EC57DA21F351
+
+Device             Start       End   Sectors  Size Type
+/dev/mmcblk1p1      4096      8191      4096    2M HiFive BBL
+/dev/mmcblk1p2      8192     16383      8192    4M unknown
+/dev/mmcblk1p3     16384    221183    204800  100M EFI System
+/dev/mmcblk1p4    221184 112261939 112040756 53.4G Linux filesystem
+/dev/mmcblk1p5 112263168 112271359      8192    4M unknown
+
+The partition table has been altered.
+
+/dev/mmcblk1:
+No errors detected.
+Header version: 1.0
+Using 5 out of 128 partitions.
+A total of 12469385 free sectors is available in 3 segments (the largest is 5.9 GiB).
+
+SEELE_SD_PROVISIONED start=112263168 sectors=8192 sha256=83f32b9636cd1ccf8f3f0724f9dca4ac1a2ca060d15db1399e6f55d41c710d24
+VF2_STATUS=0
+[?2004huser@starfive:~/seele-vf2-sd-20261117$

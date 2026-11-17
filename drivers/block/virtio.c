@@ -3,9 +3,7 @@
 #include <kernel/print.h>
 #include <kernel/string.h>
 #include <platform.h>
-#include <drivers/block/virtio.h>
-
-#ifdef VIRTIO_BASE
+#include <drivers/block/backend.h>
 
 enum {
     MAGIC = 0x000, VERSION = 0x004, DEVICE_ID = 0x008,
@@ -98,7 +96,7 @@ static uint64 reject(void)
     return 0;
 }
 
-uint64 virtio_blk_init(void)
+uint64 disk_init(void)
 {
     for (uintptr_t addr = VIRTIO_BASE; addr < VIRTIO_BASE + VIRTIO_SIZE;
          addr += VIRTIO_STRIDE) {
@@ -201,7 +199,7 @@ static int submit(uint32 type, uint64 sector)
     return response == 0 && written == expected_written ? 0 : -5;
 }
 
-int virtio_blk_read(uint64 sector, void *data)
+int disk_read(uint64 sector, void *data)
 {
     int result = submit(REQ_READ, sector);
     if (result == 0)
@@ -209,41 +207,13 @@ int virtio_blk_read(uint64 sector, void *data)
     return result;
 }
 
-int virtio_blk_write(uint64 sector, const void *data)
+int disk_write(uint64 sector, const void *data)
 {
     memcpy(bounce, data, sizeof(bounce));
     return submit(REQ_WRITE, sector);
 }
 
-int virtio_blk_flush(void)
+int disk_flush(void)
 {
     return submit(REQ_FLUSH, 0);
 }
-
-#else
-
-uint64 virtio_blk_init(void)
-{
-    return 0;
-}
-
-int virtio_blk_read(uint64 sector, void *data)
-{
-    (void)sector;
-    (void)data;
-    return -19;
-}
-
-int virtio_blk_write(uint64 sector, const void *data)
-{
-    (void)sector;
-    (void)data;
-    return -19;
-}
-
-int virtio_blk_flush(void)
-{
-    return -19;
-}
-
-#endif

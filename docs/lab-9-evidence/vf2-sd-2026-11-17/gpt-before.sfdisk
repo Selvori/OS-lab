@@ -1,0 +1,12 @@
+label: gpt
+label-id: B3B9A0AF-526C-4188-97F4-EC57DA21F351
+device: /dev/mmcblk1
+unit: sectors
+first-lba: 34
+last-lba: 124735454
+sector-size: 512
+
+/dev/mmcblk1p1 : start=        4096, size=        4096, type=2E54B353-1271-4842-806F-E436D6AF6985, uuid=D45D5CE2-1015-486A-ABD2-AAC3D073278C, name="starfive_visionfive_2_u-boot-spl"
+/dev/mmcblk1p2 : start=        8192, size=        8192, type=816E2DB1-6FE4-4797-B3FF-2DE37CB85318, uuid=8020D67A-1C9F-40AF-94B8-AAA2C4A8C109, name="starfive_visionfive_2_u-boot"
+/dev/mmcblk1p3 : start=       16384, size=      204800, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, uuid=833F9CF7-D8B7-4742-BF2F-FC84D98CDF5F, name="EFI System"
+/dev/mmcblk1p4 : start=      221184, size=   112040756, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=0A5D7122-84A6-436A-BAF9-5926CDCDD0E8, name="Root Partition"

@@ -1,0 +1,16 @@
+{
+  "sectors": 8192,
+  "disk_bytes": 4194304,
+  "concurrent_harts": 2,
+  "host_verified_sectors": 128,
+  "restart_verified": true,
+  "lru": {
+    "hits": 2,
+    "misses": 18,
+    "evictions": 2
+  },
+  "wrap_reads_per_probe": 65540,
+  "uart_bytes_per_run": 5777,
+  "no_disk_boot": true,
+  "main_sha256": "0acebc0bf665ed82a99e283b19641fb08ff6e9cb848b23936d029a7647ae81ca"
+}

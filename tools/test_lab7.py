@@ -39,15 +39,20 @@ static void lab7_probe(int cpu)
         assert(bytes[i] == 0x5a, "bad read changed destination");
 
     if (arch_is_boot_cpu()) {
+        /* Other boot-time clients may already have populated the cache. */
+        enum { TEST_FIRST = 64 };
+        struct block_cache_stats before = block_stats();
         for (unsigned i = 0; i < BLOCK_CACHE_SIZE; ++i)
-            assert(block_read(i, bytes) == 0, "cold read");
-        assert(block_read(0, bytes) == 0, "hot read");
-        assert(block_read(BLOCK_CACHE_SIZE, bytes) == 0, "evict");
-        assert(block_read(0, bytes) == 0, "MRU was evicted");
-        assert(block_read(1, bytes) == 0, "refill");
+            assert(block_read(TEST_FIRST + i, bytes) == 0, "cold read");
+        struct block_cache_stats filled = block_stats();
+        assert(filled.misses - before.misses == BLOCK_CACHE_SIZE, "cold fills");
+        assert(block_read(TEST_FIRST, bytes) == 0, "hot read");
+        assert(block_read(TEST_FIRST + BLOCK_CACHE_SIZE, bytes) == 0, "evict");
+        assert(block_read(TEST_FIRST, bytes) == 0, "MRU was evicted");
+        assert(block_read(TEST_FIRST + 1, bytes) == 0, "refill");
         struct block_cache_stats stats = block_stats();
-        assert(stats.hits == 2 && stats.misses == 18 && stats.evictions == 2,
-               "LRU counters");
+        assert(stats.hits - filled.hits == 2 && stats.misses - filled.misses == 2 &&
+               stats.evictions - filled.evictions == 2, "LRU counters");
 
         for (unsigned i = 0; i < 65540; ++i)
             assert(block_read(32 + i % (BLOCK_CACHE_SIZE + 1), bytes) == 0,

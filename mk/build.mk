@@ -1,6 +1,6 @@
 KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
 	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/proc/proc.c kernel/proc/syscall.c \
-	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c drivers/block/virtio.c
+	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c
 SOURCES := $(KERNEL_C) $(ARCH_C) $(PLATFORM_C)
 OBJECTS := $(addprefix $(BUILD)/,$(SOURCES:.c=.o) $(ARCH_S:.S=.o))
 -include $(OBJECTS:.o=.d)
