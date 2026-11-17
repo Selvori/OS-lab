@@ -28,12 +28,12 @@ functions:
     post: No context switches
   proc_fork:
     pre: RUNNING owner process, IRQ off
-    effects: Allocate private image/data/stack/tf/kstack/heap and free-list nodes; copy integer user frame
+    effects: Allocate private tables/tf/kstack/nodes; retain user frames; copy integer user frame; commit parent COW permissions and invalidate local TLB
     post: Parent gets child PID, child saved a0=0 at post-ecall PC; failure negative with parent unchanged
   proc_wait:
     pre: RUNNING owner, IRQ off, status VA zero or complete writable user int
     effects: Reap zombie child, or sleep on parent channel and recheck
-    post: Child PID and optional status, -10 if no children, -14 bad pointer
+    post: Child PID and optional status, -10 if no children, -14 bad pointer, -12 failed COW copyout with zombie retained
   proc_sleep_ticks:
     pre: RUNNING owner, IRQ off; unsigned duration <= 0x7fffffff
     effects: Set modular deadline and sleep on owner tick channel; zero yields
@@ -44,11 +44,11 @@ functions:
     post: No switches; user trap explicitly calls yield after device service
   proc_finish:
     pre: RUNNING owner with IRQ off
-    effects: Reject init exit; reparent children to init; set ZOMBIE and wake parent; switch away
+    effects: Reject init exit; reparent children to init; drop descriptors and cwd; set ZOMBIE and wake parent; switch away
     post: Child never resumes; init syscall returns -1
   proc_destroy:
     pre: Owner IRQ off; target inactive UNUSED partial allocation or ZOMBIE; not current
-    effects: Free heap, private frames/tables, revoke kernel stack alias and local TLB
+    effects: Release heap and fixed user frame references, free private tables/trapframe, revoke kernel stack alias and local TLB
     post: Slot UNUSED with all per-process resources returned
   swtch:
     pre: Kernel satp, IRQ off, no locks; distinct valid contexts and aligned new sp

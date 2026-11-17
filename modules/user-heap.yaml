@@ -5,7 +5,7 @@ layout: Fixed page arena [0x3000, 0x1003000); heap_top is its exclusive upper bo
 rules:
   - Free intervals describe virtual holes, never allocated physical memory
   - First fit for address zero; otherwise strict fixed-address allocation without replacement
-  - Eager zeroed user-pool pages, RWU and NX; no lazy faults or shared mappings
+  - Eager zeroed user-pool pages, RWU and NX; fork shares mapped frames with COW; no lazy allocation
   - No raw user pointers or dynamically allocated metadata
   - Pool lock protects node pop/push only; per-process lists belong to owner hart with IRQ off
 functions:
@@ -30,6 +30,6 @@ functions:
     effects: Validate full live page range and metadata availability; unmap/free/prune; insert or coalesce neighbors
     post: Return 0 or -22/-12; failure has no externally visible mutation
   user_heap_destroy:
-    pre: Inactive target from another kernel stack with IRQ off, partial initialization allowed
-    effects: Free remaining mapped heap pages and all region nodes
+    pre: Owner with IRQ off and kernel satp; inactive target or current process replacing its heap in exec
+    effects: Drop references to remaining mapped heap pages and all region nodes
     post: No heap frames or metadata owned by PCB

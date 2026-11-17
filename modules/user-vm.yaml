@@ -1,10 +1,10 @@
 module: user_vm
 owns: [include/kernel/user.h, kernel/mm/user.c, arch/riscv64/mm/sv39.c]
-state: Private Sv39 root and owned physical frames
+state: Private Sv39 root with one reference per owned user leaf
 rules:
   - VA_MAX=1<<38; TRAMPOLINE=VA_MAX-4096; TRAPFRAME=TRAMPOLINE-4096
   - User stack below trapframe; per-slot supervisor kernel stack alias below user stack; guard below each alias
-  - USER_BASE=4096; one RXU code page then one RWU data page; heap starts after data; heap_top is the arena limit
+  - USER_BASE=4096; one RXU code page then one logically RWU data page; heap starts after data; heap_top is the arena limit
   - Private root has no broad kernel identity mappings
 functions:
   user_copyin:
@@ -16,12 +16,12 @@ functions:
     effects: Recursively free nonleaf table pages only
     post: Root freed; leaf physical frames remain owned by caller
   user_vm_create:
-    pre: Allocated process frames and valid embedded image of at most one page
+    pre: Allocated or retained process frames and valid embedded image for fresh processes
     effects: Map code/data/stack and supervisor special pages
     post: Valid layout or failure; caller owns rollback of all private resources
   vm_unmappages:
     pre: Owner-private heap root; kernel satp with IRQ off
-    effects: Validate all owned user leaves before unmapping, local TLB flush, free and prune
+    effects: Validate all owned user leaves before unmapping, local TLB flush, drop frame references and prune
     post: Whole range removed or error with no mutation
   sv39_prune_empty:
     pre: Owner-private tables with absent leaf; no stale translation using freed frame

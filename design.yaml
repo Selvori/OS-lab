@@ -1,6 +1,6 @@
 system:
   name: Seele
-  scope: Lab 9 file descriptors and user shell, based on Labs 1-8
+  scope: Process lifecycle research on the Lab 9 branch baseline
   provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
@@ -18,18 +18,18 @@ rules:
   - Never schedule one process on multiple harts
   - Kernel executes C only with kernel satp, gp, tp and supervisor stack
   - User page table never exposes kernel DRAM or MMIO with PTE_U
-  - Null page is unmapped; code RXU; data and one stack page RWU, never RWX
+  - Null page is unmapped; code RXU; data and one stack page logically RWU, with W cleared while COW
   - Trampoline RX and trapframe RW are supervisor-only; kernel stack is supervisor RW
   - Ordinary interrupts preserve epc; user ecall advances epc by exactly 4
   - stvec is kernel_vector during kernel handlers; interrupts off during page-table transitions
   - Copy user buffers by validating PTE_U and PTE_R and reading their physical aliases
   - Publish shared table topology before secondary harts; only the owner accesses the mutable process-stack leaf
   - Destroy inactive user tables only; shared kernel table structure persists
-  - Heap free intervals are sorted, disjoint and coalesced; mapped RWU pages are their complement
+  - Heap free intervals are sorted, disjoint and coalesced; mapped logically writable user pages are their complement
   - Heap mutation is owner-only with IRQ off, kernel satp active and no concurrent table walkers
   - Flush local TLB before reusing removed frames; prune empty private table nodes
   - Failures preserve mappings, free intervals and resource counts
-non_goals: [SMP user scheduling, migration, kernel preemption, COW, general ELF loader, demand paging, floating point, vectors]
+non_goals: [SMP user scheduling, migration, kernel preemption, shared page tables, general ELF loader, demand paging, floating point, vectors]
 
 lab6_invariants:
   - Sixteen PCB slots; init PID 0 never exits; IDs are not slot numbers
@@ -41,11 +41,11 @@ lab6_invariants:
   - Only RUNNABLE processes are dispatched; timer preemption uses one tick quantum
   - Exit keeps a ZOMBIE; parent wait reclaims from a different kernel stack
   - Orphans are adopted by init and init is awakened for already-zombie adoptees
-  - Fork publishes RUNNABLE only after all allocations, copies and metadata succeed
+  - Fork publishes RUNNABLE only after all allocations and metadata succeed and parent translations are invalidated
   - wait status pointer is fully validated writable before reaping any child
 
 lab7_invariants:
-  - QEMU virtio DMA addresses use kernel identity mapping; VF2 has no backend
+  - QEMU virtio DMA addresses use kernel identity mapping; VF2 uses bounded PIO on a designated GPT partition
   - A single synchronous request owns the queue until used ring completion
   - Cache operations and device completion are serialized under the block lock
 

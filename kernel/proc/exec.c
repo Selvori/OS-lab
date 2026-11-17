@@ -1,4 +1,3 @@
-#include <kernel/lifecycle_probe.h>
 #include <kernel/file_abi.h>
 #include <kernel/fs.h>
 #include <kernel/page.h>

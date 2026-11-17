@@ -25,22 +25,26 @@ static struct kfile open_files[NFILE];
 static struct kfile console_in = { .kind = CONSOLE_IN, .flags = OPEN_RDONLY };
 static struct kfile console_out = { .kind = CONSOLE_OUT, .flags = OPEN_WRONLY };
 
+static void assign_file(struct proc *p, unsigned fd, struct kfile *file)
+{
+    assert(p->files[fd] == NULL && file != NULL, "assign file reference");
+    ++file->refs;
+    p->files[fd] = file;
+}
+
 void files_attach_console(struct proc *p)
 {
-    console_in.refs++;
-    console_out.refs += 2;
-    p->files[0] = &console_in;
-    p->files[1] = &console_out;
-    p->files[2] = &console_out;
+    assign_file(p, 0, &console_in);
+    assign_file(p, 1, &console_out);
+    assign_file(p, 2, &console_out);
 }
 
 void files_fork(struct proc *child, const struct proc *parent)
 {
     child->cwd = parent->cwd;
     for (unsigned i = 0; i < NFD; ++i) {
-        child->files[i] = parent->files[i];
-        if (child->files[i] != NULL)
-            child->files[i]->refs++;
+        if (parent->files[i] != NULL)
+            assign_file(child, i, parent->files[i]);
     }
 }
 
@@ -120,8 +124,8 @@ static int sys_open(struct proc *p, const char *path, uint64 flags)
                 return rc;
         }
     }
-    *file = (struct kfile){ .refs = 1, .kind = DISK_FILE, .ino = ino, .flags = flags };
-    p->files[fd] = file;
+    *file = (struct kfile){ .kind = DISK_FILE, .ino = ino, .flags = flags };
+    assign_file(p, (unsigned)fd, file);
     return fd;
 }
 
@@ -310,8 +314,7 @@ long file_syscall(struct proc *p)
         int fd = free_fd(p);
         if (fd < 0)
             return fd;
-        file->refs++;
-        p->files[fd] = file;
+        assign_file(p, (unsigned)fd, file);
         return fd;
     }
     case SYS_FSTAT: {

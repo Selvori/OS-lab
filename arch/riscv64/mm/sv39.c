@@ -52,7 +52,7 @@ int sv39_map(pagetable_t root, uintptr_t va, uintptr_t pa,
     if (pa >= SV39_MAX_PA || size > SV39_MAX_PA - pa)
         return -1;
     if ((flags & PTE_COW) &&
-        (flags & (PTE_R | PTE_U | PTE_W | PTE_X)) != (PTE_R | PTE_U))
+        (flags & (PTE_R | PTE_U | PTE_W | PTE_X | PTE_G)) != (PTE_R | PTE_U))
         return -1;
     if ((flags & ~allowed) != 0 ||
         ((flags & PTE_W) != 0 && (flags & PTE_R) == 0))
