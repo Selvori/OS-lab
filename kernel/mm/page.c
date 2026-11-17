@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <kernel/lock.h>
 #include <kernel/page.h>
 #include <kernel/print.h>
@@ -77,8 +78,10 @@ void *page_alloc(page_zone_type_t type)
     }
     spinlock_release(&zone->lock);
 
-    if (page != NULL)
+    if (page != NULL) {
         memset(page, 0, PAGE_SIZE);
+        lifecycle_page(type == PAGE_ZONE_USER, true);
+    }
 
     return page;
 }
@@ -111,6 +114,7 @@ void page_free(void *memory)
     zone->freelist = page;
     zone->free_count++;
     spinlock_release(&zone->lock);
+    lifecycle_page(zone == &zones[PAGE_ZONE_USER], false);
 }
 
 uint64 page_free_count(page_zone_type_t type)

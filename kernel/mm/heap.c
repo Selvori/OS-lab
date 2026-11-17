@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <asm/csr.h>
 #include <kernel/heap.h>
 #include <kernel/proc.h>
@@ -181,6 +182,7 @@ void user_heap_destroy(struct proc *p)
     heap_context(p);
     if (p->pgtbl) {
         for (uintptr_t va = USER_HEAP_START; va < p->heap_top; va += PAGE_SIZE) {
+            lifecycle_add(destroy_slots, 1);
             if (sv39_lookup(p->pgtbl, va, NULL, NULL))
                 assert(vm_unmappages(p->pgtbl, va, 1) == 0, "heap destroy");
         }
@@ -207,6 +209,7 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
         link = &copy->next;
     }
     for (uintptr_t va = USER_HEAP_START; va < src->heap_top; va += PAGE_SIZE) {
+        lifecycle_add(clone_slots, 1);
         uintptr_t pa;
         if (!sv39_lookup(src->pgtbl, va, &pa, NULL)) continue;
         void *frame = page_alloc(PAGE_ZONE_USER);
@@ -217,6 +220,7 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
             return -12;
         }
         for (size_t i = 0; i < PAGE_SIZE; ++i) ((uint8 *)frame)[i] = ((const uint8 *)pa)[i];
+        lifecycle_add(copied, PAGE_SIZE);
     }
     return 0;
 }

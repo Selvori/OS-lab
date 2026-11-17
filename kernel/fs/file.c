@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <kernel/console.h>
 #include <kernel/file_abi.h>
 #include <kernel/fs.h>
@@ -330,3 +331,13 @@ long file_syscall(struct proc *p)
         return -38;
     }
 }
+
+#ifdef LIFECYCLE_PROBE
+unsigned files_used(void)
+{
+    unsigned used = 0;
+    for (unsigned i = 0; i < NFILE; ++i)
+        used += open_files[i].refs != 0;
+    return used;
+}
+#endif

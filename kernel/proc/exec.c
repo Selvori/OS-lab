@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <kernel/file_abi.h>
 #include <kernel/fs.h>
 #include <kernel/page.h>
@@ -101,6 +102,7 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
     memcpy(p->code, code, PAGE_SIZE);
     memset(p->data, 0, PAGE_SIZE);
     memcpy(p->ustack, stack, PAGE_SIZE);
+    lifecycle_add(exec_bytes, 2 * PAGE_SIZE);
     memset(p->tf, 0, sizeof(*p->tf));
     p->tf->epc = USER_BASE;
     p->tf->x[2] = sp;

@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <asm/csr.h>
 #include <kernel/arch.h>
 #include <kernel/proc.h>
@@ -54,6 +55,9 @@ void trap_user_return(void)
                 (3UL << 13) | (3UL << 9));
     csr_write(sstatus, status | SSTATUS_SPIE);
     csr_write(sepc, p->tf->epc);
+#ifdef LIFECYCLE_PROBE
+    csr_write(scounteren, 1UL << 1); /* Expose time only in research builds. */
+#endif
     uint64 satp = SATP_MODE_SV39 | ((uintptr_t)p->pgtbl >> PAGE_SHIFT);
     void (*ret)(uint64, uint64) = (void *)(TRAMPOLINE + (uintptr_t)(user_return - trampoline));
     ret(TRAPFRAME, satp);

@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <kernel/syscall.h>
 #include <kernel/proc.h>
 #include <kernel/timer.h>
@@ -8,6 +9,11 @@ void syscall_dispatch(struct proc *p)
     long result;
     p->syscalls++;
     switch (tf->x[17]) {
+#ifdef LIFECYCLE_PROBE
+    case SYS_LIFECYCLE_PROBE:
+        result = lifecycle_control(p, tf->x[10], tf->x[11]);
+        break;
+#endif
     case SYS_MMAP:
         result = user_heap_alloc(p, tf->x[10], tf->x[11]);
         break;
@@ -20,9 +26,12 @@ void syscall_dispatch(struct proc *p)
     case SYS_TICKS:
         result = (long)timer_ticks(p->owner);
         break;
-    case SYS_FORK:
+    case SYS_FORK: {
+        uint64 start = lifecycle_begin();
         result = proc_fork();
+        lifecycle_end(fork_time, start);
         break;
+    }
     case SYS_WAIT:
         result = proc_wait(tf->x[10]);
         break;

@@ -1,3 +1,4 @@
+#include <kernel/lifecycle_probe.h>
 #include <kernel/proc.h>
 #include <kernel/arch.h>
 #include <kernel/console.h>
@@ -67,6 +68,7 @@ static struct proc *proc_allocate(void)
     if (!p) return NULL;
     p->ustack_pages = 1;
     p->pgtbl = page_alloc(PAGE_ZONE_KERNEL);
+    if (p->pgtbl) lifecycle_add(table_alloc, 1);
     p->tf = page_alloc(PAGE_ZONE_KERNEL);
     p->stack_page = page_alloc(PAGE_ZONE_KERNEL);
     p->code = page_alloc(PAGE_ZONE_USER);
@@ -127,6 +129,7 @@ long proc_fork(void)
     copy_page(child->code, parent->code);
     copy_page(child->data, parent->data);
     copy_page(child->ustack, parent->ustack);
+    lifecycle_add(copied, 3 * PAGE_SIZE);
     if (user_heap_clone(child, parent) != 0) { proc_destroy(child); return -12; }
     *child->tf = *parent->tf;
     child->tf->x[10] = 0;
@@ -215,7 +218,9 @@ long proc_wait(uintptr_t address)
             int pid = child->pid;
             if (address && user_copyout(p->pgtbl, address, &child->status, sizeof(int)) != 0)
                 return -14;
+            uint64 start = lifecycle_begin();
             proc_destroy(child);
+            lifecycle_end(reap_time, start);
             return pid;
         }
         if (!children) return -10;
@@ -285,3 +290,13 @@ void proc_scheduler(void)
         arch_irq_disable();
     }
 }
+
+#ifdef LIFECYCLE_PROBE
+unsigned proc_slots_used(void)
+{
+    unsigned used = 0;
+    for (unsigned i = 0; i < NPROC; ++i)
+        used += procs[i].state != PROC_UNUSED;
+    return used;
+}
+#endif
