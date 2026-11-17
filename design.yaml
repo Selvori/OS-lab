@@ -1,6 +1,6 @@
 system:
   name: Seele
-  scope: Lab 8 inode, directory and path resolution, based on Labs 1-7
+  scope: Lab 9 file descriptors and user shell, based on Labs 1-8
   provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
@@ -29,7 +29,7 @@ rules:
   - Heap mutation is owner-only with IRQ off, kernel satp active and no concurrent table walkers
   - Flush local TLB before reusing removed frames; prune empty private table nodes
   - Failures preserve mappings, free intervals and resource counts
-non_goals: [SMP user scheduling, migration, kernel preemption, COW, exec, filesystem, demand paging, floating point, vectors]
+non_goals: [SMP user scheduling, migration, kernel preemption, COW, general ELF loader, demand paging, floating point, vectors]
 
 lab6_invariants:
   - Sixteen PCB slots; init PID 0 never exits; IDs are not slot numbers
@@ -54,3 +54,9 @@ lab8_invariants:
   - One fs lock serializes namespace and inode changes; lock order is filesystem then block
   - Create initializes the inode before publishing the dentry; remove clears dentry before reclaiming
   - Failed metadata I/O disables the current mount; ordered writes are not a journal
+
+lab9_invariants:
+  - Only the scheduler owner modifies file references and cwd; descriptors are not kernel handles exposed by address
+  - Validate user ranges before I/O or advancing shared offsets
+  - UART RX is shared between harts under a spinlock; no spinlock is held across process switches
+  - Exec keeps process identity, descriptors and cwd; bounded argument image and replacement heap are prepared before committing

@@ -1,0 +1,15 @@
+lab: 9
+source: Course overview supplied by user; dedicated lab sheet unavailable
+contracts:
+  descriptors: 16 descriptors per process; 48 open descriptions; fork and dup share offsets; exit drops references
+  filesystem: open read write close dup fstat readdir chdir getcwd mkdir unlink sync
+  console: UART interrupt enqueues bytes; a process may wait for input without holding a spinlock
+  exec: Fixed one-page RX user program with checked header and bounded argv; replace only after preparing all resources
+  shell: User-mode line input, builtins, and foreground fork/exec/wait from /bin or an explicit path
+  fallback: Boot embedded Lab 6 init if the filesystem or /bin/sh is unavailable
+acceptance:
+  - User shell creates directories and files, lists, navigates, reads, writes, appends and removes
+  - Verify descriptor inheritance, shared offsets, error paths and close on child exit
+  - Run a separate disk-backed program with argc/argv; invalid exec preserves process image
+  - Verify restart persistence and retained Lab 6 fallback; QEMU and VF2 build image
+non_goals: [pipes, job control, signals, general ELF loader, permissions, POSIX unlink of open files]
