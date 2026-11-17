@@ -53,7 +53,7 @@ void proc_destroy(struct proc *p)
     memset(p, 0, sizeof(*p));
 }
 
-static struct proc *proc_allocate(void)
+static struct proc *proc_allocate(const struct proc *parent)
 {
     owner_context();
     struct proc *p = NULL;
@@ -71,12 +71,21 @@ static struct proc *proc_allocate(void)
     if (p->pgtbl) lifecycle_add(table_alloc, 1);
     p->tf = page_alloc(PAGE_ZONE_KERNEL);
     p->stack_page = page_alloc(PAGE_ZONE_KERNEL);
-    p->code = page_alloc(PAGE_ZONE_USER);
-    p->data = page_alloc(PAGE_ZONE_USER);
-    p->ustack = page_alloc(PAGE_ZONE_USER);
+    if (parent) {
+        p->code = parent->code;
+        p->data = parent->data;
+        p->ustack = parent->ustack;
+        page_retain_user(p->code);
+        page_retain_user(p->data);
+        page_retain_user(p->ustack);
+    } else {
+        p->code = page_alloc(PAGE_ZONE_USER);
+        p->data = page_alloc(PAGE_ZONE_USER);
+        p->ustack = page_alloc(PAGE_ZONE_USER);
+    }
     if (!p->pgtbl || !p->tf || !p->stack_page || !p->code || !p->data || !p->ustack)
         goto fail;
-    if (user_vm_create(p) != 0) goto fail;
+    if (user_vm_create(p, parent != NULL) != 0) goto fail;
     /* Trampoline already allocated this shared kernel table topology at boot. */
     if (sv39_map(kernel_vm_root(), p->kstack, (uintptr_t)p->stack_page,
                  PAGE_SIZE, PTE_R | PTE_W) != 0) goto fail;
@@ -94,7 +103,7 @@ int proc_make_first(void)
 {
     owner_context();
     assert(!initproc, "init already exists");
-    struct proc *p = proc_allocate();
+    struct proc *p = proc_allocate(NULL);
     if (!p) return -12;
     if (user_heap_init(p) != 0) { proc_destroy(p); return -12; }
     p->pid = 0;
@@ -111,11 +120,6 @@ int proc_make_first(void)
     return 0;
 }
 
-static void copy_page(void *dst, const void *src)
-{
-    for (size_t i = 0; i < PAGE_SIZE; ++i) ((uint8 *)dst)[i] = ((const uint8 *)src)[i];
-}
-
 long proc_fork(void)
 {
     owner_context();
@@ -124,19 +128,19 @@ long proc_fork(void)
     bool slot = false;
     for (unsigned i = 0; i < NPROC; ++i) if (procs[i].state == PROC_UNUSED) slot = true;
     if (!slot || next_pid > 0x7fffffffU) return -11;
-    struct proc *child = proc_allocate();
+    struct proc *child = proc_allocate(parent);
     if (!child) return -12;
-    copy_page(child->code, parent->code);
-    copy_page(child->data, parent->data);
-    copy_page(child->ustack, parent->ustack);
-    lifecycle_add(copied, 3 * PAGE_SIZE);
     if (user_heap_clone(child, parent) != 0) { proc_destroy(child); return -12; }
+    /* No fallible operation remains. Publish parent protections before the child. */
+    user_cow_mark(parent->pgtbl, USER_BASE + PAGE_SIZE);
+    user_cow_mark(parent->pgtbl, USER_STACK);
+    user_heap_cow_commit(parent);
+    sfence_vma();
     *child->tf = *parent->tf;
     child->tf->x[10] = 0;
     files_fork(child, parent);
     child->parent = parent;
     child->pid = (int)next_pid++;
-    __asm__ volatile("fence.i" ::: "memory");
     child->state = PROC_RUNNABLE;
     return child->pid;
 }
@@ -216,8 +220,11 @@ long proc_wait(uintptr_t address)
             children = true;
             if (child->state != PROC_ZOMBIE) continue;
             int pid = child->pid;
-            if (address && user_copyout(p->pgtbl, address, &child->status, sizeof(int)) != 0)
-                return -14;
+            if (address) {
+                int rc = user_copyout(p, address, &child->status, sizeof(int));
+                if (rc != 0)
+                    return rc;
+            }
             uint64 start = lifecycle_begin();
             proc_destroy(child);
             lifecycle_end(reap_time, start);

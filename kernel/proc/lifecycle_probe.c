@@ -43,5 +43,5 @@ long lifecycle_control(struct proc *p, unsigned long op, uintptr_t address)
     sample.nodes_left = mmap_pool_free_count();
     sample.slots_used = proc_slots_used();
     sample.files_used = files_used();
-    return user_copyout(p->pgtbl, address, &sample, sizeof(sample)) == 0 ? 0 : -14;
+    return user_copyout(p, address, &sample, sizeof(sample));
 }

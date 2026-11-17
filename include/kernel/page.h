@@ -17,6 +17,9 @@ typedef enum {
 
 void page_allocator_init(void);
 void *page_alloc(page_zone_type_t zone);
+/* User pages carry one reference after allocation. page_free drops ownership. */
+void page_retain_user(void *page);
+unsigned page_user_refs(void *page);
 void page_free(void *page);
 uint64 page_free_count(page_zone_type_t zone);
 uintptr_t page_zone_start(page_zone_type_t zone);

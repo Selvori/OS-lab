@@ -134,11 +134,18 @@ static long sys_read(struct proc *p, struct kfile *file, uintptr_t address, size
         return FS_INVAL;
     if (!user_writable(p->pgtbl, address, count))
         return -14;
+    if (file->kind == CONSOLE_IN) {
+        /* Prepare before dequeuing input, including a possible COW allocation failure. */
+        int rc = user_prepare_write(p, address, count);
+        if (rc != 0)
+            return rc;
+    }
     int n = file->kind == CONSOLE_IN ? console_read(data, count) :
             fs_read(file->ino, file->cursor, data, count);
     if (n > 0) {
-        if (user_copyout(p->pgtbl, address, data, (size_t)n) != 0)
-            return -14;
+        int rc = user_copyout(p, address, data, (size_t)n);
+        if (rc != 0)
+            return rc;
         if (file->kind == DISK_FILE)
             file->cursor += n;
     }
@@ -211,7 +218,8 @@ static int sys_getcwd(struct proc *p, uintptr_t address, size_t size)
     size_t count = sizeof(path) - pos;
     if (count > size)
         return -34;
-    return user_copyout(p->pgtbl, address, path + pos, count) == 0 ? (int)(count - 1) : -14;
+    int rc = user_copyout(p, address, path + pos, count);
+    return rc == 0 ? (int)(count - 1) : rc;
 }
 
 static long path_operation(struct proc *p, uint64 op, uintptr_t address, uint64 arg)
@@ -311,7 +319,7 @@ long file_syscall(struct proc *p)
         int status = file->kind == DISK_FILE ? fs_stat(file->ino, &info) : 0;
         if (status != 0)
             return status;
-        return user_copyout(p->pgtbl, arg1, &info, sizeof(info)) == 0 ? 0 : -14;
+        return user_copyout(p, arg1, &info, sizeof(info));
     }
     case SYS_READDIR: {
         if (file->kind != DISK_FILE)
@@ -322,8 +330,9 @@ long file_syscall(struct proc *p)
         int next = fs_readdir(file->ino, file->cursor, &entry);
         if (next <= 0)
             return next;
-        if (user_copyout(p->pgtbl, arg1, &entry, sizeof(entry)) != 0)
-            return -14;
+        int rc = user_copyout(p, arg1, &entry, sizeof(entry));
+        if (rc != 0)
+            return rc;
         file->cursor = next;
         return 1;
     }

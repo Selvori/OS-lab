@@ -15,6 +15,7 @@ typedef pte_t *pagetable_t;
 #define PTE_G (1UL << 5)
 #define PTE_A (1UL << 6)
 #define PTE_D (1UL << 7)
+#define PTE_COW (1UL << 8) /* Sv39 RSW bit: formerly writable user leaf. */
 #define PTE_FLAGS_MASK 0x3ffUL
 
 #define SV39_VPN_MASK 0x1ffUL

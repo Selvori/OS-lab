@@ -43,13 +43,16 @@ pte_t *sv39_walk(pagetable_t root, uintptr_t va, bool allocate)
 int sv39_map(pagetable_t root, uintptr_t va, uintptr_t pa,
              size_t size, uint64 flags)
 {
-    uint64 allowed = PTE_R | PTE_W | PTE_X | PTE_U | PTE_G;
+    uint64 allowed = PTE_R | PTE_W | PTE_X | PTE_U | PTE_G | PTE_COW;
 
     if (size == 0 || ((va | pa | size) & PAGE_MASK) != 0)
         return -1;
     if (va >= SV39_MAX_LOW_VA || size > SV39_MAX_LOW_VA - va)
         return -1;
     if (pa >= SV39_MAX_PA || size > SV39_MAX_PA - pa)
+        return -1;
+    if ((flags & PTE_COW) &&
+        (flags & (PTE_R | PTE_U | PTE_W | PTE_X)) != (PTE_R | PTE_U))
         return -1;
     if ((flags & ~allowed) != 0 ||
         ((flags & PTE_W) != 0 && (flags & PTE_R) == 0))

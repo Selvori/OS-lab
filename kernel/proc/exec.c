@@ -75,10 +75,11 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
         header.length > PAGE_SIZE || info.size != sizeof(header) + header.length)
         return -8;
 
-    uint8 *code = page_alloc(PAGE_ZONE_KERNEL);
-    uint8 *stack = page_alloc(PAGE_ZONE_KERNEL);
+    uint8 *code = page_alloc(PAGE_ZONE_USER);
+    uint8 *stack = page_alloc(PAGE_ZONE_USER);
+    uint8 *data = page_alloc(PAGE_ZONE_USER);
     rc = -12;
-    if (code == NULL || stack == NULL)
+    if (code == NULL || stack == NULL || data == NULL)
         goto done;
     rc = fs_read(ino, sizeof(header), code, header.length);
     if (rc != (int)header.length) {
@@ -99,10 +100,7 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
     user_heap_destroy(p);
     p->mmap = heap.mmap;
     p->heap_top = heap.heap_top;
-    memcpy(p->code, code, PAGE_SIZE);
-    memset(p->data, 0, PAGE_SIZE);
-    memcpy(p->ustack, stack, PAGE_SIZE);
-    lifecycle_add(exec_bytes, 2 * PAGE_SIZE);
+    user_replace_image(p, code, data, stack);
     memset(p->tf, 0, sizeof(*p->tf));
     p->tf->epc = USER_BASE;
     p->tf->x[2] = sp;
@@ -110,8 +108,10 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
     /* SYS_EXEC returns argc into saved a0. Boot has no syscall dispatcher. */
     p->tf->x[10] = argc;
     __asm__ volatile("fence.i" ::: "memory");
-    rc = argc;
+    return argc;
 done:
+    if (data != NULL)
+        page_free(data);
     if (stack != NULL)
         page_free(stack);
     if (code != NULL)

@@ -148,10 +148,7 @@ int user_heap_free(struct proc *p, uintptr_t begin, size_t npages)
     if ((prev && region_end(prev) > begin) || (next && next->begin < end)) return -22;
     /* Reject any hole, supervisor page or foreign frame before reserving metadata. */
     for (uintptr_t va = begin; va < end; va += PAGE_SIZE) {
-        uintptr_t pa; uint64 flags;
-        if (!sv39_lookup(p->pgtbl, va, &pa, &flags) ||
-            (flags & (PTE_U | PTE_R | PTE_W | PTE_X)) != (PTE_U | PTE_R | PTE_W) ||
-            pa < page_zone_start(PAGE_ZONE_USER) || pa >= page_zone_end(PAGE_ZONE_USER))
+        if (!user_heap_page(p->pgtbl, va))
             return -22;
     }
     bool left = prev && region_end(prev) == begin;
@@ -195,7 +192,7 @@ void user_heap_destroy(struct proc *p)
     p->heap_top = 0;
 }
 
-/* Caller destroys the unpublished child on failure; the source never changes. */
+/* Caller destroys the unpublished child on failure; the source changes only at commit. */
 int user_heap_clone(struct proc *dst, const struct proc *src)
 {
     heap_context(dst);
@@ -212,15 +209,24 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
         lifecycle_add(clone_slots, 1);
         uintptr_t pa;
         if (!sv39_lookup(src->pgtbl, va, &pa, NULL)) continue;
-        void *frame = page_alloc(PAGE_ZONE_USER);
-        if (!frame) return -12;
-        if (sv39_map(dst->pgtbl, va, (uintptr_t)frame, PAGE_SIZE,
-                     PTE_R | PTE_W | PTE_U) != 0) {
-            page_free(frame);
+        if (sv39_map(dst->pgtbl, va, pa, PAGE_SIZE,
+                     PTE_R | PTE_COW | PTE_U) != 0)
             return -12;
-        }
-        for (size_t i = 0; i < PAGE_SIZE; ++i) ((uint8 *)frame)[i] = ((const uint8 *)pa)[i];
-        lifecycle_add(copied, PAGE_SIZE);
+        page_retain_user((void *)pa);
     }
     return 0;
+}
+
+/* The sorted free intervals give the complement of the mapped heap pages. */
+void user_heap_cow_commit(struct proc *p)
+{
+    heap_context(p);
+    uintptr_t va = USER_HEAP_START;
+    for (mmap_region_t *r = p->mmap; r; r = r->next) {
+        for (; va < r->begin; va += PAGE_SIZE)
+            user_cow_mark(p->pgtbl, va);
+        va = region_end(r);
+    }
+    for (; va < p->heap_top; va += PAGE_SIZE)
+        user_cow_mark(p->pgtbl, va);
 }

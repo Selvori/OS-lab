@@ -18,6 +18,36 @@ struct page_zone {
 };
 
 static struct page_zone zones[PAGE_ZONE_COUNT];
+/* Indexed from the user zone's start and protected by its allocator lock. */
+static uint16_t user_refs[DRAM_SIZE / PAGE_SIZE];
+
+static uint16_t *user_ref(uintptr_t address)
+{
+    struct page_zone *zone = &zones[PAGE_ZONE_USER];
+    assert(address >= zone->start && address < zone->end &&
+           (address & PAGE_MASK) == 0, "invalid user frame");
+    return &user_refs[(address - zone->start) / PAGE_SIZE];
+}
+
+void page_retain_user(void *page)
+{
+    uint16_t *refs = user_ref((uintptr_t)page);
+    spinlock_t *lock = &zones[PAGE_ZONE_USER].lock;
+    spinlock_acquire(lock);
+    assert(*refs && *refs < UINT16_MAX, "retain invalid user frame");
+    ++*refs;
+    spinlock_release(lock);
+}
+
+unsigned page_user_refs(void *page)
+{
+    uint16_t *refs = user_ref((uintptr_t)page);
+    spinlock_t *lock = &zones[PAGE_ZONE_USER].lock;
+    spinlock_acquire(lock);
+    unsigned count = *refs;
+    spinlock_release(lock);
+    return count;
+}
 
 extern char kernel_end[];
 
@@ -75,6 +105,11 @@ void *page_alloc(page_zone_type_t type)
     if (page != NULL) {
         zone->freelist = page->next;
         zone->free_count--;
+        if (type == PAGE_ZONE_USER) {
+            uint16_t *refs = user_ref((uintptr_t)page);
+            assert(*refs == 0, "allocated live user frame");
+            *refs = 1;
+        }
     }
     spinlock_release(&zone->lock);
 
@@ -106,6 +141,16 @@ void page_free(void *memory)
     if (zone == NULL)
         panic("page outside zones");
 
+    if (zone == &zones[PAGE_ZONE_USER]) {
+        uint16_t *refs = user_ref(address);
+        spinlock_acquire(&zone->lock);
+        assert(*refs != 0, "release idle user frame");
+        bool last = --*refs == 0;
+        spinlock_release(&zone->lock);
+        if (!last)
+            return;
+    }
+    /* The last releaser owns the frame until it publishes it on the free list. */
     memset(memory, 0xa5, PAGE_SIZE);
     struct free_page *page = memory;
 

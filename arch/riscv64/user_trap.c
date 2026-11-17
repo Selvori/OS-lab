@@ -21,6 +21,8 @@ void trap_user_handler(void)
     if (cause == 8) {
         p->tf->epc += 4; /* ECALL is a 32-bit instruction, including with RVC. */
         syscall_dispatch(p);
+    } else if (cause == 15 && user_cow_fault(p, value) == 0) {
+        /* Retry the original store at the saved PC. */
     } else if (cause & SCAUSE_INTERRUPT) {
         if (!trap_device_interrupt(cause))
             goto fault;
