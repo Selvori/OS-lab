@@ -1,0 +1,18 @@
+lab: 8
+source: Course overview supplied by user; dedicated lab sheet unavailable
+format: SeeleFS v1; little-endian sectors, fixed inode array and sector allocation bitmap
+contracts:
+  mount: Validate filesystem geometry and root before making it available; never format a supplied image
+  inode: 128 fixed 64-byte records including reserved inode 0; 12 direct sectors per inode
+  dentry: Persistent 32-byte records with inode number and nul-terminated name; zero means vacant
+  lookup: Absolute and cwd-relative paths; repeated separators, dot, dot-dot and trailing slash
+  create: Allocate regular file or directory, populate dot entries, then publish its name
+  read_write: Offset I/O, no sparse holes, short write allowed at capacity, persistent sizes
+  remove: Unlink regular file or empty directory and reclaim its sectors and inode
+  sync: Explicit block flush
+acceptance:
+  - Mount a host-built image and resolve nested paths
+  - Cross sectors, update and truncate files; verify persistence after restart
+  - Handle missing paths, bad components, capacity exhaustion and reuse
+  - Reject malformed and legacy raw images without writing
+non_goals: [hard links, symlinks, journal, permissions, mount namespaces, user descriptors]

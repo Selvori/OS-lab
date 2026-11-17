@@ -1,6 +1,6 @@
 system:
   name: Seele
-  scope: Lab 7 block I/O and cache, based on Labs 1-6
+  scope: Lab 8 inode, directory and path resolution, based on Labs 1-7
   provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
@@ -48,3 +48,9 @@ lab7_invariants:
   - QEMU virtio DMA addresses use kernel identity mapping; VF2 has no backend
   - A single synchronous request owns the queue until used ring completion
   - Cache operations and device completion are serialized under the block lock
+
+lab8_invariants:
+  - SeeleFS metadata uses little-endian fixed-width disk records and a sector bitmap
+  - One fs lock serializes namespace and inode changes; lock order is filesystem then block
+  - Create initializes the inode before publishing the dentry; remove clears dentry before reclaiming
+  - Failed metadata I/O disables the current mount; ordered writes are not a journal
