@@ -1,6 +1,6 @@
 KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
 	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/proc/proc.c kernel/proc/syscall.c \
-	kernel/fs/block.c kernel/fs/fs.c drivers/block/virtio.c
+	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c drivers/block/virtio.c
 SOURCES := $(KERNEL_C) $(ARCH_C) $(PLATFORM_C)
 OBJECTS := $(addprefix $(BUILD)/,$(SOURCES:.c=.o) $(ARCH_S:.S=.o))
 -include $(OBJECTS:.o=.d)
@@ -30,3 +30,25 @@ $(BUILD)/user.bin: $(BUILD)/user.elf
 $(BUILD)/arch/riscv64/user_image.o: arch/riscv64/user_image.S $(BUILD)/user.bin
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Wa,-I$(BUILD) -c $< -o $@
+
+USER_PROGRAMS := sh echo
+USER_APP_CFLAGS := -std=c11 -Os -Wall -Wextra -Werror -ffreestanding -fno-builtin \
+	-fno-pie -fno-stack-protector -mno-relax -march=rv64imac -mabi=lp64
+APP_DEPS := kernel/lib/string.c include/kernel/string.h user/lib.c user/lib.h user/start.S user/program.ld \
+	include/kernel/file_abi.h include/kernel/fs.h include/kernel/syscall.h
+
+$(BUILD)/apps/%.elf: user/%.c $(APP_DEPS)
+	$(compile_user_program)
+
+$(BUILD)/apps/fdprobe.elf: tools/lab9_fd_probe.c $(APP_DEPS)
+	$(compile_user_program)
+
+define compile_user_program
+	@mkdir -p $(@D)
+	$(CC) -Iinclude -Iuser $(USER_APP_CFLAGS) -nostdlib -static \
+		-Wl,--build-id=none,--no-relax,-T,user/program.ld \
+		user/start.S user/lib.c kernel/lib/string.c $< -o $@
+endef
+
+$(BUILD)/apps/%.bin: $(BUILD)/apps/%.elf
+	$(OBJCOPY) -O binary $< $@

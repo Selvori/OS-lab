@@ -1,5 +1,5 @@
 #include <kernel/syscall.h>
-#include <kernel/print.h>
+#include <kernel/proc.h>
 #include <kernel/timer.h>
 
 void syscall_dispatch(struct proc *p)
@@ -8,20 +8,6 @@ void syscall_dispatch(struct proc *p)
     long result;
     p->syscalls++;
     switch (tf->x[17]) {
-    case SYS_WRITE: {
-        char buffer[SYS_WRITE_MAX];
-        size_t count = tf->x[12];
-        if (tf->x[10] != 1) { result = -9; break; }
-        if (count > sizeof(buffer)) { result = -22; break; }
-        if (user_copyin(p->pgtbl, buffer, tf->x[11], count) != 0) {
-            result = -14;
-            break;
-        }
-        for (size_t i = 0; i < count; ++i)
-            printf("%c", buffer[i]);
-        result = (long)count;
-        break;
-    }
     case SYS_MMAP:
         result = user_heap_alloc(p, tf->x[10], tf->x[11]);
         break;
@@ -51,7 +37,7 @@ void syscall_dispatch(struct proc *p)
         result = proc_finish((int)tf->x[10], false);
         break;
     default:
-        result = -38;
+        result = file_syscall(p);
         break;
     }
     tf->x[10] = (uint64)result;

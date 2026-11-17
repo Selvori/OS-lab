@@ -8,7 +8,7 @@
 #define FS_PATH_MAX 255
 #define FS_MAX_FILE (12 * 512)
 
-enum fs_type { FS_FILE = 1, FS_DIR = 2 };
+enum fs_type { FS_FILE = 1, FS_DIR = 2, FS_DEVICE = 3 };
 enum fs_error {
     FS_NOENT = -2, FS_IO = -5, FS_NODEV = -19, FS_NOTDIR = -20,
     FS_ISDIR = -21, FS_INVAL = -22, FS_NOSPC = -28, FS_NAMETOOLONG = -36,

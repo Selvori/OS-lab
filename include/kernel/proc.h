@@ -2,6 +2,8 @@
 #define SEELE_PROC_H
 #include <asm/usertrap.h>
 #include <kernel/heap.h>
+#include <kernel/file.h>
+struct kfile;
 #define NPROC 16
 struct context { uint64 ra, sp, s[12]; };
 _Static_assert(offsetof(struct context, s) == 16, "switch offsets");
@@ -21,6 +23,8 @@ struct proc {
     enum proc_state state;
     uint64 owner, user_timers, user_external, syscalls, switches;
     struct proc *parent;
+    struct kfile *files[NFD];
+    uint32 cwd;
     void *chan;
     uint64 deadline;
     int status;

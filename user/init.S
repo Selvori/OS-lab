@@ -115,7 +115,7 @@ round_trip:
     ecall
     li a1, -22
     bne a0, a1, fail
-    li a0, 2
+    li a0, 99
     li a2, 0
     li a7, SYS_WRITE
     ecall

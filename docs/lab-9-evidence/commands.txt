@@ -1,0 +1,87 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/lab9-checks/shell-test.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/riscv64-qemu-virt-sbi/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x0000000080217000-0x0000000082191000, 8058 free pages
+memory: user   0x0000000082191000-0x0000000088000000, 24175 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 1 enabled Sv39 with root 0x0000000080217000
+cpu 0 enabled Sv39 with root 0x0000000080217000
+cpu 0 SBI timer ready: 100 Hz
+cpu 1 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+cpu 1 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=1
+Seele shell. Type help for commands.
+seele$ pwd
+/
+seele$ ls
+.
+..
+etc
+bin
+seele$ cat /etc/motd
+Welcome to SeeleFS.
+seele$ pwx<BACKSPACE>d
+/
+seele$ echo "two words" xyz
+two words xyz
+seele$ /bin/echo 'a b' empty
+a b empty
+seele$ echo "unterminated
+syntax: error -22
+seele$ no-such-command
+no-such-command: error -2
+seele$ /etc/motd
+/etc/motd: error -8
+seele$ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+input: error -36
+seele$ mkdir /work
+seele$ cd /work//.
+seele$ pwd
+/work
+seele$ write note "hello world"
+seele$ append note again
+seele$ cat ../work/note
+hello world
+again
+seele$ fdprobe "two words"
+FD PROBE BEGIN
+FD PASS: inheritance, dup, user ranges, limits and rollback
+FD EXEC PASS: cwd/offset retained, heap replaced
+seele$ ls
+.
+..
+note
+records
+seele$ cd /
+seele$ rm work
+rm: error -39
+seele$ mkdir empty
+seele$ rm empty
+seele$ ls /empty
+ls: error -2
+seele$ sync
+seele$ QEMU: Terminated

@@ -10,9 +10,20 @@
 #define SYS_WAIT 8
 #define SYS_SLEEP 9
 #define SYS_YIELD 10
-#define SYS_WRITE_MAX 256
+#define SYS_OPEN 11
+#define SYS_READ 12
+#define SYS_CLOSE 13
+#define SYS_DUP 14
+#define SYS_FSTAT 15
+#define SYS_READDIR 16
+#define SYS_MKDIR 17
+#define SYS_UNLINK 18
+#define SYS_CHDIR 19
+#define SYS_GETCWD 20
+#define SYS_SYNC 21
+#define SYS_EXEC 22
 #ifndef __ASSEMBLER__
-#include <kernel/proc.h>
+struct proc;
 void syscall_dispatch(struct proc *p);
 #endif
 #endif

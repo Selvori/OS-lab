@@ -1,5 +1,7 @@
 #include <kernel/proc.h>
 #include <kernel/arch.h>
+#include <kernel/console.h>
+#include <kernel/fs.h>
 #include <kernel/print.h>
 #include <kernel/string.h>
 #include <kernel/vm.h>
@@ -33,6 +35,7 @@ void proc_destroy(struct proc *p)
     owner_context();
     assert(p && p != proc_current() && p->state != PROC_RUNNING &&
            p->state != PROC_SLEEPING, "destroy active process");
+    files_drop(p);
     user_heap_destroy(p);
     if (p->stack_mapped) {
         pte_t *pte = sv39_walk(kernel_vm_root(), p->kstack, false);
@@ -95,6 +98,12 @@ int proc_make_first(void)
     p->pid = 0;
     p->tf->epc = USER_BASE;
     p->tf->x[2] = TRAPFRAME;
+    p->cwd = FS_ROOT;
+    files_attach_console(p);
+    if (proc_exec_image(p, "/bin/sh", 0) >= 0) {
+        console_input_enable();
+        printf("init: starting /bin/sh\n");
+    }
     initproc = p;
     p->state = PROC_RUNNABLE;
     return 0;
@@ -121,6 +130,7 @@ long proc_fork(void)
     if (user_heap_clone(child, parent) != 0) { proc_destroy(child); return -12; }
     *child->tf = *parent->tf;
     child->tf->x[10] = 0;
+    files_fork(child, parent);
     child->parent = parent;
     child->pid = (int)next_pid++;
     __asm__ volatile("fence.i" ::: "memory");
@@ -229,12 +239,24 @@ int proc_finish(int status, bool fault)
         procs[i].parent = initproc;
         if (procs[i].state == PROC_ZOMBIE) proc_wakeup(initproc);
     }
+    files_drop(p);
+    p->cwd = 0;
     p->status = status;
     p->faulted = fault;
     p->state = PROC_ZOMBIE;
     proc_wakeup(p->parent);
     proc_sched();
     panic("zombie resumed");
+}
+
+bool proc_cwd_busy(uint32 ino)
+{
+    owner_context();
+    for (unsigned i = 0; i < NPROC; ++i) {
+        if (procs[i].state != PROC_UNUSED && procs[i].cwd == ino)
+            return true;
+    }
+    return false;
 }
 
 void proc_scheduler(void)
