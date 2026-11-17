@@ -1,0 +1,23 @@
+lab: 7
+source: Course overview supplied by user; dedicated lab sheet unavailable
+platform: QEMU 5.1.0 virt with modern virtio-mmio block transport
+contracts:
+  block_init:
+    effects: Discover one writable virtio block device and initialize queue 0
+    post: Capacity is in 512-byte sectors; zero when unavailable
+  block_read:
+    pre: Caller supplies one writable 512-byte kernel buffer
+    post: Return zero and copy the whole sector on success; preserve destination on error
+  block_write:
+    pre: Caller supplies one readable 512-byte kernel buffer
+    post: Return zero after completion and update cache; invalidate matching cache entry on error
+  block_flush:
+    post: Return zero after the device completes a flush
+  cache:
+    effects: Serialize synchronous requests, retain 16 sectors, replace least recently used sector
+    post: Reads fill on miss; successful writes are write-through; no dirty blocks
+acceptance:
+  - Live QEMU reads, writes, flush and restart persistence
+  - Cache hits, replacement, invalid sectors, concurrent callers
+  - Lab 6 user workload and UART still run; VisionFive2 builds without a disk backend
+non_goals: [physical SD driver, async requests, filesystem, noncoherent DMA]

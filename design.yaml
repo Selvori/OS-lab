@@ -1,6 +1,6 @@
 system:
   name: Seele
-  scope: Lab 6 process management, based on Labs 1-5
+  scope: Lab 7 block I/O and cache, based on Labs 1-6
   provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
@@ -43,3 +43,8 @@ lab6_invariants:
   - Orphans are adopted by init and init is awakened for already-zombie adoptees
   - Fork publishes RUNNABLE only after all allocations, copies and metadata succeed
   - wait status pointer is fully validated writable before reaping any child
+
+lab7_invariants:
+  - QEMU virtio DMA addresses use kernel identity mapping; VF2 has no backend
+  - A single synchronous request owns the queue until used ring completion
+  - Cache operations and device completion are serialized under the block lock
