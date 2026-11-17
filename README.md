@@ -9,4 +9,4 @@ python3 tools/bench_lifecycle.py --suite warm --output build/process-lifecycle/w
 make CONFIG=riscv64-visionfive2-uboot build image
 ~~~
 
-[研究过程及验收](docs/process-lifecycle/README.md) · [资源所有权](docs/process-lifecycle/ownership.md) · [Lab 9 功能与板端用法](docs/lab-9-baseline.md)
+[预热基准与比较](docs/process-lifecycle/comparison.md) · [研究过程及验收](docs/process-lifecycle/README.md) · [资源所有权](docs/process-lifecycle/ownership.md) · [Lab 9 功能与板端用法](docs/lab-9-baseline.md)

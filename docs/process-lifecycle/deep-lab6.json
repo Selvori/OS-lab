@@ -1,0 +1,93 @@
+{
+  "normal": {
+    "init_pid": 0,
+    "heap_cycles": 256,
+    "register_roundtrips": 4096,
+    "fork_wait_cycles": 32,
+    "cpu_iterations": 200000000,
+    "parent_progress_before_cpu_exit": true,
+    "uart_bytes": 5777,
+    "owner_only_uart": false
+  },
+  "extended": {
+    "owner_uart": {
+      "init_pid": 0,
+      "heap_cycles": 256,
+      "register_roundtrips": 4096,
+      "fork_wait_cycles": 32,
+      "cpu_iterations": 200000000,
+      "parent_progress_before_cpu_exit": true,
+      "uart_bytes": 5777,
+      "owner_only_uart": true
+    },
+    "early-exit": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "orphan-False": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "orphan-True": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fork-tree": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "sleep-boundary": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "slots": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "async-registers": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fault-null": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fault-text": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fault-heap-nx": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fault-after-unmap": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "fault-supervisor": {
+      "passed": true,
+      "uart_bytes": 5777
+    },
+    "probe": {
+      "init_pid": 0,
+      "heap_cycles": 256,
+      "register_roundtrips": 4096,
+      "fork_wait_cycles": 32,
+      "cpu_iterations": 200000000,
+      "parent_progress_before_cpu_exit": true,
+      "uart_bytes": 5777,
+      "owner_only_uart": false,
+      "allocation_failure_points": 16
+    }
+  },
+  "final": {
+    "init_pid": 0,
+    "heap_cycles": 256,
+    "register_roundtrips": 4096,
+    "fork_wait_cycles": 32,
+    "cpu_iterations": 200000000,
+    "parent_progress_before_cpu_exit": true,
+    "uart_bytes": 5777,
+    "owner_only_uart": false
+  }
+}

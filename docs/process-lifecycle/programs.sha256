@@ -1,0 +1,6 @@
+0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce  build/lifecycle-time/apps/sh.bin
+d07760ea5c1b1e9e9132880e7ac2888cad10cd669cd31d30e66394e04a878236  build/lifecycle-time/apps/lifebench.bin
+c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0  build/lifecycle-time/apps/lifejob.bin
+0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce  build/lifecycle-counts/apps/sh.bin
+d07760ea5c1b1e9e9132880e7ac2888cad10cd669cd31d30e66394e04a878236  build/lifecycle-counts/apps/lifebench.bin
+c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0  build/lifecycle-counts/apps/lifejob.bin
