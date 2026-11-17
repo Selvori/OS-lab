@@ -1,0 +1,20 @@
+{
+  "tested_commit": "1b80b84550cb331904a936583f8d0baf7b4fd040",
+  "board": "VisionFive 2 V1.3B",
+  "transport": "Windows COM7",
+  "fit_bytes": 38379,
+  "fit_sha256": "ac644f9e8653cd9afff0b443b94441eb1bb5bae5458940d0d7ae709daf3bbe61",
+  "ram_crc32": "1e255f8a",
+  "root": "0x000000004021f000",
+  "cpu_count": 4,
+  "core_boot_pass": true,
+  "embedded_user_regression_pass": true,
+  "uart_input_bytes": 1153,
+  "uart_output_bytes": 1155,
+  "uart_echo_pass": true,
+  "echo_after_idle": true,
+  "block_capacity_sectors": 0,
+  "filesystem_mount_rc": -19,
+  "disk_shell": "unavailable on this platform",
+  "bootcmd": "run vf2_sdboot"
+}

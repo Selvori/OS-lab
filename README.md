@@ -9,7 +9,7 @@ python3 tools/test_lab9.py
 make CONFIG=riscv64-visionfive2-uboot build image
 ~~~
 
-首次运行创建 `build/riscv64-qemu-virt-sbi/seele-shell.img`，之后复用镜像。`DISK=/路径/镜像.img` 指定已有镜像。按 Ctrl-A 后按 X 退出。磁盘或 `/bin/sh` 无法加载时启动内嵌的 Lab 6 演示。VF2 无磁盘后端，本实验通过 ELF/FIT 构建，未上板。
+首次运行创建 `build/riscv64-qemu-virt-sbi/seele-shell.img`，之后复用镜像。`DISK=/路径/镜像.img` 指定已有镜像。按 Ctrl-A 后按 X 退出。磁盘或 `/bin/sh` 无法加载时启动内嵌的 Lab 6 演示。VF2 V1.3B 同时通过 ELF/FIT 构建和板端 RAM 启动，四核与内嵌用户态程序运行正常。该平台当前无存储后端，磁盘版 Shell 的实机验收待支持。[实机验收记录](docs/lab-9-evidence/vf2-2026-11-17/README.md)
 
 ~~~text
 seele$ mkdir /notes

@@ -37,4 +37,4 @@ Shell 支持 255 字节输入和最多 12 个参数。exec 单参数最多 127 �
 - QEMU 5.1.0 真实串口，检查路径、读写、追加、引号、退格、长行、坏命令、坏执行文件及重启读取。
 - 用户探针确认 16 个 fd 和 48 个打开对象耗尽及回收，fork/dup 共享偏移，坏用户地址不改变输出或偏移，子退出释放引用。exec 成功保留 fd 偏移及 cwd 并重建堆，失败保留原堆。
 - 主机独立比较 520 字节跨扇区数据及位图。旧镜像的 [Lab 6 扩展回归](lab-9-evidence/lab6-extended.txt) 同时覆盖时钟抢占、进程失败回滚与 UART。
-- `make -B CONFIG=riscv64-qemu-virt-sbi build` 和 VF2 `build image` 通过。入口 `0x80200000` 和 `0x40200000`，VF2 实机未验证。见 [验收结果](lab-9-evidence/results.json)。
+- `make -B CONFIG=riscv64-qemu-virt-sbi build` 和 VF2 `build image` 通过。入口 `0x80200000` 和 `0x40200000`，2026-11-17 的 VF2 V1.3B 实机验证通过四核启动、内嵌用户态回归和 1153 字节 UART 测试，详见 [实机报告](lab-9-evidence/vf2-2026-11-17/README.md)。见 [验收结果](lab-9-evidence/results.json)。
