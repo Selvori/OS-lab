@@ -5,6 +5,12 @@
 #define PROBE_SNAPSHOT 0
 #define PROBE_START 1
 #define PROBE_STOP 2
+#define PROBE_FAIL_AFTER 3
+#define PROBE_MAPPING 4
+
+struct lifecycle_mapping {
+    unsigned long address, frame, flags, refs;
+};
 
 struct lifecycle_sample {
     unsigned long fork_time, reap_time, copied, exec_bytes;
@@ -43,6 +49,10 @@ long lifecycle_control(struct proc *, unsigned long, uintptr_t);
 #else
 #define lifecycle_begin() 0
 #define lifecycle_end(field, start) ((void)(start))
+#endif
+
+#ifdef LIFECYCLE_CHECKS
+bool lifecycle_alloc_fails(void);
 #endif
 
 #ifdef LIFECYCLE_COUNTS

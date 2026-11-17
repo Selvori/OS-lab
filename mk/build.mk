@@ -1,11 +1,14 @@
 KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
 	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/proc/proc.c kernel/proc/syscall.c \
 	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c
-ifneq ($(filter time counts,$(LIFECYCLE)),)
+ifneq ($(filter time counts check,$(LIFECYCLE)),)
 CPPFLAGS += -DLIFECYCLE_PROBE
 KERNEL_C += kernel/proc/lifecycle_probe.c
 ifeq ($(LIFECYCLE),counts)
 CPPFLAGS += -DLIFECYCLE_COUNTS
+endif
+ifeq ($(LIFECYCLE),check)
+CPPFLAGS += -DLIFECYCLE_CHECKS
 endif
 endif
 SOURCES := $(KERNEL_C) $(ARCH_C) $(PLATFORM_C)
@@ -64,4 +67,7 @@ $(BUILD)/apps/lifebench.elf: tools/lifecycle_bench.c $(APP_DEPS) include/kernel/
 	$(compile_user_program)
 
 $(BUILD)/apps/lifejob.elf: tools/lifecycle_job.c $(APP_DEPS)
+	$(compile_user_program)
+
+$(BUILD)/apps/lifetest.elf: tools/lifecycle_cases.c $(APP_DEPS) include/kernel/lifecycle_probe.h
 	$(compile_user_program)

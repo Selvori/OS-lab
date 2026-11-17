@@ -94,6 +94,10 @@ void page_allocator_init(void)
 
 void *page_alloc(page_zone_type_t type)
 {
+#ifdef LIFECYCLE_CHECKS
+    if (lifecycle_alloc_fails())
+        return NULL;
+#endif
     if (type >= PAGE_ZONE_COUNT)
         panic("invalid page zone");
 

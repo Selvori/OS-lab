@@ -103,9 +103,25 @@ extern long lab6_fail_after;
 static struct proc lab6_holders[N_MMAP];
 static void lab6_compare(struct proc *a, struct proc *b)
 {
-    assert(a->code!=b->code && a->data!=b->data && a->ustack!=b->ustack &&
-           a->tf!=b->tf && a->stack_page!=b->stack_page && a->kstack!=b->kstack,
-           "fork aliases fixed resources");
+    assert(a->pgtbl!=b->pgtbl && a->tf!=b->tf &&
+           a->stack_page!=b->stack_page && a->kstack!=b->kstack,
+           "fork aliases private contexts");
+#ifdef PTE_COW
+    assert(a->code==b->code && a->data==b->data && a->ustack==b->ustack,
+           "fork must retain fixed user frames");
+    uintptr_t fixed[]={USER_BASE, USER_BASE+PAGE_SIZE, USER_STACK};
+    for(unsigned i=0;i<3;i++){
+        uint64 fa,fb;
+        uint64 mask=PTE_U|PTE_R|PTE_W|PTE_X|PTE_COW;
+        uint64 expected=PTE_R|PTE_U|(i==0 ? PTE_X : PTE_COW);
+        assert(sv39_lookup(a->pgtbl,fixed[i],NULL,&fa) &&
+               sv39_lookup(b->pgtbl,fixed[i],NULL,&fb) &&
+               (fa&mask)==expected && (fb&mask)==expected,"fixed COW flags");
+    }
+#else
+    assert(a->code!=b->code && a->data!=b->data && a->ustack!=b->ustack,
+           "deep copy aliases fixed frames");
+#endif
     void *src[]={a->code,a->data,a->ustack};
     void *dst[]={b->code,b->data,b->ustack};
     for(unsigned j=0;j<3;j++) for(unsigned k=0;k<PAGE_SIZE;k++)
@@ -121,7 +137,14 @@ static void lab6_compare(struct proc *a, struct proc *b)
         bool ma=sv39_lookup(a->pgtbl,va,&pa,&fa),mb=sv39_lookup(b->pgtbl,va,&pb,&fb);
         assert(ma==mb,"heap occupancy copy");
         if(!ma)continue;
+#ifdef PTE_COW
+        uint64 mask=PTE_R|PTE_W|PTE_X|PTE_U|PTE_COW;
+        assert(pa==pb && (fa&mask)==(PTE_R|PTE_U|PTE_COW) &&
+               (fa&mask)==(fb&mask) && page_user_refs((void *)pa)==2,
+               "heap sharing/flags");
+#else
         assert(pa!=pb && fa==fb,"heap alias/flags");
+#endif
         for(unsigned k=0;k<PAGE_SIZE;k++)assert(((uint8*)pa)[k]==((uint8*)pb)[k],"heap bytes");
     }
     for(unsigned i=0;i<NPROC;i++){
@@ -130,10 +153,34 @@ static void lab6_compare(struct proc *a, struct proc *b)
         if(&procs[i]!=b)assert(!sv39_lookup(b->pgtbl,va,NULL,NULL),"foreign kstack exposed");
     }
 }
+#ifdef PTE_COW
+static uint64 lab6_mappings(struct proc *p)
+{
+    uint64 signature=0;
+    for(uintptr_t va=USER_BASE;va<USER_HEAP_END;va+=PAGE_SIZE){
+        uintptr_t pa; uint64 flags;
+        if(!sv39_lookup(p->pgtbl,va,&pa,&flags))continue;
+        signature=(signature*33)^va^pa^flags^page_user_refs((void *)pa);
+    }
+    uintptr_t pa; uint64 flags;
+    assert(sv39_lookup(p->pgtbl,USER_STACK,&pa,&flags),"parent stack missing");
+    return (signature*33)^pa^flags^page_user_refs((void *)pa);
+}
+#endif
 static void lab6_probe(void)
 {
     struct proc *a=initproc;
     current[scheduler_owner]=a;a->state=PROC_RUNNING;
+#ifdef PTE_COW
+    uint64 start_k=page_free_count(PAGE_ZONE_KERNEL), start_u=page_free_count(PAGE_ZONE_USER);
+    size_t start_nodes=mmap_pool_free_count();
+    unsigned heap_failures=lab5_model(a);
+    user_heap_destroy(a);
+    assert(user_heap_init(a)==0 && page_free_count(PAGE_ZONE_KERNEL)==start_k &&
+           page_free_count(PAGE_ZONE_USER)==start_u && mmap_pool_free_count()==start_nodes,
+           "Lab 5 heap model leaked resources");
+    printf("HEAP MODEL PASS: failure points=%d random=1024 whole=4096 nodes=128\n",heap_failures);
+#endif
     assert(user_heap_alloc(a,0x3000,3)==0x3000,"parent heap");
     assert(user_heap_alloc(a,0x1ff000,3)==0x1ff000,"cross table heap");
     assert(user_heap_free(a,0x4000,1)==0,"parent hole");
@@ -145,6 +192,9 @@ static void lab6_probe(void)
     uint64 k=page_free_count(PAGE_ZONE_KERNEL),u=page_free_count(PAGE_ZONE_USER);
     size_t nodes=mmap_pool_free_count();
     int points=-1;
+#ifdef PTE_COW
+    uint64 original=lab6_mappings(a);
+#endif
     for(int n=0;n<128;n++){
         lab6_fail_after=n;
         long pid=proc_fork();
@@ -157,13 +207,26 @@ static void lab6_probe(void)
             assert(user_heap_free(b,0x3000,1)==0,"child list mutation");
             assert(sv39_lookup(a->pgtbl,0x3000,NULL,NULL),"parent lost mapping");
             proc_destroy(b);points=n;
-        }else assert(pid==-12,"failure errno");
+#ifdef PTE_COW
+            assert(page_user_refs(a->code)==1 && page_user_refs(a->data)==1 &&
+                   page_user_refs(a->ustack)==1,"fixed references after release");
+#endif
+        }else {
+            assert(pid==-12,"failure errno");
+#ifdef PTE_COW
+            assert(lab6_mappings(a)==original,"failed fork changed parent PTEs or references");
+#endif
+        }
         assert(page_free_count(PAGE_ZONE_KERNEL)==k && page_free_count(PAGE_ZONE_USER)==u &&
                mmap_pool_free_count()==nodes,"fork rollback leak");
         for(unsigned i=1;i<NPROC;i++)assert(procs[i].state==PROC_UNUSED,"unpublished child leak");
         if(pid>=0)break;
     }
+#ifdef PTE_COW
+    assert(points==8,"unexpected COW fork allocation sites");
+#else
     assert(points>10,"failure injection too short");
+#endif
     unsigned holders=0;
     while(mmap_pool_free_count()){
         struct proc *h=&lab6_holders[holders++];h->owner=scheduler_owner;
@@ -185,12 +248,20 @@ static void lab6_probe(void)
     assert(page_free_count(PAGE_ZONE_KERNEL)==k && page_free_count(PAGE_ZONE_USER)==u &&
            mmap_pool_free_count()==nodes,"table lifecycle leak");
     uint8 before[4]={1,2,3,4},status[4]={9,8,7,6},after[4];
+#ifdef PTE_COW
+    assert(user_copyout(a,0x2ffe,before,4)==0,"valid copyout");
+#else
     assert(user_copyout(a->pgtbl,0x2ffe,before,4)==0,"valid copyout");
+#endif
     assert(user_copyin(a->pgtbl,after,0x2ffe,4)==0,"valid copyin");
     for(unsigned i=0;i<4;i++)assert(after[i]==before[i],"cross copyout data");
     uint8 prefix[4];
     assert(user_copyin(a->pgtbl,prefix,0x3ffc,4)==0,"prefix snapshot");
+#ifdef PTE_COW
+    assert(user_copyout(a,0x3ffe,status,4)==-14,"copyout crossed hole");
+#else
     assert(user_copyout(a->pgtbl,0x3ffe,status,4)==-1,"copyout crossed hole");
+#endif
     assert(user_copyin(a->pgtbl,after,0x3ffc,4)==0,"valid prefix");
     for(unsigned i=0;i<4;i++)assert(after[i]==prefix[i],"copyout partial write");
     assert(!user_writable(a->pgtbl,USER_BASE,4) && !user_writable(a->pgtbl,TRAPFRAME,4) &&
@@ -200,7 +271,7 @@ static void lab6_probe(void)
     user_heap_destroy(a);assert(user_heap_init(a)==0,"reset parent heap");
     memset(a->data,0,PAGE_SIZE);memset(a->ustack,0,PAGE_SIZE);
     a->state=PROC_RUNNABLE;current[scheduler_owner]=NULL;next_pid=1;
-    printf("FORK PROBE PASS: allocation points=%d slots=16 nodes=128 deep-copy/copyout/rollback\\n",points);
+    printf("FORK PROBE PASS: allocation points=%d slots=16 nodes=128 copyout/rollback\\n",points);
 }
 """
 
@@ -466,16 +537,31 @@ fault_child:
                           '    assert(initproc && !proc_current(), "scheduler init");\n    lab6_probe();')
         proc=proc.replace('static struct proc procs[NPROC];',
             'static uint64 lab6_k,lab6_u; static size_t lab6_n;\nstatic struct proc procs[NPROC];')
-        proc=proc.replace('    struct proc *child = proc_allocate();',
-            '    lab6_k=page_free_count(PAGE_ZONE_KERNEL); lab6_u=page_free_count(PAGE_ZONE_USER); lab6_n=mmap_pool_free_count();\n    struct proc *child = proc_allocate();')
+        alloc = ('    struct proc *child = proc_allocate(parent);'
+                 if 'proc_allocate(parent)' in proc else '    struct proc *child = proc_allocate();')
+        assert proc.count(alloc) == 1
+        proc=proc.replace(alloc,
+            '    lab6_k=page_free_count(PAGE_ZONE_KERNEL); lab6_u=page_free_count(PAGE_ZONE_USER); lab6_n=mmap_pool_free_count();\n' + alloc)
         proc=proc.replace('            proc_destroy(child);',
             '            proc_destroy(child);\n            assert(page_free_count(PAGE_ZONE_KERNEL)==lab6_k && page_free_count(PAGE_ZONE_USER)==lab6_u && mmap_pool_free_count()==lab6_n,"real wait leak");')
-        (ROOT/'kernel/proc/proc.c').write_text(proc+PROBE)
+        probe = PROBE
+        if 'proc_allocate(parent)' in proc:
+            from test_lab5 import HEAP_MODEL
+            base.OUT = OUT
+            model = HEAP_MODEL.replace('lab5_fail_after', 'lab6_fail_after')
+            probe = probe.replace('extern long lab6_fail_after;',
+                                  'extern long lab6_fail_after;\n' + model)
+        (ROOT/'kernel/proc/proc.c').write_text(proc+probe)
         build('probe');results['probe']=normal('probe')
         log=(OUT/'probe-serial.log').read_bytes()
         match=re.search(rb'FORK PROBE PASS: allocation points=(\d+)',log)
         assert match,log[-2000:]
         results['probe']['allocation_failure_points']=int(match[1])
+        if 'proc_allocate(parent)' in proc:
+            model = re.search(rb'HEAP MODEL PASS: failure points=(\d+) random=1024 whole=4096 nodes=128', log)
+            assert model, log[-2000:]
+            results['heap_model'] = dict(failure_points=int(model[1]), random_steps=1024,
+                                         arena_pages=4096, pool_nodes=128)
     finally:
         for n,data in saved.items():(ROOT/n).write_bytes(data)
         hashes={n:hashlib.sha256(v).hexdigest() for n,v in saved.items()}

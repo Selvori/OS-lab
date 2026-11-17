@@ -16,9 +16,7 @@ def normal(label):
     result['heap_cycles'] = 256
     return result
 
-PROBE = r"""
-extern long lab5_fail_after;
-extern struct proc *lab5_test_first(void);
+HEAP_MODEL = r"""
 static struct proc dummy[N_MMAP];
 static bool live[USER_HEAP_PAGES];
 static uint64 random_state = 0x15926;
@@ -64,21 +62,9 @@ static void mark_pages(struct proc *p, unsigned start, unsigned count)
         live[i] = true;
     }
 }
-static void lab5_probe(void)
+
+static unsigned lab5_model(struct proc *p)
 {
-    uint64 k0 = page_free_count(PAGE_ZONE_KERNEL), u0 = page_free_count(PAGE_ZONE_USER);
-    /* No metadata: process creation must unwind all already allocated frames/tables. */
-    for (unsigned i = 0; i < N_MMAP; ++i) {
-        dummy[i].owner = arch_cpu_id();
-        assert(user_heap_init(&dummy[i]) == 0, "reserve global nodes");
-    }
-    assert(mmap_pool_free_count() == 0 && proc_make_first() == -1, "init node exhaustion");
-    assert(page_free_count(PAGE_ZONE_KERNEL) == k0 && page_free_count(PAGE_ZONE_USER) == u0,
-           "init node failure leak");
-    for (unsigned i = 0; i < N_MMAP; ++i) user_heap_destroy(&dummy[i]);
-    assert(mmap_pool_free_count() == N_MMAP, "init nodes restore");
-    assert(proc_make_first() == 0, "probe process create");
-    struct proc *p = lab5_test_first();
     uint64 k = page_free_count(PAGE_ZONE_KERNEL), u = page_free_count(PAGE_ZONE_USER);
     /* Force failure at each frame/table allocation in two three-page requests.
      * The second starts just before a 2 MiB boundary. List edits stay unpublished. */
@@ -121,7 +107,10 @@ static void lab5_probe(void)
      * free may change the real process; merging needs no additional node. */
     assert(user_heap_alloc(p, USER_HEAP_START + 4*PAGE_SIZE, 3) >= 0, "pool setup");
     unsigned held = (unsigned)mmap_pool_free_count();
-    for (unsigned i=0; i<held; ++i) assert(user_heap_init(&dummy[i]) == 0, "hold node");
+    for (unsigned i=0; i<held; ++i) {
+        dummy[i].owner = p->owner;
+        assert(user_heap_init(&dummy[i]) == 0, "hold node");
+    }
     uint64 k1=page_free_count(PAGE_ZONE_KERNEL), u1=page_free_count(PAGE_ZONE_USER);
     assert(user_heap_alloc(p, USER_HEAP_START + PAGE_SIZE, 1) == -12, "split node exhaustion");
     assert(user_heap_free(p, USER_HEAP_START + 5*PAGE_SIZE, 1) == -12, "free node exhaustion");
@@ -172,6 +161,30 @@ static void lab5_probe(void)
            user_heap_alloc(p,0,(size_t)-1)==-22 && user_heap_alloc(p,USER_HEAP_END,1)==-22 &&
            user_heap_free(p,USER_BASE,1)==-22 && user_heap_free(p,USER_HEAP_START,(size_t)-1)==-22,
            "range validation");
+    return failures;
+}
+"""
+
+PROBE = r"""
+extern long lab5_fail_after;
+extern struct proc *lab5_test_first(void);
+""" + HEAP_MODEL + r"""
+static void lab5_probe(void)
+{
+    uint64 k0 = page_free_count(PAGE_ZONE_KERNEL), u0 = page_free_count(PAGE_ZONE_USER);
+    /* No metadata: process creation must unwind all already allocated frames/tables. */
+    for (unsigned i = 0; i < N_MMAP; ++i) {
+        dummy[i].owner = arch_cpu_id();
+        assert(user_heap_init(&dummy[i]) == 0, "reserve global nodes");
+    }
+    assert(mmap_pool_free_count() == 0 && proc_make_first() == -1, "init node exhaustion");
+    assert(page_free_count(PAGE_ZONE_KERNEL) == k0 && page_free_count(PAGE_ZONE_USER) == u0,
+           "init node failure leak");
+    for (unsigned i = 0; i < N_MMAP; ++i) user_heap_destroy(&dummy[i]);
+    assert(mmap_pool_free_count() == N_MMAP, "init nodes restore");
+    assert(proc_make_first() == 0, "probe process create");
+    struct proc *p = lab5_test_first();
+    unsigned failures = lab5_model(p);
     proc_destroy();
     assert(page_free_count(PAGE_ZONE_KERNEL)==k0 && page_free_count(PAGE_ZONE_USER)==u0 &&
            mmap_pool_free_count()==N_MMAP,"live heap exit leak");
