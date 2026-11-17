@@ -1,0 +1,50 @@
+riscv64-linux-gnu-gcc -Iinclude -I. -Iarch/riscv64/include -Iplatform/qemu-virt -std=gnu11 -O2 -g -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-stack-protector -fno-pie -mcmodel=medany -mno-relax -march=rv64gc -mabi=lp64d -MMD -MP -c kernel/main.c -o build/riscv64-qemu-virt-sbi/kernel/main.o
+riscv64-linux-gnu-gcc -std=gnu11 -O2 -g -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-stack-protector -fno-pie -mcmodel=medany -mno-relax -march=rv64gc -mabi=lp64d -MMD -MP -nostdlib -static -Wl,--build-id=none,--no-relax,-T,build/riscv64-qemu-virt-sbi/kernel.ld build/riscv64-qemu-virt-sbi/kernel/main.o build/riscv64-qemu-virt-sbi/kernel/lib/console.o build/riscv64-qemu-virt-sbi/kernel/lib/print.o build/riscv64-qemu-virt-sbi/kernel/lib/string.o build/riscv64-qemu-virt-sbi/kernel/lock/spinlock.o build/riscv64-qemu-virt-sbi/kernel/mm/page.o build/riscv64-qemu-virt-sbi/kernel/mm/vm.o build/riscv64-qemu-virt-sbi/kernel/mm/user.o build/riscv64-qemu-virt-sbi/kernel/mm/heap.o build/riscv64-qemu-virt-sbi/kernel/proc/proc.o build/riscv64-qemu-virt-sbi/kernel/proc/syscall.o build/riscv64-qemu-virt-sbi/kernel/fs/block.o build/riscv64-qemu-virt-sbi/kernel/fs/fs.o build/riscv64-qemu-virt-sbi/drivers/block/virtio.o build/riscv64-qemu-virt-sbi/arch/riscv64/boot/start.o build/riscv64-qemu-virt-sbi/arch/riscv64/boot/sbi.o build/riscv64-qemu-virt-sbi/arch/riscv64/cpu.o build/riscv64-qemu-virt-sbi/arch/riscv64/mm/sv39.o build/riscv64-qemu-virt-sbi/arch/riscv64/trap.o build/riscv64-qemu-virt-sbi/arch/riscv64/timer.o build/riscv64-qemu-virt-sbi/arch/riscv64/user_trap.o build/riscv64-qemu-virt-sbi/drivers/serial/uart16550.o build/riscv64-qemu-virt-sbi/drivers/irq/plic.o build/riscv64-qemu-virt-sbi/arch/riscv64/boot/entry.o build/riscv64-qemu-virt-sbi/arch/riscv64/early_trap.o build/riscv64-qemu-virt-sbi/arch/riscv64/kernel_vector.o build/riscv64-qemu-virt-sbi/arch/riscv64/trampoline.o build/riscv64-qemu-virt-sbi/arch/riscv64/switch.o build/riscv64-qemu-virt-sbi/arch/riscv64/user_image.o -lgcc -o build/riscv64-qemu-virt-sbi/kernel.elf
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/lab8-checks/persistent.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/riscv64-qemu-virt-sbi/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x0000000080217000-0x0000000082191000, 8058 free pages
+memory: user   0x0000000082191000-0x0000000088000000, 24175 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+LAB8 CASE 2 PASS
+cpu 1 enabled Sv39 with root 0x0000000080217000
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+cpu 0 enabled Sv39 with root 0x0000000080217000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+scheduler ready: init pid=0, slots=16, owner cpu=1
+HEAP cross-page write OK
+HEAP PASS: zero, split, merge, reuse, errors, 256 cycles
+Hello from Seele U-mode, pid 0!
+USER WAIT: timer and UART active
+USER PASS: 4096 round trips, registers, stack, data, errors, timer
+FORK/WAIT PASS: independent data, stack, heap, status, errors
+SLEEP PASS: deadline and idle wakeup
+CPU child: begin loop without syscalls
+PREEMPT PASS: parent ran while CPU child busy
+CPU child: registers and loop result preserved
+LIFECYCLE PASS: 32 fork/wait cycles
+LAB6 PASS: init pid 0 remains alive

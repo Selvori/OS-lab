@@ -1,0 +1,16 @@
+FIT description: OSLab
+Created:         Tue Nov 17 12:37:51 2026
+ Image 0 (kernel)
+  Description:  kernel
+  Created:      Tue Nov 17 12:37:51 2026
+  Type:         Kernel Image
+  Compression:  uncompressed
+  Data Size:    29204 Bytes = 28.52 KiB = 0.03 MiB
+  Architecture: RISC-V
+  OS:           Linux
+  Load Address: 0x40200000
+  Entry Point:  0x40200000
+ Default Configuration: 'conf'
+ Configuration 0 (conf)
+  Description:  unavailable
+  Kernel:       kernel

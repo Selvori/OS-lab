@@ -1,0 +1,11 @@
+{
+  "cross_sector": true,
+  "file_bytes": 6144,
+  "restart": true,
+  "short_write_bytes": 5120,
+  "allocated_inodes": 127,
+  "bitmap_verified": true,
+  "malformed_image_unchanged": true,
+  "uart_bytes_per_run": 5777,
+  "main_sha256": "0acebc0bf665ed82a99e283b19641fb08ff6e9cb848b23936d029a7647ae81ca"
+}

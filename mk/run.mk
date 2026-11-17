@@ -1,14 +1,14 @@
 QEMU := qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic
 .PHONY: run debug
 ifeq ($(PLATFORM),qemu-virt)
-DISK ?= $(BUILD)/disk.img
+DISK ?= $(BUILD)/seele-fs.img
 DISK_FLAGS := -global virtio-mmio.force-legacy=false \
 	-drive file=$(DISK),if=none,format=raw,id=seele-disk \
 	-device virtio-blk-device,drive=seele-disk
 
-$(BUILD)/disk.img:
+$(BUILD)/seele-fs.img:
 	@mkdir -p $(@D)
-	truncate -s 4M $@
+	python3 tools/mkfs.py $@
 
 run: build $(DISK)
 	$(QEMU) $(DISK_FLAGS) -kernel $(BUILD)/kernel.elf

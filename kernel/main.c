@@ -1,6 +1,7 @@
 #include <kernel/arch.h>
 #include <kernel/page.h>
 #include <kernel/block.h>
+#include <kernel/fs.h>
 #include <kernel/proc.h>
 #include <kernel/print.h>
 #include <kernel/vm.h>
@@ -39,6 +40,11 @@ void main(void)
         trap_kernel_inithart();
         block_init();
         printf("block: %d MiB available\n", (int)(block_capacity() / 2048));
+        int fs_result = fs_mount();
+        if (fs_result == 0)
+            printf("SeeleFS: mounted root inode %d\n", (int)FS_ROOT);
+        else
+            printf("SeeleFS: unavailable (%d)\n", fs_result);
         plic_init();
         uart_rx_intr_enable(UART_BASE, UART_SHIFT);
         printf("cpu %d enabled Sv39 with root %p\n", cpuid,
