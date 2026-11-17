@@ -1,5 +1,6 @@
 #include <kernel/arch.h>
 #include <kernel/page.h>
+#include <kernel/block.h>
 #include <kernel/proc.h>
 #include <kernel/print.h>
 #include <kernel/vm.h>
@@ -36,6 +37,8 @@ void main(void)
         kernel_vm_init();
         kernel_vm_activate();
         trap_kernel_inithart();
+        block_init();
+        printf("block: %d MiB available\n", (int)(block_capacity() / 2048));
         plic_init();
         uart_rx_intr_enable(UART_BASE, UART_SHIFT);
         printf("cpu %d enabled Sv39 with root %p\n", cpuid,
