@@ -1,0 +1,143 @@
+{
+  "failures": [],
+  "guest": {
+    "repetitions": 8,
+    "cases": [
+      "tree, first split, sole upgrade, partial unmap",
+      "cross-page wait/read, bad address, second allocation rollback",
+      "store OOM, three exec allocation failures, RX protection",
+      "sparse cross-table, failed fork, shared frames"
+    ],
+    "expected_store_faults": 16,
+    "page_and_object_balances_checked": true
+  },
+  "lab6": {
+    "normal": {
+      "init_pid": 0,
+      "heap_cycles": 256,
+      "register_roundtrips": 4096,
+      "fork_wait_cycles": 32,
+      "cpu_iterations": 200000000,
+      "parent_progress_before_cpu_exit": true,
+      "uart_bytes": 5777,
+      "owner_only_uart": false
+    },
+    "extended": {
+      "owner_uart": {
+        "init_pid": 0,
+        "heap_cycles": 256,
+        "register_roundtrips": 4096,
+        "fork_wait_cycles": 32,
+        "cpu_iterations": 200000000,
+        "parent_progress_before_cpu_exit": true,
+        "uart_bytes": 5777,
+        "owner_only_uart": true
+      },
+      "early-exit": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "orphan-False": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "orphan-True": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fork-tree": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "sleep-boundary": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "slots": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "async-registers": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fault-null": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fault-text": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fault-heap-nx": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fault-after-unmap": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "fault-supervisor": {
+        "passed": true,
+        "uart_bytes": 5777
+      },
+      "probe": {
+        "init_pid": 0,
+        "heap_cycles": 256,
+        "register_roundtrips": 4096,
+        "fork_wait_cycles": 32,
+        "cpu_iterations": 200000000,
+        "parent_progress_before_cpu_exit": true,
+        "uart_bytes": 5777,
+        "owner_only_uart": false,
+        "allocation_failure_points": 8
+      },
+      "heap_model": {
+        "failure_points": 8,
+        "random_steps": 1024,
+        "arena_pages": 4096,
+        "pool_nodes": 128
+      }
+    },
+    "final": {
+      "init_pid": 0,
+      "heap_cycles": 256,
+      "register_roundtrips": 4096,
+      "fork_wait_cycles": 32,
+      "cpu_iterations": 200000000,
+      "parent_progress_before_cpu_exit": true,
+      "uart_bytes": 5777,
+      "owner_only_uart": false
+    }
+  },
+  "source_hashes_restored": true,
+  "lab9": {
+    "shell": true,
+    "disk_backed_executable": true,
+    "argv_quotes": true,
+    "descriptor_limit": 16,
+    "open_description_limit": 48,
+    "shared_offset_fork_dup": true,
+    "child_exit_releases_files": true,
+    "failed_exec_preserves_memory": true,
+    "exec_inherits_files_cwd": true,
+    "exec_replaces_heap": true,
+    "persisted_binary_bytes": 520,
+    "bitmap_verified": true,
+    "lab6_fallback": {
+      "init_pid": 0,
+      "heap_cycles": 256,
+      "register_roundtrips": 4096,
+      "fork_wait_cycles": 32,
+      "cpu_iterations": 200000000,
+      "parent_progress_before_cpu_exit": true,
+      "uart_bytes": 5777,
+      "owner_only_uart": false
+    }
+  },
+  "formal_entries": [
+    "0x80200000",
+    "0x40200000"
+  ],
+  "vf2_fit": true
+}

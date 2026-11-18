@@ -16,7 +16,16 @@ def load(path):
         key = tuple(case[name] for name in ("pages", "writes", "stride", "job"))
         samples = case["samples"]
         rows = [row for sample in samples for row in sample["rounds"]]
-        assert len(rows) == result["runs"] * result["batches"]
+        assert len(samples) == result["batches"]
+        assert all(len(batch["rounds"]) == result["runs"] for batch in samples)
+        if result.get("schema_version") == 2:
+            assert len(case["warmup"]["rounds"]) == result["warmup_runs"]
+            for batch in [case["warmup"], *samples]:
+                by_phase = batch["last_round_tables"]
+                assert set(by_phase) == {"reap", "exec"}
+                assert all(len(counts) == 9 for counts in by_phase.values())
+                assert sum(sum(counts) for counts in by_phase.values()) == batch["rounds"][-1]["leaf_checks"]
+        assert case["mode"] not in cases.get(key, {})
         balance = ("user_left", "kernel_left", "nodes_left", "slots_used", "files_used")
         assert len({tuple(row[field] for field in balance) for row in rows}) == 1
         if case["mode"] == "counts":
@@ -32,7 +41,14 @@ def load(path):
                  elapsed[math.ceil(0.90 * len(elapsed)) - 1]]
         times.extend(median(row[name] for row in rows) for name in ("fork_time", "reap_time"))
         times.extend(median(sample[name] for sample in samples) for name in ("init", "batch"))
-        cases.setdefault(key, {})["time"] = [value / scale for value in times]
+        target = cases.setdefault(key, {})
+        target["time"] = [value / scale for value in times]
+        if result.get("schema_version") == 2:
+            target["phases"] = {
+                name: median(row[name] for row in rows) / scale
+                for name in ("wait_sleep_time", "exec_heap_time")
+            }
+    assert all("time" in c and "counts" in c for c in cases.values()), path
     return cases
 
 

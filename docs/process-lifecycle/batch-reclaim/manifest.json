@@ -1,0 +1,129 @@
+{
+  "schema_version": 2,
+  "configuration": {
+    "suite": "warm",
+    "runs": 12,
+    "batches": 3,
+    "warmup_runs": 2,
+    "qemu": "QEMU emulator version 5.1.0",
+    "compiler": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+    "host": "Linux 6.8.0-138-generic x86_64 GNU/Linux",
+    "timebase_hz": 10000000,
+    "kernel_flags": "-std=gnu11 -O2 -g -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-stack-protector -fno-pie -mcmodel=medany -mno-relax -march=rv64gc -mabi=lp64d -MMD -MP",
+    "platform": "QEMU virt, OpenSBI default, 128 MiB, 2 harts"
+  },
+  "runs": [
+    {
+      "variant": "standard-cow",
+      "commit": "db3d44faab559820de3b4023e1cd8121a16f9a9f",
+      "artifacts": {
+        "time": {
+          "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+          "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+          "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+          "kernel.elf": "51be0c4e12feff6df33bdfd2f1082ce1106002daae658bd2bffeb9bb30645143"
+        },
+        "counts": {
+          "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+          "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+          "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+          "kernel.elf": "a5ab0d63f04d8388f3aaf1f9095392e5125a3a3356f48c7714b15d1bd31ea674"
+        }
+      },
+      "failures": [],
+      "raw_sha256": "6b86194ffc28b0bd566161c4562feb88a73357efcc1c1f0f1cb37341761e4f81"
+    },
+    {
+      "variant": "batch-unmap",
+      "commit": "15dd3f160c6fa2f240ae4b639c9fb7146806dc48",
+      "artifacts": {
+        "time": {
+          "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+          "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+          "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+          "kernel.elf": "9ae0c470dfca65c809280130e32923e7535926bb7d5049bad90043874dc4808e"
+        },
+        "counts": {
+          "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+          "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+          "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+          "kernel.elf": "2c12dbc10bc330fa695206d4dfe5ca122f3b2107cf6db7008aa3f24f73f20f52"
+        }
+      },
+      "failures": [],
+      "raw_sha256": "d20238bf51bdc21ba7dc8ab09ac2fa3d2b9e8defbdbe498e67eef8819ee131d3"
+    }
+  ],
+  "scenario_matrix": [
+    {
+      "pages": 16,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 16,
+      "writes": 4,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 16,
+      "writes": 16,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 256,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 256,
+      "writes": 4,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 256,
+      "writes": 256,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 2048,
+      "writes": 4,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 2048,
+      "writes": 2048,
+      "stride": 1,
+      "job": "fork"
+    },
+    {
+      "pages": 2048,
+      "writes": 4,
+      "stride": 512,
+      "job": "fork"
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "exec"
+    }
+  ],
+  "time_read_medians": {
+    "standard-cow": 0.0,
+    "batch-unmap": 0.0
+  }
+}

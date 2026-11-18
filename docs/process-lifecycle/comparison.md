@@ -80,7 +80,7 @@
 ~~~sh
 git switch --detach aaf1420
 python3 tools/bench_lifecycle.py --suite warm --output build/process-lifecycle/deep-warm.json
-git switch research/process-lifecycle
+git switch --detach 14ec33c
 python3 tools/bench_lifecycle.py --suite warm --output build/process-lifecycle/cow-warm.json
 python3 tools/compare_lifecycle.py build/process-lifecycle/deep-warm.json build/process-lifecycle/cow-warm.json
 python3 tools/test_lifecycle.py
