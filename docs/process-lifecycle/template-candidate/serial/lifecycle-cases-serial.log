@@ -1,0 +1,102 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/template-final-regression/check-5udr2oby/check.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/lifecycle-check/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x0000000080229000-0x000000008219e000, 8053 free pages
+memory: user   0x000000008219e000-0x0000000088000000, 24162 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 1 enabled Sv39 with root 0x0000000080229000
+cpu 1 SBI timer ready: 100 Hz
+cpu 0 enabled Sv39 with root 0x0000000080229000
+cpu 1 UART external interrupt route ready
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=1
+Seele shell. Type help for commands.
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=7 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=9 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=17 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=19 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=27 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=29 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=37 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=39 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=47 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=49 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=57 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=59 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=67 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=69 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ lifetest
+LIFE CASE tree, first split, sole upgrade, partial unmap
+LIFE CASE cross-page wait/read, bad address, second allocation rollback
+USER FAULT pid=77 scause=0x000000000000000f epc=0x0000000000001a44 stval=0x0000000000003000
+USER FAULT pid=79 scause=0x000000000000000f epc=0x0000000000001ba0 stval=0x0000000000001000
+LIFE CASE store OOM, three exec allocation failures, RX protection
+LIFE CASE sparse cross-table, failed fork, shared frames
+LIFE CHECK PASS
+seele$ QEMU: Terminated
