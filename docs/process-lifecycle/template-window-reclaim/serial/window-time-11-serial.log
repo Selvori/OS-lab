@@ -1,0 +1,64 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/window-final/tmp2osq64cr/guest-11.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/window-time/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 0
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 0 is booting!
+memory: kernel 0x0000000080229000-0x000000008219e000, 8053 free pages
+memory: user   0x000000008219e000-0x0000000088000000, 24162 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 0 enabled Sv39 with root 0x0000000080229000
+cpu 1 enabled Sv39 with root 0x0000000080229000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=0
+Seele shell. Type help for commands.
+seele$ tbench 3 2048 4 512 2 f
+TB 26068 6617 6366 1907 3217 0 0 0 0 0 0 0 0 1982 2 9938 2754
+seele$ tbench 2 2048 4 512 2 f
+TB 17602 5717 5509 1077 1519 0 0 0 0 0 0 0 0 254 2 3525 2444
+seele$ tbench 3 2048 4 512 64 f
+TB 184094 5630 5705 30764 47396 0 0 0 0 0 0 0 0 7012 64 3680 2599 2537 2563 2675 2577 2919 2597 2523 2590 2520 2543 2679 2581 2939 2913 3212 2915 2721 2851 2752 2642 2511 2463 2473 2772 2619 3186 2871 2654 2552 2583 2621 2675 2861 2588 2660 2531 2515 2503 2610 2721 2555 2512 2995 2557 2519 2539 3513 2622 2556 2692 2665 2599 2525 3078 2646 2529 2508 2559 2594 2523 2738 2621
+seele$ tbench 2 2048 4 512 64 f
+TB 181979 6231 5516 32518 46460 0 0 0 0 0 0 0 0 7163 64 3770 2615 2514 3269 2814 2579 3014 2671 2609 2836 3232 2902 2604 2527 2590 2612 3043 2589 2807 2616 2531 2506 2565 2690 2558 2533 2567 2515 2514 2516 2680 2662 2542 2534 2557 2552 2505 2506 2640 2649 2530 2511 2547 2563 2839 2536 2688 2660 2518 2545 2505 2504 2564 2765 2593 2525 2595 2546 2509 2493 2539 2876 2597 2560
+seele$ wpin 2
+WP 0 2049 19 0 0
+WP 508 2557 19 0 0
+WP 509 2049 19 0 0
+WP 2047 2051 23 0 0
+WP 2048 2049 23 0 0
+WE 15606 16176 14784 14871 501
+WT 1337 0 0 59188 15526 0 0 24156 24156 7938 7938 126 126 2 2 0 0
+WP PASS
+seele$ wpin 1
+WP 0 2049 19 0 0
+WP 508 2557 19 0 0
+WP 509 2558 19 0 0
+WP 2047 4096 23 0 0
+WP 2048 4097 23 0 0
+WE 286 194 209 195 784
+WT 167 0 0 0 0 0 0 24156 24156 7938 7938 126 126 2 2 0 0
+WP PASS
+seele$ QEMU: Terminated

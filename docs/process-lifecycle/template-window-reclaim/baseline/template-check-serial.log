@@ -1,0 +1,69 @@
+qemu-system-riscv64 -machine virt -bios default -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/window-baseline/tmpv6sf2160/guest.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/template-check/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x0000000080229000-0x000000008219e000, 8053 free pages
+memory: user   0x000000008219e000-0x0000000088000000, 24162 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 1 enabled Sv39 with root 0x0000000080229000
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+cpu 0 enabled Sv39 with root 0x0000000080229000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=1
+Seele shell. Type help for commands.
+seele$ tcheck
+USER FAULT pid=10 scause=0x000000000000000f epc=0x00000000000012c2 stval=0x0000000000001000
+USER FAULT pid=11 scause=0x000000000000000f epc=0x0000000000001310 stval=0x00000000003ff000
+USER FAULT pid=14 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000a77000
+USER FAULT pid=15 scause=0x000000000000000f epc=0x000000000000132a stval=0x00000000009a5000
+USER FAULT pid=16 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000911000
+USER FAULT pid=17 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000995000
+USER FAULT pid=18 scause=0x000000000000000f epc=0x000000000000132a stval=0x00000000009b5000
+USER FAULT pid=19 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000923000
+USER FAULT pid=20 scause=0x000000000000000f epc=0x000000000000132a stval=0x00000000008f6000
+USER FAULT pid=13 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000be3000
+USER FAULT pid=30 scause=0x000000000000000f epc=0x00000000000012c2 stval=0x0000000000001000
+USER FAULT pid=31 scause=0x000000000000000f epc=0x0000000000001310 stval=0x00000000003ff000
+USER FAULT pid=35 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000993000
+USER FAULT pid=36 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000a1f000
+USER FAULT pid=37 scause=0x000000000000000f epc=0x000000000000132a stval=0x00000000009ec000
+USER FAULT pid=38 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000793000
+USER FAULT pid=39 scause=0x000000000000000f epc=0x000000000000132a stval=0x000000000079e000
+USER FAULT pid=40 scause=0x000000000000000f epc=0x000000000000132a stval=0x00000000009a1000
+USER FAULT pid=33 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000c2f000
+USER FAULT pid=34 scause=0x000000000000000f epc=0x000000000000132a stval=0x0000000000bd4000
+TC PASS
+seele$ tpin 0
+PIN 2048 11
+PIN PASS
+seele$ tpin 1
+PIN 4096 23
+PIN PASS
+seele$ tpin 2
+PIN 4096 23
+PIN PASS
+seele$ QEMU: Terminated

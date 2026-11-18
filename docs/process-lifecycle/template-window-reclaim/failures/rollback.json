@@ -1,0 +1,32 @@
+{
+  "commit": "c034ec292b344fadf29d8af8e861c6360020ed8b",
+  "source_clean": false,
+  "qemu": "QEMU emulator version 5.1.0",
+  "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+  "timebase_hz": 10000000,
+  "artifacts": {
+    "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+    "wcheck": "39c5d2204837a6a5e035e1113f7169f1e55d447409f3019bd9455ad1f9202fd0",
+    "tcheck": "d2886cc74c81426882780260b191f03cf6558a530d9ae08e0e63d9b42d2fc235",
+    "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+    "kernel": "b7a35b4344f98e438dd93c01a49be99d407ddccaa6169107c418074fa8ed5e3e"
+  },
+  "boots": [
+    {
+      "index": 0,
+      "policy_order": [
+        2,
+        3
+      ],
+      "warmup": [],
+      "primary": [],
+      "memory": []
+    }
+  ],
+  "failures": [
+    {
+      "boot": 0,
+      "error": "AssertionError('tcheck\\r\\nUSER FAULT pid=10 scause=0x000000000000000f epc=0x0000000000001254 stval=0x0000000000001000\\r\\nUSER FAULT pid=11 scause=0x000000000000000f epc=0x00000000000012b6 stval=0x00000000003ff000\\r\\nUSER FAULT pid=17 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000ab3000\\r\\nUSER FAULT pid=18 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000730000\\r\\nUSER FAULT pid=19 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x000000000089b000\\r\\nUSER FAULT pid=20 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000923000\\r\\nUSER FAULT pid=13 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x000000000093c000\\r\\nUSER FAULT pid=15 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000b8a000\\r\\nUSER FAULT pid=16 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000b64000\\r\\nUSER FAULT pid=14 scause=0x000000000000000f epc=0x00000000000012d0 stval=0x0000000000aa8000\\r\\ntcheck: error -81\\r\\nseele$ ')"
+    }
+  ]
+}

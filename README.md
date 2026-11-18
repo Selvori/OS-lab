@@ -14,3 +14,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [Sv39 模板所有权协议、可执行模型和基准](docs/process-lifecycle/template-ownership/README.md)
 
 [候选模板内核原型及三路对照](docs/process-lifecycle/template-candidate/README.md) 已在独立研究分支验证。普通 fork 保留批量 COW；模板操作通过显式系统调用使用。
+
+[关闭模板后的窗口提前回收](docs/process-lifecycle/template-window-reclaim/README.md) 提供独立策略 `freeze(2)`。它在最后一个分支放弃某个 2 MiB 窗口里的全部借用后归还模板的原始堆帧引用。QEMU 的 8 MiB 长寿分支少占 2048 个用户页，大窗口末次写增加同步释放开销。

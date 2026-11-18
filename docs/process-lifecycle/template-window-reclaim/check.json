@@ -1,0 +1,34 @@
+{
+  "commit": "7bfead210d708d31cc1379f3c0ed6a77f4c77c7e",
+  "source_clean": true,
+  "qemu": "QEMU emulator version 5.1.0",
+  "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+  "timebase_hz": 10000000,
+  "artifacts": {
+    "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+    "wcheck": "39c5d2204837a6a5e035e1113f7169f1e55d447409f3019bd9455ad1f9202fd0",
+    "tcheck": "ae65a4189753ccbc89c3ccbcbbd4697b2108c4e4c4a884b57aacb5c9c3fb2acf",
+    "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+    "kernel": "b7a35b4344f98e438dd93c01a49be99d407ddccaa6169107c418074fa8ed5e3e"
+  },
+  "boots": [
+    {
+      "index": 0,
+      "policy_order": [
+        2,
+        3
+      ],
+      "warmup": [],
+      "primary": [],
+      "memory": [],
+      "checks": [
+        "write-then-close/disjoint/exec",
+        "close-then-write/disjoint/wait",
+        "creator-refs/holes/remap",
+        "close-immediate",
+        "PASS"
+      ]
+    }
+  ],
+  "failures": []
+}
