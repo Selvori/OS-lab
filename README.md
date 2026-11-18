@@ -10,3 +10,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 ~~~
 
 [批量回收报告与复跑](docs/process-lifecycle/batch-reclaim/README.md) · [深拷贝与标准 COW 比较](docs/process-lifecycle/comparison.md) · [研究过程及验收](docs/process-lifecycle/README.md) · [资源所有权](docs/process-lifecycle/ownership.md) · [Lab 9 功能与板端用法](docs/lab-9-baseline.md)
+
+[Sv39 模板所有权协议、可执行模型和基准](docs/process-lifecycle/template-ownership/README.md)

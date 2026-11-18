@@ -1,0 +1,103 @@
+{
+  "heap_operation_counts": {
+    "table_refs": {
+      "aligned_readonly": {
+        "eviction_drops": 2048
+      },
+      "cluster4": {
+        "borrow_drop": 4,
+        "borrow_retain": 509,
+        "eviction_drops": 2048,
+        "exit_slots_read": 512,
+        "pte_slots_copied": 512
+      },
+      "full": {
+        "borrow_drop": 2048,
+        "borrow_retain": 2048,
+        "eviction_drops": 2048,
+        "exit_slots_read": 2560,
+        "pte_slots_copied": 2560
+      },
+      "readonly": {
+        "borrow_retain": 509,
+        "eviction_drops": 2048,
+        "exit_slots_read": 512,
+        "pte_slots_copied": 512
+      },
+      "spread4": {
+        "borrow_drop": 4,
+        "borrow_retain": 2045,
+        "eviction_drops": 2048,
+        "exit_slots_read": 2048,
+        "pte_slots_copied": 2048
+      }
+    },
+    "template_owner": {
+      "aligned_readonly": {
+        "eviction_drops": 2048
+      },
+      "cluster4": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 4,
+        "pte_slots_copied": 512
+      },
+      "full": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 2048,
+        "pte_slots_copied": 2560
+      },
+      "readonly": {
+        "eviction_drops": 2048,
+        "pte_slots_copied": 512
+      },
+      "spread4": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 4,
+        "pte_slots_copied": 2048
+      }
+    }
+  },
+  "repeated_one_write": {
+    "table_refs": {
+      "1": {
+        "borrow_drop": 1,
+        "borrow_retain": 1021,
+        "eviction_drops": 2048,
+        "exit_slots_read": 1024,
+        "pte_slots_copied": 1024
+      },
+      "8": {
+        "borrow_drop": 8,
+        "borrow_retain": 8168,
+        "eviction_drops": 2048,
+        "exit_slots_read": 8192,
+        "pte_slots_copied": 8192
+      },
+      "64": {
+        "borrow_drop": 64,
+        "borrow_retain": 65344,
+        "eviction_drops": 2048,
+        "exit_slots_read": 65536,
+        "pte_slots_copied": 65536
+      }
+    },
+    "template_owner": {
+      "1": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 1,
+        "pte_slots_copied": 1024
+      },
+      "8": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 8,
+        "pte_slots_copied": 8192
+      },
+      "64": {
+        "eviction_drops": 2048,
+        "exit_owned_drops": 64,
+        "pte_slots_copied": 65536
+      }
+    }
+  },
+  "seeds_per_policy": 128
+}
