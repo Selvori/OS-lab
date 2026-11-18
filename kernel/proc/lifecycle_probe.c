@@ -28,11 +28,13 @@ void lifecycle_heap_check(uintptr_t va, unsigned level)
     ++lifecycle_sample.leaf_checks;
 }
 
-static uint64 last_page_event, extra_pages;
+static uint64 last_page_event;
+static int64_t extra_pages;
 static void account_residency(void)
 {
     uint64 now = lifecycle_time();
-    template_stats.resident_page_ticks += (now - last_page_event) * extra_pages;
+    if (extra_pages > 0)
+        template_stats.resident_page_ticks += (now - last_page_event) * (uint64)extra_pages;
     last_page_event = now;
 }
 

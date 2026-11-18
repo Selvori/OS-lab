@@ -37,7 +37,8 @@ def collect(out, mode, smoke):
     subprocess.run(["make","-s","-j4",qemu.CONFIG,f"BUILD={directory}",
                     f"LIFECYCLE={mode}","build",*map(str,apps.values())],check=True)
     artifacts = dict(apps,kernel=directory/"kernel.elf")
-    data = dict(artifacts={k:hashlib.sha256(v.read_bytes()).hexdigest()
+    data = dict(commit=subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+                timebase_hz=10_000_000, artifacts={k:hashlib.sha256(v.read_bytes()).hexdigest()
                            for k,v in artifacts.items()}, samples=[],warmups=[])
     with tempfile.TemporaryDirectory(dir=out) as tmp:
         image = Path(tmp).resolve()/"guest.img"
@@ -78,6 +79,23 @@ def collect(out, mode, smoke):
         finally:
             vm.close()
             (out/(mode+".json")).write_text(json.dumps(data,separators=(",",":"))+"\n")
+        if mode=="time" and not smoke:
+            # A new guest per pair controls persistent allocator and scheduling state.
+            data["boot_pairs"]=[]
+            for rep in range(12):
+                vm=qemu.Machine(f"pair-{rep:02d}")
+                try:
+                    vm.until(b"seele$ ")
+                    order=(0,1,2) if rep%2==0 else (2,1,0)
+                    for policy in order:
+                        sample(vm,PRIMARY,policy,2)
+                    for policy in order:
+                        row=sample(vm,PRIMARY,policy,64)
+                        row["pair"]=rep
+                        data["boot_pairs"].append(row)
+                finally:
+                    vm.close()
+                    (out/(mode+".json")).write_text(json.dumps(data,separators=(",",":"))+"\n")
 
 
 if __name__=="__main__":
