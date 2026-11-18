@@ -83,13 +83,64 @@ static bool writable_user_flags(uint64 flags)
            (flags & (PTE_W | PTE_COW)) != 0;
 }
 
+static bool heap_leaf(uint64 flags, uintptr_t pa)
+{
+    return writable_user_flags(flags) && !(flags & PTE_X) &&
+           pa >= page_zone_start(PAGE_ZONE_USER) &&
+           pa < page_zone_end(PAGE_ZONE_USER);
+}
+
 bool user_heap_page(pagetable_t root, uintptr_t va)
 {
     uintptr_t pa;
     uint64 flags;
-    return sv39_lookup(root, va, &pa, &flags) && writable_user_flags(flags) &&
-           !(flags & PTE_X) && pa >= page_zone_start(PAGE_ZONE_USER) &&
-           pa < page_zone_end(PAGE_ZONE_USER);
+    return sv39_lookup(root, va, &pa, &flags) && heap_leaf(flags, pa);
+}
+
+void user_vm_clear_heap(pagetable_t root, uintptr_t begin, uintptr_t end)
+{
+    assert(root && !((begin | end) & PAGE_MASK) && begin >= USER_HEAP_START &&
+           begin <= end && end <= USER_HEAP_END, "heap clear range");
+    for (uintptr_t va = begin; va < end;) {
+        uintptr_t base = va & ~(SV39_LEAF_SPAN - 1);
+        uintptr_t limit = base + SV39_LEAF_SPAN;
+        if (limit > end)
+            limit = end;
+
+        pte_t *table = sv39_walk(root, base, false);
+        if (table != NULL) {
+            unsigned first = sv39_index(0, va);
+            unsigned last = first + (limit - va) / PAGE_SIZE;
+            lifecycle_add(destroy_slots, last - first);
+            bool revoked = false;
+            for (unsigned i = first; i < last; ++i) {
+                lifecycle_add(pte_visits, 1);
+                pte_t entry = table[i];
+                if (entry == 0)
+                    continue;
+                assert((entry & PTE_V) && heap_leaf(entry, sv39_pte_to_pa(entry)),
+                       "heap leaf ownership");
+                /* Keep the frame number in an invalid PTE until the fence.
+                 * The root is inactive and only the owner can access it. */
+                table[i] = entry & ~PTE_V;
+                revoked = true;
+            }
+            if (revoked) {
+                sfence_vma();
+                for (unsigned i = first; i < last; ++i) {
+                    lifecycle_add(pte_visits, 1);
+                    pte_t entry = table[i];
+                    if (entry == 0)
+                        continue;
+                    table[i] = 0;
+                    lifecycle_heap_add(heap_leaves, 1);
+                    page_free((void *)sv39_pte_to_pa(entry));
+                }
+                sv39_prune_empty(root, va);
+            }
+        }
+        va = limit;
+    }
 }
 
 bool user_writable(pagetable_t root, uintptr_t dst, size_t count)

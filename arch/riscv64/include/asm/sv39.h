@@ -19,6 +19,7 @@ typedef pte_t *pagetable_t;
 #define PTE_FLAGS_MASK 0x3ffUL
 
 #define SV39_VPN_MASK 0x1ffUL
+#define SV39_LEAF_SPAN (PAGE_SIZE * (SV39_VPN_MASK + 1))
 #define SV39_MAX_LOW_VA (1UL << 38)
 #define SV39_MAX_PA (1UL << 56)
 #define SATP_MODE_SV39 (8UL << 60)

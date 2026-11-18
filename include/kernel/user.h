@@ -15,6 +15,9 @@ void user_replace_image(struct proc *p, void *code, void *data, void *stack);
 int user_prepare_write(struct proc *p, uintptr_t dst, size_t count);
 bool user_heap_page(pagetable_t root, uintptr_t va);
 int vm_unmappages(pagetable_t root, uintptr_t begin, size_t npages);
+/* Revoke all present heap leaves in an aligned range of an owner-private,
+ * inactive root. Holes are allowed, including in an unpublished child. */
+void user_vm_clear_heap(pagetable_t root, uintptr_t begin, uintptr_t end);
 bool user_writable(pagetable_t root, uintptr_t dst, size_t count);
 int user_copyout(struct proc *p, uintptr_t dst, const void *src, size_t count);
 int user_copyin(pagetable_t root, void *dst, uintptr_t src, size_t count);

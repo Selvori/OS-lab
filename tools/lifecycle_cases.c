@@ -211,6 +211,49 @@ static void faults_and_exec(void)
     say("LIFE CASE store OOM, three exec allocation failures, RX protection\n");
 }
 
+static void sparse_cross_table(void)
+{
+    const unsigned long addresses[] = {0x1ff000, 0x200000, 0x401000, 0x1002000};
+    unsigned n = sizeof(addresses) / sizeof(addresses[0]);
+    unsigned long frames[4];
+    for (unsigned i = 0; i < n; ++i) {
+        CHECK(call(SYS_MMAP, addresses[i], 1, 0) == (long)addresses[i]);
+        *(volatile unsigned char *)addresses[i] = 41 + i;
+        frames[i] = mapping((void *)addresses[i]).frame;
+    }
+
+    struct lifecycle_sample mapped;
+    resources(&mapped);
+    /* The third L0 allocation fails after the unpublished child mapped
+     * heap leaves in the first two tables. */
+    CHECK(call(SYS_LIFECYCLE_PROBE, PROBE_FAIL_AFTER, 8, 0) == 0);
+    CHECK(fork_process() == -12);
+    check_resources(&mapped);
+    for (unsigned i = 0; i < n; ++i) {
+        struct lifecycle_mapping m = mapping((void *)addresses[i]);
+        CHECK(m.frame == frames[i] && m.refs == 1 && (m.flags & (W | COW)) == W);
+    }
+
+    long pid = fork_process();
+    CHECK(pid >= 0);
+    if (!pid) {
+        CHECK(call(SYS_MUNMAP, 0x200000, 2, 0) == -22);
+        CHECK(*(volatile unsigned char *)0x200000 == 42);
+        *(volatile unsigned char *)0x200000 = 99;
+        finish(53);
+    }
+    int status;
+    CHECK(wait_for(&status) == pid && status == 53);
+    check_resources(&mapped);
+    for (unsigned i = 0; i < n; ++i) {
+        void *address = (void *)addresses[i];
+        struct lifecycle_mapping m = mapping(address);
+        CHECK(m.frame == frames[i] && m.refs == 1 && *(volatile unsigned char *)address == 41 + i);
+        unmap(address, 1);
+    }
+    say("LIFE CASE sparse cross-table, failed fork, shared frames\n");
+}
+
 int main(void)
 {
     struct lifecycle_sample before;
@@ -220,6 +263,8 @@ int main(void)
     copyout();
     check_resources(&before);
     faults_and_exec();
+    check_resources(&before);
+    sparse_cross_table();
     check_resources(&before);
     say("LIFE CHECK PASS\n");
     return 0;

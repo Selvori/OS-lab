@@ -16,6 +16,7 @@ CASES = (
     "tree, first split, sole upgrade, partial unmap",
     "cross-page wait/read, bad address, second allocation rollback",
     "store OOM, three exec allocation failures, RX protection",
+    "sparse cross-table, failed fork, shared frames",
 )
 ELFS = ("build/riscv64-qemu-virt-sbi/kernel.elf",
         "build/riscv64-visionfive2-uboot/kernel.elf")

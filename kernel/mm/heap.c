@@ -178,13 +178,8 @@ void user_heap_destroy(struct proc *p)
 {
     heap_context(p);
     lifecycle_heap_scope(true);
-    if (p->pgtbl) {
-        for (uintptr_t va = USER_HEAP_START; va < p->heap_top; va += PAGE_SIZE) {
-            lifecycle_add(destroy_slots, 1);
-            if (sv39_lookup(p->pgtbl, va, NULL, NULL))
-                assert(vm_unmappages(p->pgtbl, va, 1) == 0, "heap destroy");
-        }
-    }
+    if (p->pgtbl && p->heap_top != 0)
+        user_vm_clear_heap(p->pgtbl, USER_HEAP_START, p->heap_top);
     lifecycle_heap_scope(false);
     while (p->mmap) {
         mmap_region_t *next = p->mmap->next;
