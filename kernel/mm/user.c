@@ -178,8 +178,11 @@ static void install_user_frame(struct proc *p, uintptr_t va, pte_t *pte,
     }
     sfence_vma();
     if (old != frame) {
-        if (!branch_borrows(p, va)) page_free(old);
-        branch_own(p, va);
+        if (branch_borrows(p, va))
+            branch_drop_borrow(p, va);
+        else
+            page_free(old);
+        branch_map(p, va);
     }
 }
 

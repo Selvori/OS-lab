@@ -4,7 +4,7 @@ KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
 ifneq ($(filter time counts check,$(LIFECYCLE)),)
 CPPFLAGS += -DLIFECYCLE_PROBE
 KERNEL_C += kernel/proc/lifecycle_probe.c
-ifeq ($(LIFECYCLE),counts)
+ifneq ($(filter counts check,$(LIFECYCLE)),)
 CPPFLAGS += -DLIFECYCLE_COUNTS
 endif
 ifeq ($(LIFECYCLE),check)
@@ -68,6 +68,8 @@ $(BUILD)/apps/lifebench.elf: tools/lifecycle_bench.c $(APP_DEPS) include/kernel/
 
 $(BUILD)/apps/lifejob.elf: tools/lifecycle_job.c $(APP_DEPS)
 	$(compile_user_program)
+
+$(addprefix $(BUILD)/apps/,$(addsuffix .elf,tbench tcheck tpin wpin wcheck)): include/kernel/lifecycle_probe.h
 
 $(BUILD)/apps/lifetest.elf: tools/lifecycle_cases.c $(APP_DEPS) include/kernel/lifecycle_probe.h
 	$(compile_user_program)

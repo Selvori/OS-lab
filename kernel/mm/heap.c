@@ -132,7 +132,7 @@ long user_heap_alloc(struct proc *p, uintptr_t hint, size_t npages)
         return -12;
     }
     if (p->branch)
-        for (uintptr_t va = begin; va < end; va += PAGE_SIZE) branch_own(p, va);
+        for (uintptr_t va = begin; va < end; va += PAGE_SIZE) branch_map(p, va);
     if (left) {
         if (right) {
             *extra = (mmap_region_t){end, (old_end - end) / PAGE_SIZE, region->next};

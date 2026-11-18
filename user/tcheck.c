@@ -12,6 +12,12 @@ static bool equal_resources(struct lifecycle_sample *a, struct lifecycle_sample 
            a->files_used==b->files_used;
 }
 
+static bool release_counts(unsigned windows, unsigned refs)
+{
+    struct template_stats s;
+    return !PROBE(PROBE_TEMPLATE,&s) && s.released_windows==windows && s.dropped_refs==refs;
+}
+
 static int check_policy(unsigned policy, unsigned mode)
 {
     struct lifecycle_sample original, stable, after;
@@ -64,30 +70,38 @@ static int check_policy(unsigned policy, unsigned mode)
         void *cross=(void *)(base+4094);
         /* On an already-private stack, a failing second leaf allocation
          * must leave both windows and every free-list balance unchanged. */
+        unsigned sample_op=mode==5 && policy==2 ? PROBE_BALANCE : PROBE_SNAPSHOT;
         if (mode==5) {
-            CHECK(!PROBE(PROBE_SNAPSHOT,&stable));
+            /* Balance probes capture values before writing to the user stack. */
+            CHECK(!PROBE(sample_op,&stable));
+            if (policy==2) CHECK(release_counts(0,0));
+            CHECK(!PROBE(sample_op,&stable));
             for (unsigned i=0;i<2;++i) {
                 CHECK(!PROBE(PROBE_FAIL_AFTER,i));
                 CHECK(call(SYS_MUNMAP,base,2,0)==-12);
                 CHECK(*p==19 && p[4096]==27);
-                CHECK(!PROBE(PROBE_SNAPSHOT,&after) && equal_resources(&stable,&after));
+                CHECK(!PROBE(sample_op,&after) && equal_resources(&stable,&after));
+                if (policy==2) CHECK(release_counts(0,0));
             }
             for (unsigned i=0;i<3;++i) {
                 CHECK(!PROBE(PROBE_FAIL_AFTER,i));
                 CHECK(call(SYS_MMAP,base+8192,2,0)==-12);
-                CHECK(!PROBE(PROBE_SNAPSHOT,&after) && equal_resources(&stable,&after));
+                CHECK(!PROBE(sample_op,&after) && equal_resources(&stable,&after));
+                if (policy==2) CHECK(release_counts(0,0));
             }
         }
-        CHECK(!PROBE(PROBE_SNAPSHOT,&stable));
+        CHECK(!PROBE(sample_op,&stable));
         for (unsigned i=0;i<4;++i) {
             CHECK(!PROBE(PROBE_FAIL_AFTER,i));
             CHECK(read(fd,cross,4)==-12);
             CHECK(!p[4094] && p[4096]==27);
-            CHECK(!PROBE(PROBE_SNAPSHOT,&after));
+            CHECK(!PROBE(sample_op,&after));
             if (mode==5) CHECK(equal_resources(&stable,&after));
+            if (mode==5 && policy==2) CHECK(release_counts(0,0));
             /* Sibling exits can change global pool balances between syscalls. */
         }
         CHECK(read(fd,cross,4)==4 && p[4094]=='W' && p[4096]=='l');
+        if (mode==5 && policy==2) CHECK(release_counts(2,2));
         close(fd);
         unsigned char id=call(SYS_GETPID,0,0,0);
         p[0]=id;
@@ -111,6 +125,7 @@ static int check_policy(unsigned policy, unsigned mode)
     }
     unsigned n=(mode==0 || mode==4) ? 8 : 1;
     for (unsigned i=0;i<n;++i) CHECK(SPAWN()>0);
+    if (mode==5 && policy==2) CHECK(!PROBE(PROBE_START,0));
     CHECK(!RELEASE() && SPAWN()==-22);
     CHECK(*p==19 && p[4096]==27);
     CHECK(!call(SYS_MUNMAP,base,pages,0));
@@ -132,7 +147,7 @@ static int check_policy(unsigned policy, unsigned mode)
 
 int main(void)
 {
-    for (unsigned policy=0;policy<2;++policy)
+    for (unsigned policy=0;policy<3;++policy)
         for (unsigned mode=0;mode<6;++mode) {
             int result=check_policy(policy,mode);
             if (result) return result;

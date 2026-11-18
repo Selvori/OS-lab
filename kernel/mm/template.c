@@ -5,6 +5,8 @@
 #include <kernel/lifecycle_probe.h>
 #include <asm/csr.h>
 
+_Static_assert(NPROC <= 255 && HEAP_WINDOWS <= 16, "window accounting fields");
+
 _Static_assert((USER_HEAP_END - 1) / SV39_LEAF_SPAN + 1 == HEAP_WINDOWS,
                "template directory must cover the heap");
 struct branch_heap {
@@ -12,6 +14,7 @@ struct branch_heap {
     unsigned shared;
     bool mixed_heap;
     uint64 owned[HEAP_WINDOWS][8];
+    uint16_t borrowed[HEAP_WINDOWS];
 };
 _Static_assert(sizeof(struct branch_heap) <= PAGE_SIZE, "branch metadata");
 
@@ -125,7 +128,91 @@ bool branch_borrows(struct proc *p, uintptr_t va)
            !(p->branch->owned[w][i/64] & (1UL << (i%64)));
 }
 
-void branch_own(struct proc *p, uintptr_t va)
+/* Called at close, while the owner serializes mapping changes and branch teardown.
+ * An original heap frame is still borrowed only if its branch slot is valid and
+ * has not been replaced by a private mapping. Holes need no history. */
+bool branch_count_borrows(struct proc *p, struct proc *image)
+{
+    struct branch_heap *b = p->branch;
+    if (!b || b->image != image) return false;
+    template_count(close_scan_branches, 1);
+    for (unsigned w = 0; w < HEAP_WINDOWS; ++w) {
+        if (!w && !b->mixed_heap) continue;
+        pte_t *leaf = table(p, w);
+        if (!leaf) continue;
+        unsigned count = 0, first = first_slot(w);
+        for (unsigned i = first; i < 512; ++i)
+            if ((leaf[i] & PTE_V) && !(b->owned[w][i/64] & (1UL << (i%64))))
+                ++count;
+        template_count(close_scan_slots, 512 - first);
+        b->borrowed[w] = count;
+        if (count)
+            ++image->template_borrowers[w];
+    }
+    return true;
+}
+
+/* The image root is never active. A branch removes its old translation and
+ * fences before reporting its last borrow. Keep the directory links and page
+ * table storage until the existing template reference count reaches zero. */
+static void reclaim_window(struct proc *image, unsigned w)
+{
+    assert(image->template_tracking && !image->template_borrowers[w] &&
+           !(image->template_reclaimed & (1U << w)), "template window reclaim");
+    pte_t *leaf = table(image, w);
+    assert(leaf, "template reclaim leaf");
+    uint64 start = lifecycle_begin();
+    for (unsigned i = first_slot(w); i < 512; ++i) {
+        pte_t entry = leaf[i];
+        if (entry & PTE_V) {
+            leaf[i] = 0;
+            page_free((void *)sv39_pte_to_pa(entry));
+            template_count(dropped_refs, 1);
+        }
+    }
+    image->template_reclaimed |= 1U << w;
+    template_count(released_windows, 1);
+#ifdef LIFECYCLE_PROBE
+    if (lifecycle_active) {
+        uint64 ticks = lifecycle_time() - start;
+        template_stats.release_ticks += ticks;
+        if (ticks > template_stats.max_release_ticks)
+            template_stats.max_release_ticks = ticks;
+    }
+#else
+    (void)start;
+#endif
+}
+
+void template_reclaim_unborrowed(struct proc *image)
+{
+    for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
+        if (!image->template_borrowers[w] && (w || image->mixed_heap) && table(image, w))
+            reclaim_window(image, w);
+}
+
+static void end_window_borrow(struct branch_heap *b, unsigned w)
+{
+    struct proc *image = b->image;
+    b->borrowed[w] = 0;
+    assert(image->template_borrowers[w], "template window borrow underflow");
+    if (!--image->template_borrowers[w])
+        reclaim_window(image, w);
+}
+
+void branch_drop_borrow(struct proc *p, uintptr_t va)
+{
+    struct branch_heap *b = p->branch;
+    if (!b->image->template_tracking) return;
+    unsigned w = va / SV39_LEAF_SPAN;
+    assert(b->borrowed[w], "branch window borrow underflow");
+    if (b->borrowed[w] == 1)
+        end_window_borrow(b, w);
+    else
+        --b->borrowed[w];
+}
+
+void branch_map(struct proc *p, uintptr_t va)
 {
     if (p->branch && va >= USER_HEAP_START && va < SV39_LEAF_SPAN)
         p->branch->mixed_heap = true;
@@ -145,7 +232,10 @@ void branch_unmap(struct proc *p, uintptr_t va, size_t pages)
         bool borrowed = branch_borrows(p, va);
         *slot = 0;
         sfence_vma();
-        if (!borrowed) page_free(frame);
+        if (borrowed)
+            branch_drop_borrow(p, va);
+        else
+            page_free(frame);
         p->branch->owned[w][i/64] &= ~(1UL << (i%64));
         sv39_prune_empty(p->pgtbl, va);
     }
@@ -163,6 +253,8 @@ void branch_detach(struct proc *p)
         /* In the mixed window revoke heap leaves before dropping any frame.
          * Both exec and wait run on the kernel root with user translation inactive. */
         sfence_vma();
+        if (b->borrowed[w])
+            end_window_borrow(b, w);
         if (b->shared & (1U << w)) continue;
         if (b->image->template_owned) {
             for (unsigned j = 0; j < 8; ++j) {
@@ -172,7 +264,6 @@ void branch_detach(struct proc *p)
                     if (!(bits & 1)) continue;
                     page_free((void *)sv39_pte_to_pa(leaf[i]));
                     template_count(private_drops, 1);
-
                 }
             }
         } else {

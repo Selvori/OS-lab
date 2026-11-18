@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     unsigned policy=num(argv[1]), pages=num(argv[2]), writes=num(argv[3]);
     unsigned stride=num(argv[4]), n=num(argv[5]);
     char kind=argv[6][0];
-    if (!pages || pages>4096 || !n || n>64 || policy>2 ||
+    if (!pages || pages>4096 || !n || n>64 || policy>3 ||
         (writes && (writes-1)*stride >= pages)) return 2;
     struct lifecycle_sample before, after, sample;
     struct template_stats stats;

@@ -121,12 +121,13 @@ long lifecycle_control(struct proc *p, unsigned long op, uintptr_t address)
         lifecycle_active = true;
         return 0;
     }
-    if (op != PROBE_STOP && op != PROBE_SNAPSHOT)
+    if (op != PROBE_STOP && op != PROBE_SNAPSHOT && op != PROBE_BALANCE)
         return -22;
 #ifdef LIFECYCLE_COUNTS
-    if (lifecycle_active) account_residency();
+    if (lifecycle_active && op != PROBE_BALANCE) account_residency();
 #endif
-    lifecycle_active = false;
+    if (op != PROBE_BALANCE)
+        lifecycle_active = false;
     struct lifecycle_sample sample = {0};
     if (op == PROBE_STOP)
         sample = lifecycle_sample;

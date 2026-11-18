@@ -3,6 +3,7 @@
 #include <asm/usertrap.h>
 #include <kernel/heap.h>
 #include <kernel/file.h>
+#include <kernel/template.h>
 struct kfile;
 #define NPROC 16
 struct context { uint64 ra, sp, s[12]; };
@@ -15,7 +16,9 @@ struct proc {
     struct proc *template_handle;
     struct branch_heap *branch;
     unsigned template_refs;
-    bool template_owned, mixed_heap;
+    bool template_owned, template_reclaim, template_tracking, mixed_heap;
+    uint16_t template_reclaimed;
+    uint8 template_borrowers[HEAP_WINDOWS];
 #ifdef LIFECYCLE_PROBE
     bool timed_heap_write;
 #endif

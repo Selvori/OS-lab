@@ -340,7 +340,8 @@ long template_freeze(unsigned policy)
         }
     }
     image->template_refs = 1;
-    image->template_owned = policy != 0;
+    image->template_owned = policy != TEMPLATE_TABLE_REFS;
+    image->template_reclaim = policy == TEMPLATE_WINDOW_RECLAIM;
     p->template_handle = image;
     return 1;
 }
@@ -375,7 +376,16 @@ long template_close(struct proc *p)
 {
     struct proc *image = p->template_handle;
     if (!image) return -22;
+    owner_context();
     p->template_handle = NULL;
+    if (image->template_reclaim && image->template_refs > 1) {
+        unsigned branches = 0;
+        for (unsigned i = 0; i < NPROC; ++i)
+            branches += branch_count_borrows(&procs[i], image);
+        assert(branches == image->template_refs - 1, "template branch count");
+        image->template_tracking = true;
+        template_reclaim_unborrowed(image);
+    }
     template_put(image);
     return 0;
 }

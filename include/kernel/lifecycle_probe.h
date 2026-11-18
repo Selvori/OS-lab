@@ -9,9 +9,12 @@
 #define PROBE_MAPPING 4
 #define PROBE_HEAP_DETAIL 5
 #define PROBE_TEMPLATE 6
+#define PROBE_BALANCE 7
 struct template_stats {
     unsigned long copied_slots, retains, exit_slots, bitmap_words, private_drops;
     unsigned long resident_page_ticks, first_write_ticks, first_writes;
+    unsigned long close_scan_branches, close_scan_slots;
+    unsigned long released_windows, dropped_refs, release_ticks, max_release_ticks;
 };
 #ifdef LIFECYCLE_COUNTS
 extern struct template_stats template_stats;

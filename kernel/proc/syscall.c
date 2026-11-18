@@ -16,7 +16,7 @@ void syscall_dispatch(struct proc *p)
         break;
 #endif
     case SYS_FREEZE:
-        result = tf->x[10] > 1 ? -22 : template_freeze(tf->x[10]);
+        result = tf->x[10] > TEMPLATE_WINDOW_RECLAIM ? -22 : template_freeze(tf->x[10]);
         break;
     case SYS_SPAWN:
         result = template_spawn();
