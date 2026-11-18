@@ -2,6 +2,7 @@
 #include <kernel/syscall.h>
 #include <kernel/proc.h>
 #include <kernel/timer.h>
+#include <kernel/template.h>
 
 void syscall_dispatch(struct proc *p)
 {
@@ -14,6 +15,15 @@ void syscall_dispatch(struct proc *p)
         result = lifecycle_control(p, tf->x[10], tf->x[11]);
         break;
 #endif
+    case SYS_FREEZE:
+        result = tf->x[10] > 1 ? -22 : template_freeze(tf->x[10]);
+        break;
+    case SYS_SPAWN:
+        result = template_spawn();
+        break;
+    case SYS_RELEASE:
+        result = template_close(p);
+        break;
     case SYS_MMAP:
         result = user_heap_alloc(p, tf->x[10], tf->x[11]);
         break;

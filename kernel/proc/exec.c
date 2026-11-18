@@ -5,6 +5,7 @@
 #include <kernel/proc.h>
 #include <kernel/string.h>
 #include <kernel/user.h>
+#include <kernel/template.h>
 
 struct executable {
     uint32 magic;
@@ -99,6 +100,7 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
 
     uint64 heap_start = lifecycle_begin();
     lifecycle_heap_phase_set(PROBE_EXEC);
+    template_close(p);
     user_heap_destroy(p);
     lifecycle_heap_phase_set(PROBE_REAP);
     lifecycle_end(exec_heap_time, heap_start);

@@ -1,5 +1,5 @@
 KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
-	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/proc/proc.c kernel/proc/syscall.c \
+	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/mm/template.c kernel/proc/proc.c kernel/proc/syscall.c \
 	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c
 ifneq ($(filter time counts check,$(LIFECYCLE)),)
 CPPFLAGS += -DLIFECYCLE_PROBE

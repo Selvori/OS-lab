@@ -7,6 +7,7 @@
 struct lifecycle_sample lifecycle_sample;
 bool lifecycle_active;
 
+struct template_stats template_stats;
 static struct lifecycle_heap_detail heap_detail;
 
 #ifdef LIFECYCLE_COUNTS
@@ -27,10 +28,21 @@ void lifecycle_heap_check(uintptr_t va, unsigned level)
     ++lifecycle_sample.leaf_checks;
 }
 
+static uint64 last_page_event, extra_pages;
+static void account_residency(void)
+{
+    uint64 now = lifecycle_time();
+    template_stats.resident_page_ticks += (now - last_page_event) * extra_pages;
+    last_page_event = now;
+}
+
 void lifecycle_page(bool user, bool allocated)
 {
     if (!lifecycle_active)
         return;
+    account_residency();
+    /* Measured batches release all transient frames before the final snapshot. */
+    extra_pages += allocated ? 1 : -1;
     struct lifecycle_sample *s = &lifecycle_sample;
     unsigned long *alloc = user ? &s->user_alloc : &s->kernel_alloc;
     unsigned long *freed = user ? &s->user_free : &s->kernel_free;
@@ -89,6 +101,8 @@ long lifecycle_control(struct proc *p, unsigned long op, uintptr_t address)
     if (op == PROBE_MAPPING)
         return inspect_mapping(p, address);
 #endif
+    if (op == PROBE_TEMPLATE)
+        return user_copyout(p, address, &template_stats, sizeof(template_stats));
     if (op == PROBE_HEAP_DETAIL) {
         if (lifecycle_active)
             return -22;
@@ -96,12 +110,20 @@ long lifecycle_control(struct proc *p, unsigned long op, uintptr_t address)
     }
     if (op == PROBE_START) {
         memset(&lifecycle_sample, 0, sizeof(lifecycle_sample));
+        memset(&template_stats, 0, sizeof(template_stats));
         memset(&heap_detail, 0, sizeof(heap_detail));
+#ifdef LIFECYCLE_COUNTS
+        extra_pages = 0;
+        last_page_event = lifecycle_time();
+#endif
         lifecycle_active = true;
         return 0;
     }
     if (op != PROBE_STOP && op != PROBE_SNAPSHOT)
         return -22;
+#ifdef LIFECYCLE_COUNTS
+    if (lifecycle_active) account_residency();
+#endif
     lifecycle_active = false;
     struct lifecycle_sample sample = {0};
     if (op == PROBE_STOP)

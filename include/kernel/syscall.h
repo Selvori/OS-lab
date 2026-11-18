@@ -22,6 +22,9 @@
 #define SYS_GETCWD 20
 #define SYS_SYNC 21
 #define SYS_EXEC 22
+#define SYS_FREEZE 23
+#define SYS_SPAWN 24
+#define SYS_RELEASE 25
 #ifndef __ASSEMBLER__
 struct proc;
 void syscall_dispatch(struct proc *p);

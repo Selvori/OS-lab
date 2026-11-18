@@ -12,6 +12,13 @@ enum proc_state { PROC_UNUSED, PROC_USED, PROC_RUNNABLE, PROC_RUNNING,
                   PROC_SLEEPING, PROC_ZOMBIE };
 struct proc {
     int pid;
+    struct proc *template_handle;
+    struct branch_heap *branch;
+    unsigned template_refs;
+    bool template_owned, mixed_heap;
+#ifdef LIFECYCLE_PROBE
+    bool timed_heap_write;
+#endif
     pagetable_t pgtbl;
     uintptr_t heap_top;
     mmap_region_t *mmap;

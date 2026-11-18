@@ -4,6 +4,7 @@
 #include <kernel/print.h>
 #include <kernel/string.h>
 #include <kernel/heap.h>
+#include <kernel/template.h>
 
 extern char trampoline[], user_image_start[], user_image_end[];
 
@@ -176,8 +177,10 @@ static void install_user_frame(struct proc *p, uintptr_t va, pte_t *pte,
     case USER_STACK: p->ustack = frame; break;
     }
     sfence_vma();
-    if (old != frame)
-        page_free(old);
+    if (old != frame) {
+        if (!branch_borrows(p, va)) page_free(old);
+        branch_own(p, va);
+    }
 }
 
 void user_replace_image(struct proc *p, void *code, void *data, void *stack)
@@ -216,19 +219,38 @@ int user_cow_fault(struct proc *p, uintptr_t address)
                 (PTE_V | PTE_U | PTE_R | PTE_COW))
         return -14;
     lifecycle_add(cow_fault, 1);
+#ifdef LIFECYCLE_PROBE
+    bool first = lifecycle_active && !p->timed_heap_write &&
+                 va >= USER_HEAP_START && va < USER_HEAP_END;
+    uint64 start = first ? lifecycle_time() : 0;
+#endif
     void *frame = (void *)sv39_pte_to_pa(*pte);
-    if (page_user_refs(frame) > 1) {
+    struct split_plan plan = {0};
+    if (p->branch && branch_prepare(p, va, va + PAGE_SIZE, &plan)) return -12;
+    if (branch_borrows(p, va) || page_user_refs(frame) > 1) {
         frame = page_alloc(PAGE_ZONE_USER);
-        if (!frame)
+        if (!frame) {
+            if (p->branch) branch_cancel(&plan);
             return -12;
+        }
+    }
+    if (p->branch) {
+        branch_commit(p, &plan);
+        pte = sv39_walk(p->pgtbl, va, false);
     }
     commit_cow(p, va, pte, frame);
+#ifdef LIFECYCLE_PROBE
+    if (first) {
+        template_stats.first_write_ticks += lifecycle_time() - start;
+        ++template_stats.first_writes;
+        p->timed_heap_write = true;
+    }
+#endif
     return 0;
 }
 
 struct prepared_frame {
     struct prepared_frame *next;
-    pte_t *pte;
     uintptr_t va;
 };
 
@@ -242,12 +264,14 @@ int user_prepare_write(struct proc *p, uintptr_t dst, size_t count)
         return 0;
     struct prepared_frame *pending = NULL;
     uintptr_t start = PAGE_ROUND_DOWN(dst), end = dst + count;
+    struct split_plan plan = {0};
+    if (p->branch && branch_prepare(p, start, end, &plan)) return -12;
     for (uintptr_t va = start; va < end; va += PAGE_SIZE) {
         pte_t *pte = sv39_walk(p->pgtbl, va, false);
         if (!(*pte & PTE_COW))
             continue;
         lifecycle_add(cow_copyout, 1);
-        if (page_user_refs((void *)sv39_pte_to_pa(*pte)) == 1)
+        if (!branch_borrows(p, va) && page_user_refs((void *)sv39_pte_to_pa(*pte)) == 1)
             continue;
         struct prepared_frame *frame = page_alloc(PAGE_ZONE_USER);
         if (!frame) {
@@ -256,15 +280,17 @@ int user_prepare_write(struct proc *p, uintptr_t dst, size_t count)
                 pending = frame->next;
                 page_free(frame);
             }
+            if (p->branch) branch_cancel(&plan);
             return -12;
         }
-        *frame = (struct prepared_frame){pending, pte, va};
+        *frame = (struct prepared_frame){pending, va};
         pending = frame;
     }
+    if (p->branch) branch_commit(p, &plan);
     while (pending) {
         struct prepared_frame *frame = pending;
         pending = frame->next;
-        commit_cow(p, frame->va, frame->pte, frame);
+        commit_cow(p, frame->va, sv39_walk(p->pgtbl, frame->va, false), frame);
     }
     for (uintptr_t va = start; va < end; va += PAGE_SIZE) {
         pte_t *pte = sv39_walk(p->pgtbl, va, false);

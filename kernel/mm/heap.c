@@ -4,6 +4,7 @@
 #include <kernel/proc.h>
 #include <kernel/arch.h>
 #include <kernel/lock.h>
+#include <kernel/template.h>
 #include <kernel/print.h>
 
 static mmap_region_node_t list_mmap_region_node[N_MMAP];
@@ -103,6 +104,14 @@ long user_heap_alloc(struct proc *p, uintptr_t hint, size_t npages)
     mmap_region_t *extra = left && right ? region_alloc() : NULL;
     if (left && right && !extra) return -12;
     /* Do not publish the interval edit until every physical page is mapped. */
+    struct split_plan plan = {0};
+    if (p->branch) {
+        if (branch_prepare(p, begin, end, &plan)) {
+            if (extra) region_free(extra);
+            return -12;
+        }
+        branch_commit(p, &plan);
+    }
     size_t mapped = 0;
     for (; mapped < npages; ++mapped) {
         uintptr_t va = begin + mapped * PAGE_SIZE;
@@ -118,9 +127,12 @@ long user_heap_alloc(struct proc *p, uintptr_t hint, size_t npages)
     }
     if (mapped != npages) {
         if (mapped) assert(vm_unmappages(p->pgtbl, begin, mapped) == 0, "heap rollback");
+        if (p->branch) branch_undo(p, &plan);
         if (extra) region_free(extra);
         return -12;
     }
+    if (p->branch)
+        for (uintptr_t va = begin; va < end; va += PAGE_SIZE) branch_own(p, va);
     if (left) {
         if (right) {
             *extra = (mmap_region_t){end, (old_end - end) / PAGE_SIZE, region->next};
@@ -155,7 +167,15 @@ int user_heap_free(struct proc *p, uintptr_t begin, size_t npages)
     bool right = next && next->begin == end;
     mmap_region_t *extra = !left && !right ? region_alloc() : NULL;
     if (!left && !right && !extra) return -12;
-    assert(vm_unmappages(p->pgtbl, begin, npages) == 0, "heap unmap invariant");
+    if (p->branch) {
+        struct split_plan plan = {0};
+        if (branch_prepare(p, begin, end, &plan)) {
+            if (extra) region_free(extra);
+            return -12;
+        }
+        branch_commit(p, &plan);
+        branch_unmap(p, begin, npages);
+    } else assert(vm_unmappages(p->pgtbl, begin, npages) == 0, "heap unmap invariant");
     if (left) {
         prev->npages += npages;
         if (right) {
@@ -178,7 +198,8 @@ void user_heap_destroy(struct proc *p)
 {
     heap_context(p);
     lifecycle_heap_scope(true);
-    if (p->pgtbl && p->heap_top != 0)
+    if (p->branch) branch_detach(p);
+    else if (p->pgtbl && p->heap_top != 0)
         user_vm_clear_heap(p->pgtbl, USER_HEAP_START, p->heap_top);
     lifecycle_heap_scope(false);
     while (p->mmap) {
@@ -202,6 +223,7 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
         *link = copy;
         link = &copy->next;
     }
+    if (src->template_refs) return branch_attach(dst, (struct proc *)src);
     for (uintptr_t va = USER_HEAP_START; va < src->heap_top; va += PAGE_SIZE) {
         lifecycle_add(clone_slots, 1);
         uintptr_t pa;

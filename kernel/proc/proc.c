@@ -8,6 +8,7 @@
 #include <kernel/vm.h>
 #include <asm/csr.h>
 #include <platform.h>
+#include <kernel/template.h>
 
 /* Only scheduler_owner touches this table. Other harts service devices only. */
 static struct proc procs[NPROC];
@@ -125,6 +126,7 @@ long proc_fork(void)
     owner_context();
     struct proc *parent = proc_current();
     assert(parent && parent->state == PROC_RUNNING, "fork current");
+    if (parent->branch) return -95;
     bool slot = false;
     for (unsigned i = 0; i < NPROC; ++i) if (procs[i].state == PROC_UNUSED) slot = true;
     if (!slot || next_pid > 0x7fffffffU) return -11;
@@ -253,6 +255,7 @@ int proc_finish(int status, bool fault)
         procs[i].parent = initproc;
         if (procs[i].state == PROC_ZOMBIE) proc_wakeup(initproc);
     }
+    template_close(p);
     files_drop(p);
     p->cwd = 0;
     p->status = status;
@@ -309,3 +312,70 @@ unsigned proc_slots_used(void)
     return used;
 }
 #endif
+
+/* Freeze returns 1 to the creator. Spawned branches resume here with 0. */
+long template_freeze(unsigned policy)
+{
+    owner_context();
+    struct proc *p = proc_current();
+    if (p->template_handle || p->branch) return -16;
+    struct proc *image = proc_allocate(p);
+    if (!image) return -12;
+    if (user_heap_clone(image, p)) {
+        proc_destroy(image);
+        return -12;
+    }
+    user_cow_mark(p->pgtbl, USER_BASE + PAGE_SIZE);
+    user_cow_mark(p->pgtbl, USER_STACK);
+    user_heap_cow_commit(p);
+    sfence_vma();
+    *image->tf = *p->tf;
+    image->tf->x[10] = 0;
+    files_fork(image, p);
+    pte_t *mixed = sv39_walk(image->pgtbl, 0, false);
+    for (unsigned i = sv39_index(0, USER_HEAP_START); i < 512; ++i) {
+        if (mixed[i]) {
+            image->mixed_heap = true;
+            break;
+        }
+    }
+    image->template_refs = 1;
+    image->template_owned = policy != 0;
+    p->template_handle = image;
+    return 1;
+}
+
+long template_spawn(void)
+{
+    owner_context();
+    struct proc *p = proc_current(), *image = p->template_handle;
+    if (!image) return -22;
+    if (next_pid > 0x7fffffffU) return -11;
+    struct proc *child = proc_allocate(image);
+    if (!child) return -12;
+    if (user_heap_clone(child, image)) {
+        proc_destroy(child);
+        return -12;
+    }
+    *child->tf = *image->tf;
+    files_fork(child, image);
+    child->parent = p;
+    child->pid = (int)next_pid++;
+    child->state = PROC_RUNNABLE;
+    return child->pid;
+}
+
+void template_put(struct proc *image)
+{
+    assert(image->template_refs, "template reference underflow");
+    if (!--image->template_refs) proc_destroy(image);
+}
+
+long template_close(struct proc *p)
+{
+    struct proc *image = p->template_handle;
+    if (!image) return -22;
+    p->template_handle = NULL;
+    template_put(image);
+    return 0;
+}

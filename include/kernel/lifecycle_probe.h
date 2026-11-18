@@ -8,6 +8,17 @@
 #define PROBE_FAIL_AFTER 3
 #define PROBE_MAPPING 4
 #define PROBE_HEAP_DETAIL 5
+#define PROBE_TEMPLATE 6
+struct template_stats {
+    unsigned long copied_slots, retains, exit_slots, bitmap_words, private_drops;
+    unsigned long resident_page_ticks, first_write_ticks, first_writes;
+};
+#ifdef LIFECYCLE_COUNTS
+extern struct template_stats template_stats;
+#define template_count(field, n) do { if (lifecycle_active) template_stats.field += (n); } while (0)
+#else
+#define template_count(field, n) ((void)0)
+#endif
 #define PROBE_HEAP_TABLES 9
 #define PROBE_REAP 0
 #define PROBE_EXEC 1
@@ -35,6 +46,7 @@ struct lifecycle_sample {
 #include <kernel/types.h>
 struct proc;
 extern struct lifecycle_sample lifecycle_sample;
+extern struct template_stats template_stats;
 extern bool lifecycle_active;
 
 static inline uint64 lifecycle_time(void)
