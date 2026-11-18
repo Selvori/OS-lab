@@ -33,7 +33,7 @@ def sample(vm, case, policy, n):
 def collect(out, mode, smoke):
     directory = Path("build") / ("template-"+mode)
     apps = {name: directory/"apps"/(name+".bin") for name in
-            ("sh","tcheck","tbench","lifejob")}
+            ("sh","tcheck","tbench","tpin","lifejob")}
     subprocess.run(["make","-s","-j4",qemu.CONFIG,f"BUILD={directory}",
                     f"LIFECYCLE={mode}","build",*map(str,apps.values())],check=True)
     artifacts = dict(apps,kernel=directory/"kernel.elf")
@@ -52,6 +52,13 @@ def collect(out, mode, smoke):
                 result=vm.until(b"seele$ ",timeout=120)
                 assert b"TC PASS" in result and b"PANIC" not in result, result[-2400:]
                 data["guest_checks"]="passed"
+                data["pin_pages"]=[]
+                for policy in range(3):
+                    vm.send(f"tpin {policy}\r".encode())
+                    block=vm.until(b"seele$ ",timeout=60).decode()
+                    assert "PIN PASS" in block, block
+                    row=next(line for line in block.splitlines() if line.startswith("PIN "))
+                    data["pin_pages"].append(list(map(int,row.split()[1:])))
             else:
                 cases=[(p,w,s,"e" if k=="exec" else "f") for p,w,s,k in WARM]
                 cases += [(2048,0,1,"a"),(2048,0,1,"q"),(2048,0,1,"u")]
