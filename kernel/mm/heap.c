@@ -177,6 +177,7 @@ int user_heap_free(struct proc *p, uintptr_t begin, size_t npages)
 void user_heap_destroy(struct proc *p)
 {
     heap_context(p);
+    lifecycle_heap_scope(true);
     if (p->pgtbl) {
         for (uintptr_t va = USER_HEAP_START; va < p->heap_top; va += PAGE_SIZE) {
             lifecycle_add(destroy_slots, 1);
@@ -184,6 +185,7 @@ void user_heap_destroy(struct proc *p)
                 assert(vm_unmappages(p->pgtbl, va, 1) == 0, "heap destroy");
         }
     }
+    lifecycle_heap_scope(false);
     while (p->mmap) {
         mmap_region_t *next = p->mmap->next;
         region_free(p->mmap);

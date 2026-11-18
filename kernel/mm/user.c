@@ -69,6 +69,7 @@ int vm_unmappages(pagetable_t root, uintptr_t begin, size_t npages)
         pte_t *pte = sv39_walk(root, va, false);
         uintptr_t pa = sv39_pte_to_pa(*pte);
         *pte = 0;
+        lifecycle_heap_add(heap_leaves, 1);
         sfence_vma(); /* Revoke translations before the frame can be reused. */
         page_free((void *)pa);
         sv39_prune_empty(root, va);

@@ -2,7 +2,7 @@
 #include <kernel/lifecycle_probe.h>
 
 #define PAGE 4096UL
-#define MAX_RUNS 16
+#define MAX_RUNS 15
 
 struct round_sample {
     unsigned long elapsed;
@@ -153,6 +153,14 @@ int main(int argc, char **argv)
             print_number(fields[j]);
         say("\n");
     }
+    struct lifecycle_heap_detail detail;
+    if (call(SYS_LIFECYCLE_PROBE, PROBE_HEAP_DETAIL, (long)&detail, 0))
+        return 12;
+    say("LIFE TABLES");
+    for (unsigned phase = 0; phase < 2; ++phase)
+        for (unsigned table = 0; table < PROBE_HEAP_TABLES; ++table)
+            print_number(detail.checks[phase][table]);
+    say("\n");
     say("LIFE PASS\n");
     return 0;
 }

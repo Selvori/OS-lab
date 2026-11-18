@@ -135,13 +135,18 @@ void sv39_prune_empty(pagetable_t root, uintptr_t va)
         ++depth;
     }
     while (depth) {
+        unsigned level = 2 - depth;
+        lifecycle_heap_check(va, level);
         for (unsigned i = 0; i < 512; ++i) {
             lifecycle_add(pte_visits, 1);
+            lifecycle_heap_add(leaf_reads, level == 0);
+            lifecycle_heap_add(upper_reads, level != 0);
             if (tables[depth][i] != 0) return;
         }
         *parents[depth - 1] = 0;
         sfence_vma();
         lifecycle_add(table_free, 1);
+        lifecycle_heap_add(heap_table_free, 1);
         page_free(tables[depth]);
         --depth;
     }

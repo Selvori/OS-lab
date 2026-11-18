@@ -1,5 +1,6 @@
 #include <kernel/file_abi.h>
 #include <kernel/fs.h>
+#include <kernel/lifecycle_probe.h>
 #include <kernel/page.h>
 #include <kernel/proc.h>
 #include <kernel/string.h>
@@ -96,7 +97,11 @@ int proc_exec_image(struct proc *p, const char *path, uintptr_t argv)
     if (rc != 0)
         goto done;
 
+    uint64 heap_start = lifecycle_begin();
+    lifecycle_heap_phase_set(PROBE_EXEC);
     user_heap_destroy(p);
+    lifecycle_heap_phase_set(PROBE_REAP);
+    lifecycle_end(exec_heap_time, heap_start);
     p->mmap = heap.mmap;
     p->heap_top = heap.heap_top;
     user_replace_image(p, code, data, stack);

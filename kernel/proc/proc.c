@@ -233,7 +233,9 @@ long proc_wait(uintptr_t address)
         if (!children) return -10;
         /* Check and publication are indivisible: only owner modifies the table,
          * and owner IRQ is off until after switching to scheduler context. */
+        uint64 sleep_start = lifecycle_begin();
         proc_sleep(p);
+        lifecycle_end(wait_sleep_time, sleep_start);
     }
 }
 

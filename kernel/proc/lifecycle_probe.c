@@ -1,12 +1,32 @@
 #include <kernel/lifecycle_probe.h>
 #include <kernel/arch.h>
 #include <kernel/proc.h>
+#include <kernel/print.h>
 #include <kernel/string.h>
 
 struct lifecycle_sample lifecycle_sample;
 bool lifecycle_active;
 
+static struct lifecycle_heap_detail heap_detail;
+
 #ifdef LIFECYCLE_COUNTS
+bool lifecycle_in_heap;
+unsigned lifecycle_heap_phase;
+
+void lifecycle_heap_check(uintptr_t va, unsigned level)
+{
+    if (!lifecycle_active || !lifecycle_in_heap)
+        return;
+    if (level != 0) {
+        ++lifecycle_sample.upper_checks;
+        return;
+    }
+    unsigned table = sv39_index(1, va);
+    assert(table < PROBE_HEAP_TABLES, "heap probe range");
+    ++heap_detail.checks[lifecycle_heap_phase][table];
+    ++lifecycle_sample.leaf_checks;
+}
+
 void lifecycle_page(bool user, bool allocated)
 {
     if (!lifecycle_active)
@@ -69,8 +89,14 @@ long lifecycle_control(struct proc *p, unsigned long op, uintptr_t address)
     if (op == PROBE_MAPPING)
         return inspect_mapping(p, address);
 #endif
+    if (op == PROBE_HEAP_DETAIL) {
+        if (lifecycle_active)
+            return -22;
+        return user_copyout(p, address, &heap_detail, sizeof(heap_detail));
+    }
     if (op == PROBE_START) {
         memset(&lifecycle_sample, 0, sizeof(lifecycle_sample));
+        memset(&heap_detail, 0, sizeof(heap_detail));
         lifecycle_active = true;
         return 0;
     }
