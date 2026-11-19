@@ -15,6 +15,9 @@ SOURCES := $(KERNEL_C) $(ARCH_C) $(PLATFORM_C)
 OBJECTS := $(addprefix $(BUILD)/,$(SOURCES:.c=.o) $(ARCH_S:.S=.o))
 -include $(OBJECTS:.o=.d)
 
+# Userspace links the byte routines from the same source.
+$(BUILD)/kernel/lib/string.o: private CPPFLAGS += -DKERNEL_PAGE_MEMORY
+
 $(BUILD)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
