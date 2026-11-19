@@ -1,0 +1,134 @@
+{
+  "commits": {
+    "baseline": "6fa4fd593c447c4ee8f4f0d0805e718c9d2baa62",
+    "candidate": "44802a0192808d816068344b3e4fb835da8898f6",
+    "baseline-repeat": "6fa4fd593c447c4ee8f4f0d0805e718c9d2baa62"
+  },
+  "metadata": {
+    "platform": "QEMU virt, OpenSBI default, 128 MiB, 2 harts",
+    "suite": "warm",
+    "variant": "batch-unmap",
+    "runs": 12,
+    "batches": 3,
+    "warmup_runs": 2,
+    "qemu": "QEMU emulator version 5.1.0",
+    "compiler": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+    "host": "Linux 6.8.0-149-generic x86_64 GNU/Linux",
+    "timebase_hz": 10000000,
+    "kernel_flags": "-std=gnu11 -O2 -g -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-stack-protector -fno-pie -mcmodel=medany -mno-relax -march=rv64gc -mabi=lp64d -MMD -MP"
+  },
+  "user_binary_sha256_by_mode": {
+    "time": {
+      "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+      "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+      "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0"
+    },
+    "counts": {
+      "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+      "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+      "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0"
+    }
+  },
+  "first_round_optimized_kernel_and_user_hashes_match_baseline": true,
+  "formal_samples_per_mode_per_run": 396,
+  "passed_batches_per_mode_per_run_including_warmups": 44,
+  "counts_equal_each_case_for_all_warmup_and_formal_samples": true,
+  "positive_metric_median_deltas_against_either_baseline": [
+    {
+      "mode": "time",
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "baseline_median_us": "132.20",
+      "baseline_batch1_us": "128.85",
+      "baseline_batch2_us": "132.20",
+      "baseline_batch3_us": "133.05",
+      "baseline_p10_us": "126.70",
+      "baseline_p90_us": "156.50",
+      "candidate_median_us": "133.85",
+      "candidate_batch1_us": "133.45",
+      "candidate_batch2_us": "133.50",
+      "candidate_batch3_us": "134.50",
+      "candidate_p10_us": "126.85",
+      "candidate_p90_us": "158.85",
+      "baseline_repeat_median_us": "134.65",
+      "baseline_repeat_batch1_us": "134.45",
+      "baseline_repeat_batch2_us": "135.45",
+      "baseline_repeat_batch3_us": "133.55",
+      "baseline_repeat_p10_us": "127.80",
+      "baseline_repeat_p90_us": "161.30",
+      "candidate_delta_vs_baseline_pct": "1.25",
+      "candidate_delta_vs_baseline_repeat_pct": "-0.59"
+    }
+  ],
+  "positive_batch_median_deltas_against_either_baseline": [
+    {
+      "pages": 16,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "batch": 3,
+      "baseline_us": 8.95,
+      "candidate_us": 9.05,
+      "baseline_repeat_us": 8.5
+    },
+    {
+      "pages": 256,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "batch": 2,
+      "baseline_us": 22.05,
+      "candidate_us": 22.1,
+      "baseline_repeat_us": 23.15
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "batch": 1,
+      "baseline_us": 128.85,
+      "candidate_us": 133.45,
+      "baseline_repeat_us": 134.45
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "batch": 2,
+      "baseline_us": 132.2,
+      "candidate_us": 133.5,
+      "baseline_repeat_us": 135.45
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "fork",
+      "metric": "wait_sleep_time",
+      "batch": 3,
+      "baseline_us": 133.05,
+      "candidate_us": 134.5,
+      "baseline_repeat_us": 133.55
+    },
+    {
+      "pages": 2048,
+      "writes": 0,
+      "stride": 1,
+      "job": "exec",
+      "metric": "fork_time",
+      "batch": 3,
+      "baseline_us": 550.7,
+      "candidate_us": 554.95,
+      "baseline_repeat_us": 563.0
+    }
+  ]
+}

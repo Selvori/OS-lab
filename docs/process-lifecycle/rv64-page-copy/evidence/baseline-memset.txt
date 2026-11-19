@@ -1,0 +1,17 @@
+
+build/lifecycle-time/kernel.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text:
+
+0000000080200984 <memset>:
+    80200984:	0ff5f593          	zext.b	a1,a1
+    80200988:	87aa                	mv	a5,a0
+    8020098a:	00a60733          	add	a4,a2,a0
+    8020098e:	c611                	beqz	a2,8020099a <memset+0x16>
+    80200990:	00b78023          	sb	a1,0(a5)
+    80200994:	0785                	addi	a5,a5,1
+    80200996:	fee79de3          	bne	a5,a4,80200990 <memset+0xc>
+    8020099a:	8082                	ret
+
+Disassembly of section .trampoline:

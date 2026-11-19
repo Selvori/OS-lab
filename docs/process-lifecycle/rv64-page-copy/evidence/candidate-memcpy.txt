@@ -1,0 +1,34 @@
+
+build/lifecycle-time/kernel.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text:
+
+00000000802009cc <memcpy>:
+    802009cc:	6785                	lui	a5,0x1
+    802009ce:	02f60063          	beq	a2,a5,802009ee <memcpy+0x22>
+    802009d2:	4781                	li	a5,0
+    802009d4:	ce1d                	beqz	a2,80200a12 <memcpy+0x46>
+    802009d6:	00f58733          	add	a4,a1,a5
+    802009da:	00074683          	lbu	a3,0(a4)
+    802009de:	00f50733          	add	a4,a0,a5
+    802009e2:	0785                	addi	a5,a5,1 # 1001 <_entry-0x801fefff>
+    802009e4:	00d70023          	sb	a3,0(a4)
+    802009e8:	fec7e7e3          	bltu	a5,a2,802009d6 <memcpy+0xa>
+    802009ec:	8082                	ret
+    802009ee:	fff60793          	addi	a5,a2,-1
+    802009f2:	00b56733          	or	a4,a0,a1
+    802009f6:	8f7d                	and	a4,a4,a5
+    802009f8:	4781                	li	a5,0
+    802009fa:	ff71                	bnez	a4,802009d6 <memcpy+0xa>
+    802009fc:	87aa                	mv	a5,a0
+    802009fe:	00c58733          	add	a4,a1,a2
+    80200a02:	6194                	ld	a3,0(a1)
+    80200a04:	05a1                	addi	a1,a1,8
+    80200a06:	07a1                	addi	a5,a5,8
+    80200a08:	fed7bc23          	sd	a3,-8(a5)
+    80200a0c:	fee59be3          	bne	a1,a4,80200a02 <memcpy+0x36>
+    80200a10:	8082                	ret
+    80200a12:	8082                	ret
+
+Disassembly of section .trampoline:

@@ -1,0 +1,65 @@
+static uint8 smoke_source[PAGE_SIZE * 3] __attribute__((aligned(PAGE_SIZE)));
+static uint8 smoke_destination[PAGE_SIZE * 3] __attribute__((aligned(PAGE_SIZE)));
+
+static uint8 smoke_pattern(size_t i)
+{
+    return (uint8)(i * 197 + (i >> 7));
+}
+
+static void rv64_page_smoke(void)
+{
+    static const size_t lengths[] = {0, 1, 7, 8, 9, 15, PAGE_SIZE - 1,
+                                     PAGE_SIZE, PAGE_SIZE + 1};
+    static const size_t offsets[] = {0, 1, 7, 8};
+    static const int values[] = {0, 0xa5, -1, 0x1a5, 0x17b};
+
+    for (size_t i = 0; i < sizeof(smoke_source); ++i)
+        smoke_source[i] = smoke_pattern(i);
+
+    for (size_t n = 0; n < sizeof(lengths) / sizeof(lengths[0]); ++n) {
+        size_t length = lengths[n];
+        for (size_t d = 0; d < sizeof(offsets) / sizeof(offsets[0]); ++d) {
+            size_t out = PAGE_SIZE + offsets[d];
+            for (size_t s = 0; s < sizeof(offsets) / sizeof(offsets[0]); ++s) {
+                size_t in = PAGE_SIZE + offsets[s];
+                memset(smoke_destination, 0x42, sizeof(smoke_destination));
+                assert(memcpy(smoke_destination + out, smoke_source + in, length)
+                       == smoke_destination + out, "memcpy return");
+                for (size_t i = 0; i < sizeof(smoke_destination); ++i) {
+                    uint8 expected = i >= out && i < out + length
+                        ? smoke_pattern(in + i - out) : 0x42;
+                    assert(smoke_destination[i] == expected, "memcpy range or bytes");
+                    assert(smoke_source[i] == smoke_pattern(i), "memcpy modified source");
+                }
+            }
+            for (size_t v = 0; v < sizeof(values) / sizeof(values[0]); ++v) {
+                memset(smoke_destination, 0x42, sizeof(smoke_destination));
+                assert(memset(smoke_destination + out, values[v], length)
+                       == smoke_destination + out, "memset return");
+                for (size_t i = 0; i < sizeof(smoke_destination); ++i) {
+                    uint8 expected = i >= out && i < out + length
+                        ? (uint8)values[v] : 0x42;
+                    assert(smoke_destination[i] == expected, "memset range or bytes");
+                }
+            }
+        }
+    }
+
+    for (page_zone_type_t zone = PAGE_ZONE_KERNEL; zone < PAGE_ZONE_COUNT; ++zone) {
+        uint64 before = page_free_count(zone);
+        uint8 *page = page_alloc(zone);
+        assert(page != NULL && page_free_count(zone) == before - 1, "alloc balance");
+        for (size_t i = 0; i < PAGE_SIZE; ++i)
+            assert(page[i] == 0, "first alloc clear");
+        memset(page, 0xa5, PAGE_SIZE);
+        page_free(page);
+        uint8 *reused = page_alloc(zone);
+        assert(reused == page, "expected LIFO reuse");
+        for (size_t i = 0; i < PAGE_SIZE; ++i)
+            assert(reused[i] == 0, "realloc clear");
+        page_free(reused);
+        assert(page_free_count(zone) == before, "final free balance");
+        printf("RV64 PAGE SMOKE zone=%d free=%d restored\n", (int)zone, (int)before);
+    }
+    printf("RV64 PAGE SMOKE PASS: 144 copies, 180 fills, 2 page pools\n");
+}

@@ -1,0 +1,18 @@
+
+build/lifecycle-time/kernel.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text:
+
+000000008020099c <memcpy>:
+    8020099c:	ca19                	beqz	a2,802009b2 <memcpy+0x16>
+    8020099e:	87aa                	mv	a5,a0
+    802009a0:	962e                	add	a2,a2,a1
+    802009a2:	0005c703          	lbu	a4,0(a1)
+    802009a6:	0585                	addi	a1,a1,1
+    802009a8:	0785                	addi	a5,a5,1
+    802009aa:	fee78fa3          	sb	a4,-1(a5)
+    802009ae:	fec59ae3          	bne	a1,a2,802009a2 <memcpy+0x6>
+    802009b2:	8082                	ret
+
+Disassembly of section .trampoline:
