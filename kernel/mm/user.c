@@ -297,12 +297,45 @@ static void commit_cow(struct proc *p, uintptr_t va, pte_t *pte, void *frame)
     install_user_frame(p, va, pte, frame, flags);
 }
 
+static bool cow_leaf(pte_t pte)
+{
+    uint64 required = PTE_V | PTE_U | PTE_R | PTE_COW;
+    return (pte & (required | PTE_W | PTE_X)) == required;
+}
+
+/* A successful demand fault has already committed. Optional copies are bounded
+ * by this leaf table and keep the same publish/fence/release order as demand. */
+static void cow_prefetch(struct proc *p, uintptr_t va, pte_t *pte)
+{
+    if (p->branch || p->template_handle || !p->parent ||
+        va < USER_HEAP_START || va >= p->heap_top)
+        return;
+
+    uintptr_t next = va + PAGE_SIZE;
+    unsigned index = sv39_index(0, va);
+    if (va == p->cow_next && index != 0) {
+        unsigned limit = (unsigned)(SV39_LEAF_SPAN / PAGE_SIZE);
+        for (unsigned extra = 1; extra <= 4 && index + extra < limit &&
+                                 next < p->heap_top; ++extra) {
+            pte_t *leaf = pte + extra;
+            if (!cow_leaf(*leaf) || page_user_refs((void *)sv39_pte_to_pa(*leaf)) <= 1)
+                break;
+            void *page = page_alloc(PAGE_ZONE_USER);
+            if (!page)
+                break;
+            commit_cow(p, next, leaf, page);
+            next += PAGE_SIZE;
+        }
+    }
+    /* A fault immediately after the copied run can continue the sequence. */
+    p->cow_next = next;
+}
+
 int user_cow_fault(struct proc *p, uintptr_t address)
 {
     uintptr_t va = PAGE_ROUND_DOWN(address);
     pte_t *pte = sv39_walk(p->pgtbl, va, false);
-    if (!pte || (*pte & (PTE_V | PTE_U | PTE_R | PTE_COW | PTE_W | PTE_X)) !=
-                (PTE_V | PTE_U | PTE_R | PTE_COW))
+    if (!pte || !cow_leaf(*pte))
         return -14;
     lifecycle_add(cow_fault, 1);
 #ifdef LIFECYCLE_PROBE
@@ -325,6 +358,7 @@ int user_cow_fault(struct proc *p, uintptr_t address)
         pte = sv39_walk(p->pgtbl, va, false);
     }
     commit_cow(p, va, pte, frame);
+    cow_prefetch(p, va, pte);
 #ifdef LIFECYCLE_PROBE
     if (first) {
         template_stats.first_write_ticks += lifecycle_time() - start;

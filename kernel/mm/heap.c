@@ -146,6 +146,7 @@ long user_heap_alloc(struct proc *p, uintptr_t hint, size_t npages)
         *link = region->next;
         region_free(region);
     }
+    p->cow_next = 0;
     sfence_vma();
     return (long)begin;
 }
@@ -191,6 +192,7 @@ int user_heap_free(struct proc *p, uintptr_t begin, size_t npages)
         if (prev) prev->next = extra;
         else p->mmap = extra;
     }
+    p->cow_next = 0;
     return 0;
 }
 
@@ -208,6 +210,7 @@ void user_heap_destroy(struct proc *p)
         p->mmap = next;
     }
     p->heap_top = 0;
+    p->cow_next = 0;
 }
 
 /* Caller destroys the unpublished child on failure; the source changes only at commit. */
@@ -242,6 +245,7 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
 void user_heap_cow_commit(struct proc *p)
 {
     heap_context(p);
+    p->cow_next = 0;
     uintptr_t va = USER_HEAP_START;
     for (mmap_region_t *r = p->mmap; r; r = r->next) {
         user_vm_cow_mark_heap_span(p->pgtbl, va, r->begin);

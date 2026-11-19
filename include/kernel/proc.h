@@ -24,6 +24,7 @@ struct proc {
 #endif
     pagetable_t pgtbl;
     uintptr_t heap_top;
+    uintptr_t cow_next;
     mmap_region_t *mmap;
     unsigned ustack_pages;
     struct user_trapframe *tf;
