@@ -67,7 +67,7 @@ static bool valid_range(struct proc *p, uintptr_t begin, size_t npages)
            begin < p->heap_top && npages <= (p->heap_top - begin) / PAGE_SIZE;
 }
 
-static uintptr_t region_end(mmap_region_t *region)
+static uintptr_t region_end(const mmap_region_t *region)
 {
     return region->begin + region->npages * PAGE_SIZE;
 }
@@ -224,14 +224,23 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
         link = &copy->next;
     }
     if (src->template_refs) return branch_attach(dst, (struct proc *)src);
-    for (uintptr_t va = USER_HEAP_START; va < src->heap_top; va += PAGE_SIZE) {
-        lifecycle_add(clone_slots, 1);
-        uintptr_t pa;
-        if (!sv39_lookup(src->pgtbl, va, &pa, NULL)) continue;
-        if (sv39_map(dst->pgtbl, va, pa, PAGE_SIZE,
-                     PTE_R | PTE_COW | PTE_U) != 0)
-            return -12;
-        page_retain_user((void *)pa);
+    /* The sorted free intervals delimit every mapped span. */
+    uintptr_t va = USER_HEAP_START;
+    const mmap_region_t *free = src->mmap;
+    for (;;) {
+        uintptr_t end = free ? free->begin : src->heap_top;
+        for (; va < end; va += PAGE_SIZE) {
+            lifecycle_add(clone_slots, 1);
+            uintptr_t pa;
+            if (!sv39_lookup(src->pgtbl, va, &pa, NULL) ||
+                sv39_map(dst->pgtbl, va, pa, PAGE_SIZE,
+                         PTE_R | PTE_COW | PTE_U) != 0)
+                return -12;
+            page_retain_user((void *)pa);
+        }
+        if (!free) break;
+        va = region_end(free);
+        free = free->next;
     }
     return 0;
 }
