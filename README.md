@@ -20,3 +20,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [普通 fork 稀疏堆克隆](docs/process-lifecycle/sparse-heap-fork/README.md) 按空闲区间跳过未映射堆槽。64 KiB 只读负载在 QEMU 上的 fork 到 wait 中位数由 137.20 µs 降到 99.55 µs，堆槽探查由 4096 次降到 16 次。
 
 [RV64 对齐整页填充与复制](docs/process-lifecycle/rv64-page-copy/README.md) 在内核清零、回池填充和 COW 复制使用 64 位访问。QEMU 的 8 MiB 全写负载从 fork 到 wait 的中位数由 45.850 ms 降至 29.098 ms，复测原版为 46.287 ms。
+
+[普通 fork 复用 Sv39 末级页表](docs/process-lifecycle/fork-leaf-walk/README.md)将已映射堆段按 2 MiB 边界切分，复用父、子末级表。QEMU 的 8 MiB 只读整轮中位数从 1.153 ms 降至 0.904 ms，fork 相位从 0.550 ms 降至 0.322 ms。
