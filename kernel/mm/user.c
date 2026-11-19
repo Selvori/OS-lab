@@ -102,6 +102,7 @@ void user_vm_clear_heap(pagetable_t root, uintptr_t begin, uintptr_t end)
 {
     assert(root && !((begin | end) & PAGE_MASK) && begin >= USER_HEAP_START &&
            begin <= end && end <= USER_HEAP_END, "heap clear range");
+    void *frames[PAGE_USER_REF_BATCH_MAX];
     for (uintptr_t va = begin; va < end;) {
         uintptr_t base = va & ~(SV39_LEAF_SPAN - 1);
         uintptr_t limit = base + SV39_LEAF_SPAN;
@@ -128,6 +129,7 @@ void user_vm_clear_heap(pagetable_t root, uintptr_t begin, uintptr_t end)
             }
             if (revoked) {
                 sfence_vma();
+                size_t count = 0;
                 for (unsigned i = first; i < last; ++i) {
                     lifecycle_add(pte_visits, 1);
                     pte_t entry = table[i];
@@ -135,8 +137,14 @@ void user_vm_clear_heap(pagetable_t root, uintptr_t begin, uintptr_t end)
                         continue;
                     table[i] = 0;
                     lifecycle_heap_add(heap_leaves, 1);
-                    page_free((void *)sv39_pte_to_pa(entry));
+                    frames[count++] = (void *)sv39_pte_to_pa(entry);
+                    if (count == PAGE_USER_REF_BATCH_MAX) {
+                        page_release_user_batch(frames, count);
+                        count = 0;
+                    }
                 }
+                if (count)
+                    page_release_user_batch(frames, count);
                 sv39_prune_empty(root, va);
             }
         }
@@ -180,6 +188,7 @@ static uintptr_t leaf_span_end(uintptr_t va, uintptr_t end)
 int user_vm_clone_heap_span(pagetable_t dst, pagetable_t src,
                            uintptr_t begin, uintptr_t end)
 {
+    void *frames[PAGE_USER_REF_BATCH_MAX];
     for (uintptr_t va = begin; va < end;) {
         uintptr_t limit = leaf_span_end(va, end);
         const pte_t *parent = sv39_walk(src, va, false);
@@ -190,21 +199,33 @@ int user_vm_clone_heap_span(pagetable_t dst, pagetable_t src,
             return -12;
 
         size_t pages = (limit - va) / PAGE_SIZE;
-        for (size_t i = 0; i < pages; ++i) {
-            lifecycle_add(clone_slots, 1);
-            /* sv39_walk already counted the first slot in each table. */
-            lifecycle_add(pte_visits, i != 0);
-            pte_t entry = parent[i];
-            if (!(entry & PTE_V) || !sv39_pte_is_leaf(entry))
-                return -12;
-            uintptr_t pa = sv39_pte_to_pa(entry);
-            if (pa >= SV39_MAX_PA)
-                return -12;
-            lifecycle_add(pte_visits, i != 0);
-            if (child[i] & PTE_V)
-                return -12;
-            child[i] = sv39_pa_to_pte(pa) | PTE_V | PTE_A | PTE_R | PTE_U | PTE_COW;
-            page_retain_user((void *)pa);
+        for (size_t first = 0; first < pages;) {
+            size_t count = pages - first;
+            if (count > PAGE_USER_REF_BATCH_MAX)
+                count = PAGE_USER_REF_BATCH_MAX;
+            for (size_t j = 0; j < count; ++j) {
+                size_t i = first + j;
+                lifecycle_add(clone_slots, 1);
+                /* sv39_walk already counted the first slot in each table. */
+                lifecycle_add(pte_visits, i != 0);
+                pte_t entry = parent[i];
+                if (!(entry & PTE_V) || !sv39_pte_is_leaf(entry))
+                    return -12;
+                uintptr_t pa = sv39_pte_to_pa(entry);
+                if (pa >= SV39_MAX_PA)
+                    return -12;
+                lifecycle_add(pte_visits, i != 0);
+                if (child[i] & PTE_V)
+                    return -12;
+                frames[j] = (void *)pa;
+            }
+
+            /* A valid child leaf owns its reference, including on rollback. */
+            page_retain_user_batch(frames, count);
+            for (size_t j = 0; j < count; ++j)
+                child[first + j] = sv39_pa_to_pte((uintptr_t)frames[j]) |
+                                   PTE_V | PTE_A | PTE_R | PTE_U | PTE_COW;
+            first += count;
         }
         va = limit;
     }

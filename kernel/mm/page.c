@@ -39,6 +39,20 @@ void page_retain_user(void *page)
     spinlock_release(lock);
 }
 
+void page_retain_user_batch(void *const *pages, size_t count)
+{
+    assert(count && count <= PAGE_USER_REF_BATCH_MAX, "user retain batch size");
+    struct page_zone *zone = &zones[PAGE_ZONE_USER];
+
+    spinlock_acquire(&zone->lock);
+    for (size_t i = 0; i < count; ++i) {
+        uint16_t *refs = user_ref((uintptr_t)pages[i]);
+        assert(*refs && *refs < UINT16_MAX, "retain invalid user frame");
+        ++*refs;
+    }
+    spinlock_release(&zone->lock);
+}
+
 unsigned page_user_refs(void *page)
 {
     uint16_t *refs = user_ref((uintptr_t)page);
@@ -164,6 +178,42 @@ void page_free(void *memory)
     zone->free_count++;
     spinlock_release(&zone->lock);
     lifecycle_page(zone == &zones[PAGE_ZONE_USER], false);
+}
+
+void page_release_user_batch(void **pages, size_t count)
+{
+    assert(count && count <= PAGE_USER_REF_BATCH_MAX, "user release batch size");
+    struct page_zone *zone = &zones[PAGE_ZONE_USER];
+    size_t last = 0;
+
+    spinlock_acquire(&zone->lock);
+    for (size_t i = 0; i < count; ++i) {
+        uint16_t *refs = user_ref((uintptr_t)pages[i]);
+        assert(*refs != 0, "release idle user frame");
+        if (--*refs == 0)
+            pages[last++] = pages[i];
+    }
+    spinlock_release(&zone->lock);
+    if (last == 0)
+        return;
+
+    /* Zero-reference frames remain private until the filled list is published. */
+    struct free_page *head = NULL;
+    struct free_page *tail = pages[0];
+    for (size_t i = 0; i < last; ++i) {
+        struct free_page *page = pages[i];
+        memset(page, 0xa5, PAGE_SIZE);
+        page->next = head;
+        head = page;
+    }
+
+    spinlock_acquire(&zone->lock);
+    tail->next = zone->freelist;
+    zone->freelist = head;
+    zone->free_count += last;
+    spinlock_release(&zone->lock);
+    for (size_t i = 0; i < last; ++i)
+        lifecycle_page(true, false);
 }
 
 uint64 page_free_count(page_zone_type_t type)
