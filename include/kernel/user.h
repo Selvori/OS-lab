@@ -10,6 +10,11 @@
 struct proc;
 int user_vm_create(struct proc *p, bool shared);
 void user_cow_mark(pagetable_t root, uintptr_t va);
+/* Page-aligned mapped heap spans in owner-private roots. On clone failure,
+ * the caller owns any pages and tables already installed in dst. */
+int user_vm_clone_heap_span(pagetable_t dst, pagetable_t src,
+                           uintptr_t begin, uintptr_t end);
+void user_vm_cow_mark_heap_span(pagetable_t root, uintptr_t begin, uintptr_t end);
 int user_cow_fault(struct proc *p, uintptr_t address);
 void user_replace_image(struct proc *p, void *code, void *data, void *stack);
 int user_prepare_write(struct proc *p, uintptr_t dst, size_t count);

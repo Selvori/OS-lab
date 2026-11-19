@@ -3,11 +3,6 @@
 #include <asm/sv39.h>
 #include <kernel/page.h>
 
-static bool pte_is_leaf(pte_t pte)
-{
-    return (pte & (PTE_R | PTE_W | PTE_X)) != 0;
-}
-
 pte_t *sv39_walk(pagetable_t root, uintptr_t va, bool allocate)
 {
     if (root == NULL || va >= SV39_MAX_LOW_VA)
@@ -18,7 +13,7 @@ pte_t *sv39_walk(pagetable_t root, uintptr_t va, bool allocate)
         pte_t *pte = &root[sv39_index((unsigned)level, va)];
 
         if ((*pte & PTE_V) != 0) {
-            if (pte_is_leaf(*pte))
+            if (sv39_pte_is_leaf(*pte))
                 return NULL;
             root = (pagetable_t)sv39_pte_to_pa(*pte);
             continue;
@@ -77,7 +72,7 @@ bool sv39_lookup(pagetable_t root, uintptr_t va,
 {
     pte_t *pte = sv39_walk(root, va, false);
 
-    if (pte == NULL || (*pte & PTE_V) == 0 || !pte_is_leaf(*pte))
+    if (pte == NULL || (*pte & PTE_V) == 0 || !sv39_pte_is_leaf(*pte))
         return false;
 
     if (pa != NULL)
@@ -111,7 +106,7 @@ void sv39_free_tables(pagetable_t root)
     lifecycle_add(pte_visits, 512);
     for (unsigned i = 0; i < 512; ++i) {
         pte_t pte = root[i];
-        if ((pte & PTE_V) && !pte_is_leaf(pte))
+        if ((pte & PTE_V) && !sv39_pte_is_leaf(pte))
             sv39_free_tables((pagetable_t)sv39_pte_to_pa(pte));
     }
     lifecycle_add(table_free, 1);
@@ -129,7 +124,7 @@ void sv39_prune_empty(pagetable_t root, uintptr_t va)
     for (int level = 2; level > 0; --level) {
         lifecycle_add(pte_visits, 1);
         pte_t *pte = &tables[depth][sv39_index((unsigned)level, va)];
-        if (!(*pte & PTE_V) || pte_is_leaf(*pte)) break;
+        if (!(*pte & PTE_V) || sv39_pte_is_leaf(*pte)) break;
         parents[depth] = pte;
         tables[depth + 1] = (pagetable_t)sv39_pte_to_pa(*pte);
         ++depth;

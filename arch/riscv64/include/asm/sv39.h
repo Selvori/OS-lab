@@ -25,6 +25,11 @@ typedef pte_t *pagetable_t;
 #define SATP_MODE_SV39 (8UL << 60)
 #define SATP_PPN_MASK ((1UL << 44) - 1UL)
 
+static inline bool sv39_pte_is_leaf(pte_t pte)
+{
+    return (pte & (PTE_R | PTE_W | PTE_X)) != 0;
+}
+
 static inline unsigned sv39_index(unsigned level, uintptr_t va)
 {
     return (unsigned)((va >> (PAGE_SHIFT + 9UL * level)) & SV39_VPN_MASK);

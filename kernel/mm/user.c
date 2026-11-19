@@ -156,12 +156,74 @@ bool user_writable(pagetable_t root, uintptr_t dst, size_t count)
     return true;
 }
 
+static inline void cow_mark_leaf(pte_t *pte)
+{
+    pte_t entry = *pte;
+    assert((entry & PTE_V) && writable_user_flags(entry) &&
+           !(entry & PTE_X), "fork writable user leaf");
+    *pte = (entry & ~PTE_W) | PTE_COW;
+}
+
 void user_cow_mark(pagetable_t root, uintptr_t va)
 {
     pte_t *pte = sv39_walk(root, va, false);
-    assert(pte && (*pte & PTE_V) && writable_user_flags(*pte) &&
-           !(*pte & PTE_X), "fork writable user leaf");
-    *pte = (*pte & ~PTE_W) | PTE_COW;
+    assert(pte, "fork writable user leaf");
+    cow_mark_leaf(pte);
+}
+
+static uintptr_t leaf_span_end(uintptr_t va, uintptr_t end)
+{
+    uintptr_t boundary = (va & ~(SV39_LEAF_SPAN - 1)) + SV39_LEAF_SPAN;
+    return boundary < end ? boundary : end;
+}
+
+int user_vm_clone_heap_span(pagetable_t dst, pagetable_t src,
+                           uintptr_t begin, uintptr_t end)
+{
+    for (uintptr_t va = begin; va < end;) {
+        uintptr_t limit = leaf_span_end(va, end);
+        const pte_t *parent = sv39_walk(src, va, false);
+        if (!parent)
+            return -12;
+        pte_t *child = sv39_walk(dst, va, true);
+        if (!child)
+            return -12;
+
+        size_t pages = (limit - va) / PAGE_SIZE;
+        for (size_t i = 0; i < pages; ++i) {
+            lifecycle_add(clone_slots, 1);
+            /* sv39_walk already counted the first slot in each table. */
+            lifecycle_add(pte_visits, i != 0);
+            pte_t entry = parent[i];
+            if (!(entry & PTE_V) || !sv39_pte_is_leaf(entry))
+                return -12;
+            uintptr_t pa = sv39_pte_to_pa(entry);
+            if (pa >= SV39_MAX_PA)
+                return -12;
+            lifecycle_add(pte_visits, i != 0);
+            if (child[i] & PTE_V)
+                return -12;
+            child[i] = sv39_pa_to_pte(pa) | PTE_V | PTE_A | PTE_R | PTE_U | PTE_COW;
+            page_retain_user((void *)pa);
+        }
+        va = limit;
+    }
+    return 0;
+}
+
+void user_vm_cow_mark_heap_span(pagetable_t root, uintptr_t begin, uintptr_t end)
+{
+    for (uintptr_t va = begin; va < end;) {
+        uintptr_t limit = leaf_span_end(va, end);
+        pte_t *first = sv39_walk(root, va, false);
+        assert(first, "fork heap leaf table");
+        size_t pages = (limit - va) / PAGE_SIZE;
+        for (size_t i = 0; i < pages; ++i) {
+            lifecycle_add(pte_visits, i != 0);
+            cow_mark_leaf(&first[i]);
+        }
+        va = limit;
+    }
 }
 
 /* The fixed-image PCB pointers own the same references represented by their leaves.

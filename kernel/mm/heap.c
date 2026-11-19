@@ -229,15 +229,8 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
     const mmap_region_t *free = src->mmap;
     for (;;) {
         uintptr_t end = free ? free->begin : src->heap_top;
-        for (; va < end; va += PAGE_SIZE) {
-            lifecycle_add(clone_slots, 1);
-            uintptr_t pa;
-            if (!sv39_lookup(src->pgtbl, va, &pa, NULL) ||
-                sv39_map(dst->pgtbl, va, pa, PAGE_SIZE,
-                         PTE_R | PTE_COW | PTE_U) != 0)
-                return -12;
-            page_retain_user((void *)pa);
-        }
+        if (user_vm_clone_heap_span(dst->pgtbl, src->pgtbl, va, end))
+            return -12;
         if (!free) break;
         va = region_end(free);
         free = free->next;
@@ -251,10 +244,8 @@ void user_heap_cow_commit(struct proc *p)
     heap_context(p);
     uintptr_t va = USER_HEAP_START;
     for (mmap_region_t *r = p->mmap; r; r = r->next) {
-        for (; va < r->begin; va += PAGE_SIZE)
-            user_cow_mark(p->pgtbl, va);
+        user_vm_cow_mark_heap_span(p->pgtbl, va, r->begin);
         va = region_end(r);
     }
-    for (; va < p->heap_top; va += PAGE_SIZE)
-        user_cow_mark(p->pgtbl, va);
+    user_vm_cow_mark_heap_span(p->pgtbl, va, p->heap_top);
 }
