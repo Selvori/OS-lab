@@ -24,3 +24,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [普通 fork 复用 Sv39 末级页表](docs/process-lifecycle/fork-leaf-walk/README.md)将已映射堆段按 2 MiB 边界切分，复用父、子末级表。QEMU 的 8 MiB 只读整轮中位数从 1.153 ms 降至 0.904 ms，fork 相位从 0.550 ms 降至 0.322 ms。
 
 [普通 COW 堆帧引用分批更新](docs/process-lifecycle/user-frame-ref-batches/README.md) 在私有堆克隆和整体清理路径中每批更新至多 32 个引用。QEMU 的 8 MiB 只读普通 fork 至 wait 中位数由 0.905 降至 0.443 ms。
+
+[普通私有堆 COW 顺序写提前分离](docs/process-lifecycle/sequential-cow-prefetch/README.md) 在同一 Sv39 末级表命中相邻堆页写缺页后，最多提前复制四页。QEMU 的 8 MiB 全写整轮中位数从 30.181 ms 降至 15.675 ms，复测基线为 28.896 ms。集中写四页会额外复制两页，方案保留在独立研究分支。
