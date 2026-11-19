@@ -1,0 +1,193 @@
+{
+  "commit": "c791c85489a913b60127df81024a9549be952bfb",
+  "version": "candidate",
+  "records": [
+    {
+      "case": [
+        16,
+        0,
+        1,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 16,
+          "retain_locks": 1,
+          "release_frames": 16,
+          "release_locks": 1,
+          "publish_frames": 0,
+          "publish_locks": 0
+        },
+        {
+          "retain_frames": 16,
+          "retain_locks": 1,
+          "release_frames": 16,
+          "release_locks": 1,
+          "publish_frames": 0,
+          "publish_locks": 0
+        }
+      ]
+    },
+    {
+      "case": [
+        33,
+        1,
+        1,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 33,
+          "retain_locks": 2,
+          "release_frames": 33,
+          "release_locks": 2,
+          "publish_frames": 1,
+          "publish_locks": 1
+        },
+        {
+          "retain_frames": 33,
+          "retain_locks": 2,
+          "release_frames": 33,
+          "release_locks": 2,
+          "publish_frames": 1,
+          "publish_locks": 1
+        }
+      ]
+    },
+    {
+      "case": [
+        256,
+        0,
+        1,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 256,
+          "retain_locks": 8,
+          "release_frames": 256,
+          "release_locks": 8,
+          "publish_frames": 0,
+          "publish_locks": 0
+        },
+        {
+          "retain_frames": 256,
+          "retain_locks": 8,
+          "release_frames": 256,
+          "release_locks": 8,
+          "publish_frames": 0,
+          "publish_locks": 0
+        }
+      ]
+    },
+    {
+      "case": [
+        2048,
+        0,
+        1,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 0,
+          "publish_locks": 0
+        },
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 0,
+          "publish_locks": 0
+        }
+      ]
+    },
+    {
+      "case": [
+        2048,
+        4,
+        512,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 4,
+          "publish_locks": 4
+        },
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 4,
+          "publish_locks": 4
+        }
+      ]
+    },
+    {
+      "case": [
+        2048,
+        2048,
+        1,
+        "fork"
+      ],
+      "rows": [
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 2048,
+          "publish_locks": 65
+        },
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 2048,
+          "publish_locks": 65
+        }
+      ]
+    },
+    {
+      "case": [
+        2048,
+        0,
+        1,
+        "exec"
+      ],
+      "rows": [
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 0,
+          "publish_locks": 0
+        },
+        {
+          "retain_frames": 2048,
+          "retain_locks": 65,
+          "release_frames": 2048,
+          "release_locks": 65,
+          "publish_frames": 0,
+          "publish_locks": 0
+        }
+      ]
+    }
+  ],
+  "programs": {
+    "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+    "lifebench": "82c631531131504350a4258fdc6c6825f919ef22565984a33236e6a24550c059",
+    "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0"
+  }
+}

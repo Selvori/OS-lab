@@ -1,0 +1,12 @@
+{
+  "repetitions": 8,
+  "commit": "c791c85489a913b60127df81024a9549be952bfb",
+  "heap_pages": 35,
+  "injected_failure_after_allocations": 8,
+  "restored_parent_writable_flags": true,
+  "restored_resource_counts": true,
+  "mixed_batch_shared": 31,
+  "mixed_batch_last": 1,
+  "tail_pages": 1,
+  "source_restored": true
+}

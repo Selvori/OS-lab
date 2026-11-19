@@ -1,0 +1,60 @@
+static unsigned char *const extra[] = {(void *)0x200000, (void *)0x400000};
+
+static unsigned char *address(unsigned i)
+{
+    return i < 33 ? (void *)(0x3000UL + i * PAGE) : extra[i - 33];
+}
+
+int main(void)
+{
+    struct lifecycle_sample original, mapped;
+    unsigned long frames[35];
+    resources(&original);
+    unsigned char *heap = heap_pages(33);
+    for (unsigned i = 0; i < 2; ++i)
+        CHECK(call(SYS_MMAP, (long)extra[i], 1, 0) == (long)extra[i]);
+    for (unsigned i = 0; i < 35; ++i) {
+        *address(i) = i + 21;
+        frames[i] = mapping(address(i)).frame;
+    }
+    resources(&mapped);
+    /* Fail the third L0 allocation after retaining 33 + 1 heap frames. */
+    CHECK(call(SYS_LIFECYCLE_PROBE, PROBE_FAIL_AFTER, 8, 0) == 0);
+    CHECK(fork_process() == -12);
+    check_resources(&mapped);
+    for (unsigned i = 0; i < 35; ++i) {
+        struct lifecycle_mapping m = mapping(address(i));
+        CHECK(m.frame == frames[i] && m.refs == 1 && (m.flags & (W | COW)) == W);
+    }
+    long pid = fork_process();
+    CHECK(pid >= 0);
+    if (!pid) {
+        for (unsigned i = 0; i < 35; ++i) {
+            struct lifecycle_mapping m = mapping(address(i));
+            CHECK(m.frame == frames[i] && m.refs == 2 && (m.flags & (W | COW)) == COW);
+            CHECK(*address(i) == i + 21);
+        }
+        /* The first release batch now has 31 shared frames and one last
+         * reference; page 32 is a one-entry tail of the first table. */
+        heap[PAGE] = 99;
+        heap[32 * PAGE] = 100;
+        for (unsigned i = 1; i <= 32; i += 31) {
+            struct lifecycle_mapping m = mapping(address(i));
+            CHECK(m.frame != frames[i] && m.refs == 1 && (m.flags & (W | COW)) == W);
+        }
+        finish(54);
+    }
+    int status;
+    CHECK(wait_for(&status) == pid && status == 54);
+    check_resources(&mapped);
+    for (unsigned i = 0; i < 35; ++i) {
+        struct lifecycle_mapping m = mapping(address(i));
+        CHECK(m.frame == frames[i] && m.refs == 1 && *address(i) == i + 21);
+    }
+    unmap(heap, 33);
+    for (unsigned i = 0; i < 2; ++i)
+        unmap(extra[i], 1);
+    check_resources(&original);
+    say("HEAP BATCH CHECK PASS\n");
+    return 0;
+}
