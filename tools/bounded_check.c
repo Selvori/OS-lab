@@ -82,10 +82,15 @@ int main(int argc, char **argv)
         struct reclaim_frame released = frame_event(0);
         CHECK(f.frame == released.frame && released.pool_return > f.template_drop);
         ROW("IDENTITY", released.frame, released.template_drop, released.pool_return);
-    } else if (policy == 6) {
-        CHECK(drops == 2038 && returns == 2038);
     } else {
-        CHECK(!drops && !returns);
+        CHECK(drops == (policy == 6 ? 2038U : 0) && returns == drops);
+        for (unsigned i = 0; i < pages; ++i) {
+            bool pin = pinned(i, true, pages) || pinned(i, false, pages);
+            bool expected = policy == 6 && !pin;
+            struct reclaim_frame f = frame_event(i);
+            CHECK(f.frame && !!f.pool_return == expected && !!f.template_drop == expected);
+            if (pin) ROW("PIN", i, f.frame, f.template_drop, f.pool_return);
+        }
     }
     CHECK(publish("/b-end", 1) && wait_for(a) && wait_for(b) && drain(true, false));
     observed(pages, &drops, &returns);
