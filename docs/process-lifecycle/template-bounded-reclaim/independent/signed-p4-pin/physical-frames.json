@@ -1,0 +1,74 @@
+{
+  "commit": "df073c034acd7ef04fe4b409045f0a9d1cbadf59",
+  "case": "pin",
+  "policy": 4,
+  "granularity": "window",
+  "elf_sha256": "ef8f8f81012d54cd141f3b0f483832caaea224b89abe4878adb3046ba8b828da",
+  "program_sha256": "ff361e68c6cd648009add4cd6bbf674ab0e4067bb54019b3effcbc368caf3cd6",
+  "snapshots": [
+    {
+      "phase": "ORIGIN",
+      "ref_histogram": {
+        "1": 2048
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 22107,
+      "parent_mapped": 2048,
+      "branch_mapped": []
+    },
+    {
+      "phase": "ATTACHED",
+      "ref_histogram": {
+        "2": 2048
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 22104,
+      "parent_mapped": 2048,
+      "branch_mapped": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "phase": "HELD",
+      "ref_histogram": {
+        "1": 2048
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 22104,
+      "parent_mapped": 0,
+      "live_pins": [
+        [
+          0,
+          509,
+          1021,
+          1533,
+          2045
+        ],
+        [
+          1,
+          510,
+          1022,
+          1534,
+          2046
+        ]
+      ],
+      "branch_mapped": [
+        5,
+        5
+      ]
+    },
+    {
+      "phase": "FINAL",
+      "ref_histogram": {
+        "0": 2048
+      },
+      "originals_on_free_list": 2048,
+      "zone_free_pages": 24155,
+      "parent_mapped": 0,
+      "branch_mapped": []
+    }
+  ],
+  "original_frames_sha256": "5dcf26399adcc34f2f88d6fd3d443793e6983f97a6e06989d2df2a260128fd95",
+  "passed": true
+}

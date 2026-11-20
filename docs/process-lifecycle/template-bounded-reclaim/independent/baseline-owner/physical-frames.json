@@ -1,0 +1,71 @@
+{
+  "commit": "df799fb4da6080981d6e070c745c827533b9cc9f",
+  "case": "owner",
+  "policy": 2,
+  "granularity": "window",
+  "elf_sha256": "661e5c5b277f8144a8e3c3931ebccf8acf9731030605544068155e3a2879510f",
+  "program_sha256": "ff361e68c6cd648009add4cd6bbf674ab0e4067bb54019b3effcbc368caf3cd6",
+  "snapshots": [
+    {
+      "phase": "ORIGIN",
+      "ref_histogram": {
+        "1": 1
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 24155,
+      "parent_mapped": 1,
+      "branch_mapped": []
+    },
+    {
+      "phase": "ATTACHED",
+      "ref_histogram": {
+        "2": 1
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 24152,
+      "parent_mapped": 1,
+      "branch_mapped": [
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "HELD",
+      "ref_histogram": {
+        "1": 1
+      },
+      "originals_on_free_list": 0,
+      "zone_free_pages": 24152,
+      "parent_mapped": 1,
+      "branch_mapped": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": "CREATOR RELEASED",
+      "ref_histogram": {
+        "0": 1
+      },
+      "originals_on_free_list": 1,
+      "zone_free_pages": 24153,
+      "parent_mapped": 0,
+      "branch_mapped": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": "FINAL",
+      "ref_histogram": {
+        "0": 1
+      },
+      "originals_on_free_list": 1,
+      "zone_free_pages": 24156,
+      "parent_mapped": 0,
+      "branch_mapped": []
+    }
+  ],
+  "original_frames_sha256": "3d02d7f26a63c8ed42e3301af584330916b8bb14622fbec8ceb35496d53cb8ad",
+  "passed": true
+}
