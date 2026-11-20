@@ -1,0 +1,88 @@
+{
+  "revision": "5f33cd7a2e110f14790c47ae0270657c29e8e89e",
+  "policy": 9,
+  "elf": "17b817bbf9acb9b581016830283f8433aa3457881a87054c0f14503e5f79fcd5",
+  "guest": "aee0224dfd27a532d75b052c7df99b09fde5eb82bdcef0808fcdaec14e750b9a",
+  "snapshots": [
+    {
+      "phase": "ORIGIN",
+      "refs": {
+        "1": 26
+      },
+      "on_free_list": 0,
+      "free_offsets": []
+    },
+    {
+      "phase": "BEFORE CLOSE",
+      "refs": {
+        "2": 9,
+        "1": 17
+      },
+      "on_free_list": 0,
+      "free_offsets": []
+    },
+    {
+      "phase": "DRAINED",
+      "refs": {
+        "1": 9,
+        "0": 17
+      },
+      "on_free_list": 17,
+      "free_offsets": [
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        508,
+        509,
+        510,
+        511,
+        512,
+        513,
+        4095
+      ]
+    },
+    {
+      "phase": "FINAL",
+      "refs": {
+        "0": 26
+      },
+      "on_free_list": 26,
+      "free_offsets": [
+        0,
+        1,
+        2,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        126,
+        127,
+        508,
+        509,
+        510,
+        511,
+        512,
+        513,
+        1020,
+        1021,
+        1022,
+        1023,
+        4095
+      ]
+    }
+  ],
+  "passed": true
+}

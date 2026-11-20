@@ -34,3 +34,7 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [七种模板策略的同负载数据和优劣](docs/process-lifecycle/template-bounded-reclaim/strategy-comparison/README.md)给出 14 次独立开机的每任务耗时、计数与五窗保留试验。
 
 显式 `freeze(8)` 在模板关闭时无活分支且关闭者主动让出的条件下，通过调度器空闲轮排空。QEMU 主样本的排空中位数较策略 6 从 7.666 ms 降至 1.716 ms，五窗活分支仍提前回池 2038 页。[空闲排空结果及复跑](docs/process-lifecycle/template-idle-drain/README.md)
+
+[模板关闭后的空闲排空](docs/process-lifecycle/template-idle-drain/README.md) 以显式 `freeze(8)` 在顶层空闲调度机会处理零分支关闭作业。
+
+[零分支关闭后的末次引用释放](docs/process-lifecycle/template-terminal-release/README.md) 以显式 `freeze(9)` 缩短实际排空，并保留活分支逐页回收。报告包含 5% 门槛、双分支五窗和带洞物理帧检查。

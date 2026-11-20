@@ -1,0 +1,14 @@
+{
+  "failures": [],
+  "guest": {
+    "repetitions": 8,
+    "cases": [
+      "tree, first split, sole upgrade, partial unmap",
+      "cross-page wait/read, bad address, second allocation rollback",
+      "store OOM, three exec allocation failures, RX protection",
+      "sparse cross-table, failed fork, shared frames"
+    ],
+    "expected_store_faults": 16,
+    "page_and_object_balances_checked": true
+  }
+}
