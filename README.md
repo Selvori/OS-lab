@@ -30,3 +30,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [模板关闭后的有界逐页回收](docs/process-lifecycle/template-bounded-reclaim/README.md)通过显式 `freeze(6)` 选择。8 MiB 五窗十页钉住负载在分支存续期间归还 2038 帧，单调度机会全队列限额为 32 次确认、8 次减引用、1 次固定析构。开放期含最终排空的摊销未通过 5% 门槛。
 
 [有界逐页回收的独立验收](docs/process-lifecycle/template-bounded-reclaim/independent/README.md) 逐帧核对两条活分支的映射及物理页池，并从 12 次独立开机原始样本复算性能门槛。
+
+[七种模板策略的同负载数据和优劣](docs/process-lifecycle/template-bounded-reclaim/strategy-comparison/README.md)给出 14 次独立开机的每任务耗时、计数与五窗保留试验。

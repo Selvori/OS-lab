@@ -1,0 +1,114 @@
+{
+  "0": {
+    "before_close_us": 972.23984375,
+    "borrow_retains": 130880,
+    "ci95_pct": [
+      367.15008380080667,
+      426.0223992415072
+    ],
+    "close_us": 232.9,
+    "copied_slots": 130880,
+    "drain_us": 26.15,
+    "drop_locks": 131136,
+    "paired_total_pct": 396.05510236073434,
+    "retain_locks": 130880,
+    "spawn_us": 129.45859375,
+    "total_us": 976.32890625
+  },
+  "1": {
+    "before_close_us": 190.371875,
+    "borrow_retains": 0,
+    "ci95_pct": [
+      0.0,
+      0.0
+    ],
+    "close_us": 217.6,
+    "copied_slots": 130880,
+    "drain_us": 23.1,
+    "drop_locks": 0,
+    "paired_total_pct": 0.0,
+    "retain_locks": 0,
+    "spawn_us": 32.764062499999994,
+    "total_us": 194.60078125
+  },
+  "2": {
+    "before_close_us": 186.15468750000002,
+    "borrow_retains": 0,
+    "ci95_pct": [
+      -8.674540385226459,
+      3.142191222087032
+    ],
+    "close_us": 221.3,
+    "copied_slots": 130880,
+    "drain_us": 22.85,
+    "drop_locks": 0,
+    "paired_total_pct": -2.9441348409520343,
+    "retain_locks": 0,
+    "spawn_us": 32.435937499999994,
+    "total_us": 189.9375
+  },
+  "3": {
+    "before_close_us": 292.65625,
+    "borrow_retains": 130880,
+    "ci95_pct": [
+      40.1215867470395,
+      69.89066548237926
+    ],
+    "close_us": 231.10000000000002,
+    "copied_slots": 130880,
+    "drain_us": 24.1,
+    "drop_locks": 4352,
+    "paired_total_pct": 55.75796618511273,
+    "retain_locks": 4096,
+    "spawn_us": 47.689843749999994,
+    "total_us": 296.48359375
+  },
+  "4": {
+    "before_close_us": 195.54453125,
+    "borrow_retains": 0,
+    "ci95_pct": [
+      54.26959556054294,
+      92.13286357796996
+    ],
+    "close_us": 24.5,
+    "copied_slots": 130880,
+    "drain_us": 8060.5,
+    "drop_locks": 0,
+    "paired_total_pct": 70.07197103489172,
+    "retain_locks": 0,
+    "spawn_us": 31.8453125,
+    "total_us": 341.5125
+  },
+  "5": {
+    "before_close_us": 202.0359375,
+    "borrow_retains": 0,
+    "ci95_pct": [
+      50.13087193980179,
+      88.45865298516493
+    ],
+    "close_us": 24.35,
+    "copied_slots": 130880,
+    "drain_us": 8206.05,
+    "drop_locks": 0,
+    "paired_total_pct": 75.62184313307169,
+    "retain_locks": 0,
+    "spawn_us": 33.4828125,
+    "total_us": 327.4171875
+  },
+  "6": {
+    "before_close_us": 192.21953125,
+    "borrow_retains": 0,
+    "ci95_pct": [
+      53.026792517492154,
+      81.43216314368192
+    ],
+    "close_us": 23.25,
+    "copied_slots": 130880,
+    "drain_us": 8539.7,
+    "drop_locks": 0,
+    "paired_total_pct": 69.1945886166836,
+    "retain_locks": 0,
+    "spawn_us": 31.7,
+    "total_us": 326.1734375
+  }
+}
