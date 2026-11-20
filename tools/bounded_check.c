@@ -42,7 +42,8 @@ int main(int argc, char **argv)
     CHECK(argc == 2);
     bool external = equal(argv[1], "ref");
     unsigned policy = external ? 6 : argv[1][0] - '0';
-    CHECK(policy <= 7);
+    CHECK(policy <= 8);
+    bool per_page = policy == 6 || policy == 8;
     unsigned pages = external ? 1 : PAGES;
     struct lifecycle_sample before, balance, steady;
     CHECK(!PROBE(PROBE_SNAPSHOT, &before));
@@ -83,10 +84,10 @@ int main(int argc, char **argv)
         CHECK(f.frame == released.frame && released.pool_return > f.template_drop);
         ROW("IDENTITY", released.frame, released.template_drop, released.pool_return);
     } else {
-        CHECK(drops == (policy == 6 ? 2038U : 0) && returns == drops);
+        CHECK(drops == (per_page ? 2038U : 0) && returns == drops);
         for (unsigned i = 0; i < pages; ++i) {
             bool pin = pinned(i, true, pages) || pinned(i, false, pages);
-            bool expected = policy == 6 && !pin;
+            bool expected = per_page && !pin;
             struct reclaim_frame f = frame_event(i);
             CHECK(f.frame && !!f.pool_return == expected && !!f.template_drop == expected);
             if (pin) ROW("PIN", i, f.frame, f.template_drop, f.pool_return);
@@ -98,7 +99,20 @@ int main(int argc, char **argv)
     struct reclaim_stats stats;
     CHECK(!PROBE(PROBE_RECLAIM, &stats));
     CHECK(!stats.pending && !stats.backlog && stats.confirm_max <= 32 && stats.release_max <= 8);
-    if (policy == 6 && !external) CHECK(stats.redirtied);
+    if (per_page && !external) CHECK(stats.redirtied);
+    if (policy == 8) {
+        unsigned long dropped = 0, confirmed = 0, finalized = 0;
+        for (unsigned long i = 0; i < stats.batches; ++i) {
+            struct reclaim_trace batch = {.index = i};
+            CHECK(!PROBE(PROBE_RECLAIM_TRACE, &batch) && batch.index == i);
+            CHECK(batch.confirmed <= 32 && batch.released <= 8 && batch.finalized <= 1);
+            dropped += batch.released;
+            confirmed += batch.confirmed;
+            finalized += batch.finalized;
+        }
+        CHECK(dropped == PAGES && confirmed == stats.confirm_total && finalized == 1);
+        ROW("TRACE", stats.batches, confirmed, dropped, finalized);
+    }
     CHECK(!PROBE(PROBE_STOP, &balance) && same(&before, &balance));
     ROW("FINAL", drops, returns, balance.user_left, balance.kernel_left,
         balance.nodes_left, balance.slots_used, balance.files_used);

@@ -81,6 +81,8 @@ $(BUILD)/apps/bopen.elf: tools/bounded_open.c $(APP_DEPS) tools/bounded_guest.h 
 	$(compile_user_program)
 $(BUILD)/apps/bcheck.elf: tools/bounded_check.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
 	$(compile_user_program)
+$(BUILD)/apps/byield.elf: tools/bounded_yield.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
 $(BUILD)/apps/bclose.elf: tools/bounded_close.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
 	$(compile_user_program)
 $(BUILD)/apps/bedges.elf: tools/bounded_edges.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h

@@ -19,6 +19,7 @@ enum work_kind { CONFIRM, RELEASE, FINALIZE, WORK_KINDS };
 
 struct template_job {
     struct proc *image;
+    struct proc *yield_owner;
     struct template_job *next[WORK_KINDS];
     unsigned policy, queued, remaining;
     bool closed;
@@ -178,12 +179,16 @@ static void allow_window(struct template_job *job, unsigned w)
         job->ready_windows |= 1U << w;
 }
 
-void template_close_job(struct proc *image)
+void template_close_job(struct proc *image, struct proc *closer)
 {
     struct template_job *job = image->reclaim_job;
     assert(image->template_refs == 1 + image->template_branches, "template close refs");
     ++image->template_refs;
     job->closed = true;
+    if (job->policy == TEMPLATE_IDLE_RECLAIM && !image->template_branches) {
+        job->yield_owner = closer;
+        closer->yield_reclaim = job;
+    }
 #ifdef LIFECYCLE_CHECKS
     if (lifecycle_active) {
         for (unsigned i = 0; i < NPROC; ++i) {
@@ -304,6 +309,9 @@ static void finalize_job(void)
     struct proc *image = job->image;
     assert(image->template_refs == 1 && !image->template_branches &&
            !job->remaining && !job->queued, "template final job ref");
+    /* PCB slots can be reused and a closer can queue a newer job. */
+    if (job->yield_owner && job->yield_owner->yield_reclaim == job)
+        job->yield_owner->yield_reclaim = NULL;
     template_put(image);
 #ifdef LIFECYCLE_PROBE
     --pending;

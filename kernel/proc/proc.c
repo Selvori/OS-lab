@@ -17,6 +17,10 @@ static struct context scheduler_context;
 static struct proc *current[NCPU];
 static uint64 scheduler_owner, sched_ticks;
 static unsigned next_pid;
+static bool yielded_to_reclaim;
+
+/* Stop starting idle turns 100 us after the voluntary context switch. */
+#define RECLAIM_YIELD_TICKS (TIMEBASE_HZ / 10000)
 
 static void owner_context(void)
 {
@@ -164,11 +168,12 @@ static void proc_sched(void)
            "scheduler resumed wrong process");
 }
 
-void proc_yield(void)
+void proc_yield(bool voluntary)
 {
     owner_context();
     struct proc *p = proc_current();
     assert(p && p->state == PROC_RUNNING, "yield current");
+    yielded_to_reclaim = voluntary && p->yield_reclaim;
     p->state = PROC_RUNNABLE;
     proc_sched();
 }
@@ -196,7 +201,7 @@ int proc_sleep_ticks(uint64 duration)
 {
     owner_context();
     if (duration > 0x7fffffffUL) return -22;
-    if (!duration) { proc_yield(); return 0; }
+    if (!duration) { proc_yield(false); return 0; }
     struct proc *p = proc_current();
     p->deadline = sched_ticks + duration;
     while ((int64_t)(sched_ticks - p->deadline) < 0) proc_sleep(&sched_ticks);
@@ -286,11 +291,19 @@ void proc_scheduler(void)
 {
     owner_context();
     assert(initproc && !proc_current(), "scheduler init");
+    struct proc *deferred = NULL;
+    uint64 defer_start = 0;
     for (;;) {
+        /* Each empty pass still gets only the normal idle reclaim turn. */
+        if (deferred && (!deferred->yield_reclaim ||
+                         csr_read(time) - defer_start >= RECLAIM_YIELD_TICKS))
+            deferred = NULL;
         bool ran = false;
         for (unsigned i = 0; i < NPROC; ++i) {
             struct proc *p = &procs[i];
-            if (p->state != PROC_RUNNABLE) continue;
+            if (p->state != PROC_RUNNABLE || p == deferred) continue;
+            /* A runnable competitor cancels the defer when selected. */
+            deferred = NULL;
             ran = true;
             template_reclaim_step(false);
             current[scheduler_owner] = p;
@@ -299,11 +312,21 @@ void proc_scheduler(void)
             swtch(&scheduler_context, &p->ctx);
             assert(!arch_irq_enabled() && p->state != PROC_RUNNING, "scheduler return");
             current[scheduler_owner] = NULL;
+            if (yielded_to_reclaim) {
+                yielded_to_reclaim = false;
+                deferred = p;
+                defer_start = csr_read(time);
+            }
         }
         if (!ran && !template_reclaim_step(true)) {
-            /* WFI wakes on a locally enabled pending timer even with SIE=0.
-             * Deliver it on the boot stack before checking runnable state. */
-            __asm__ volatile("wfi");
+            if (deferred) {
+                /* No runnable competitor or work. Reselect the yielder. */
+                deferred = NULL;
+            } else {
+                /* WFI wakes on a locally enabled pending timer even with SIE=0.
+                 * Deliver it on the boot stack before checking runnable state. */
+                __asm__ volatile("wfi");
+            }
         }
         arch_irq_enable();
         arch_irq_disable();
@@ -422,7 +445,7 @@ long template_close(struct proc *p)
         image->template_tracking = true;
     }
     if (image->reclaim_job)
-        template_close_job(image);
+        template_close_job(image, p);
     else if (image->template_tracking)
         template_reclaim_unborrowed(image);
     template_put(image);

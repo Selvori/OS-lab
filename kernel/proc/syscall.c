@@ -15,9 +15,15 @@ void syscall_dispatch(struct proc *p)
         result = lifecycle_control(p, tf->x[10], tf->x[11]);
         break;
 #endif
-    case SYS_FREEZE:
-        result = tf->x[10] >= TEMPLATE_POLICY_COUNT ? -22 : template_freeze(tf->x[10]);
+    case SYS_FREEZE: {
+        uint64 policy = tf->x[10];
+        result = -22;
+#ifndef LIFECYCLE_CHECKS
+        if (policy == TEMPLATE_RECORD_ONLY) break;
+#endif
+        if (policy < TEMPLATE_POLICY_COUNT) result = template_freeze(policy);
         break;
+    }
     case SYS_SPAWN:
         result = template_spawn();
         break;
@@ -49,7 +55,7 @@ void syscall_dispatch(struct proc *p)
         result = proc_sleep_ticks(tf->x[10]);
         break;
     case SYS_YIELD:
-        proc_yield();
+        proc_yield(true);
         result = 0;
         break;
     case SYS_EXIT:

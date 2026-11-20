@@ -11,9 +11,8 @@ enum template_policy {
     TEMPLATE_WINDOW_BATCH,
     TEMPLATE_WINDOW_INCREMENTAL,
     TEMPLATE_PAGE_RECLAIM,
-#ifdef LIFECYCLE_CHECKS
-    TEMPLATE_RECORD_ONLY,
-#endif
+    TEMPLATE_RECORD_ONLY = 7,
+    TEMPLATE_IDLE_RECLAIM = 8,
     TEMPLATE_POLICY_COUNT,
 };
 struct split_plan { pagetable_t fresh[HEAP_WINDOWS]; };
@@ -39,7 +38,7 @@ bool template_index_drained(const struct proc *image);
 long template_audit(unsigned pid);
 #endif
 void template_index_destroy(struct proc *image);
-void template_close_job(struct proc *image);
+void template_close_job(struct proc *image, struct proc *closer);
 bool template_reclaim_step(bool idle);
 #ifdef LIFECYCLE_PROBE
 unsigned template_work_pending(void);

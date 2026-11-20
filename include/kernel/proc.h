@@ -43,6 +43,7 @@ struct proc {
     uint64 deadline;
     int status;
     bool stack_mapped, faulted;
+    struct template_job *yield_reclaim;
 };
 void proc_init(void);
 int proc_make_first(void);
@@ -51,7 +52,7 @@ struct proc *proc_current(void);
 long proc_fork(void);
 long proc_wait(uintptr_t status_address);
 int proc_sleep_ticks(uint64 duration);
-void proc_yield(void);
+void proc_yield(bool voluntary);
 void proc_sleep(void *chan);
 void proc_wakeup(void *chan);
 void proc_tick(void);
