@@ -32,3 +32,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [有界逐页回收的独立验收](docs/process-lifecycle/template-bounded-reclaim/independent/README.md) 逐帧核对两条活分支的映射及物理页池，并从 12 次独立开机原始样本复算性能门槛。
 
 [七种模板策略的同负载数据和优劣](docs/process-lifecycle/template-bounded-reclaim/strategy-comparison/README.md)给出 14 次独立开机的每任务耗时、计数与五窗保留试验。
+
+显式 `freeze(8)` 在模板关闭时无活分支且关闭者主动让出的条件下，通过调度器空闲轮排空。QEMU 主样本的排空中位数较策略 6 从 7.666 ms 降至 1.716 ms，五窗活分支仍提前回池 2038 页。[空闲排空结果及复跑](docs/process-lifecycle/template-idle-drain/README.md)
