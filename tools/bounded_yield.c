@@ -1,8 +1,45 @@
 #include "bounded_guest.h"
 
+static int check_owner(unsigned policy)
+{
+    struct lifecycle_sample before, balance;
+    CHECK(!PROBE(PROBE_SNAPSHOT, &before));
+    CHECK(MAP(0, PAGES) == BASE);
+    CHECK(!PROBE(PROBE_START, 0));
+    struct reclaim_watch watch = {BASE, PAGES};
+    CHECK(!PROBE(PROBE_WATCH, &watch));
+    CHECK(call(SYS_FREEZE, policy, 0, 0) == 1);
+    for (unsigned i = 0; i < PAGES; ++i) {
+        struct lifecycle_mapping m = {.address = BASE + i * PAGE};
+        CHECK(!PROBE(PROBE_MAPPING, &m) && m.refs == 2);
+        CHECK(m.frame == frame_event(i).frame);
+    }
+    CHECK(!call(SYS_RELEASE, 0, 0, 0) && drain(true, false));
+    for (unsigned i = 0; i < PAGES; ++i) {
+        struct lifecycle_mapping m = {.address = BASE + i * PAGE};
+        struct reclaim_frame f = frame_event(i);
+        CHECK(!PROBE(PROBE_MAPPING, &m) && m.refs == 1);
+        CHECK(m.frame == f.frame && !f.pool_return);
+        if (policy != 1) CHECK(f.template_drop);
+    }
+    CHECK(!UNMAP(BASE, PAGES));
+    for (unsigned i = 0; i < PAGES; ++i) {
+        struct reclaim_frame f = frame_event(i);
+        CHECK(f.frame && f.pool_return > f.template_drop);
+    }
+    CHECK(!PROBE(PROBE_STOP, &balance) && same(&before, &balance));
+    ROW("OWNER", policy, PAGES, PAGES, 0, PAGES);
+    say("OWNER PASS\n");
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
-    CHECK(argc == 2 && (equal(argv[1], "6") || equal(argv[1], "8")));
+    CHECK(argc == 2);
+    if (equal(argv[1], "ref1")) return check_owner(1);
+    if (equal(argv[1], "ref6")) return check_owner(6);
+    if (equal(argv[1], "ref8")) return check_owner(8);
+    CHECK(equal(argv[1], "6") || equal(argv[1], "8"));
     unsigned policy = argv[1][0] - '0';
     struct lifecycle_sample before, balance;
     struct reclaim_stats competed, before_sleep, ordinary, finished;
@@ -15,6 +52,9 @@ int main(int argc, char **argv)
         CHECK(await("/b-yield-exit", false));
         return 73;
     }
+    /* Synchronize after the child's initial filesystem write. It remains
+     * runnable, polling and yielding, until the parent releases it. */
+    CHECK(await("/b-yield-ran", false));
 
     CHECK(MAP(0, PAGES) == BASE);
     CHECK(!PROBE(PROBE_START, 0));
@@ -23,9 +63,8 @@ int main(int argc, char **argv)
     unsigned long t = now();
     CHECK(!call(SYS_YIELD, 0, 0, 0));
     unsigned long contention = now() - t;
-    CHECK(peek("/b-yield-ran"));
     CHECK(!PROBE(PROBE_RECLAIM, &competed));
-    CHECK(competed.busy && !competed.idle && competed.drops < PAGES);
+    CHECK(competed.busy >= 2 && !competed.idle && competed.drops < PAGES);
     CHECK(publish("/b-yield-exit", 1) && wait_for(child));
 
     CHECK(!PROBE(PROBE_RECLAIM, &before_sleep));

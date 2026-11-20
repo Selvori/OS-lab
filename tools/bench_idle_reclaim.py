@@ -28,6 +28,9 @@ COMMANDS = (
     ("bcheck 7", "CHECK PASS"),
     ("bcheck 8", "CHECK PASS"),
     ("bcheck ref", "CHECK PASS"),
+    ("byield ref1", "OWNER PASS"),
+    ("byield ref6", "OWNER PASS"),
+    ("byield ref8", "OWNER PASS"),
 )
 
 
@@ -95,7 +98,7 @@ def save(path, value):
                                    mtime=0))
 
 
-def collect(out, quick):
+def collect(out, quick, checks_only):
     out.mkdir(parents=True, exist_ok=True)
     qemu.OUT = out
     data = dict(commit=first_line("git", "rev-parse", "HEAD"),
@@ -103,7 +106,8 @@ def collect(out, quick):
                 qemu=first_line("qemu-system-riscv64", "--version"),
                 gcc=first_line("riscv64-linux-gnu-gcc", "--version"),
                 harts=2, memory_mib=128, timebase_hz=TIMEBASE_HZ, modes={})
-    builds = {mode: build_mode(out, mode) for mode in ("check", "time", "counts")}
+    modes = ("check",) if checks_only else ("check", "time", "counts")
+    builds = {mode: build_mode(out, mode) for mode in modes}
     for mode, built in builds.items():
         files = dict(built["apps"], kernel=built["build"] / "kernel.elf")
         group = dict(build=built["command"], hashes={n: digest(p) for n, p in files.items()},
@@ -114,8 +118,9 @@ def collect(out, quick):
             group["boots"].append(boot(out, mode, index, order, built))
             print(f"{mode} boot {index + 1}: {order or 'guest checks'}", flush=True)
             save(out / "raw.json.gz", data)
-    for app in ("sh", "bopen"):
-        assert data["modes"]["time"]["hashes"][app] == data["modes"]["counts"]["hashes"][app]
+    if not checks_only:
+        for app in ("sh", "bopen"):
+            assert data["modes"]["time"]["hashes"][app] == data["modes"]["counts"]["hashes"][app]
 
 
 def interval(values):
@@ -158,8 +163,11 @@ if __name__ == "__main__":
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--quick", action="store_true")
     mode.add_argument("--summarize", action="store_true")
+    mode.add_argument("--checks-only", action="store_true")
     args = parser.parse_args()
     if not args.summarize:
-        collect(args.out.resolve(), args.quick)
+        collect(args.out.resolve(), args.quick, args.checks_only)
+    if args.checks_only:
+        raise SystemExit(0)
     with gzip.open(args.out / "raw.json.gz", "rt", encoding="utf-8") as raw:
         print(json.dumps(summarize(json.load(raw)), indent=2))
