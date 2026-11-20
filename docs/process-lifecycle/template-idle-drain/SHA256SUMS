@@ -1,11 +1,15 @@
 8d7dfe55368ade9e1fc33a95c1fda025af3736ac1244d8723035a7a07e9e992f  docs/process-lifecycle/template-idle-drain/checks/raw.json.gz
 bcd9bfe19bd6f1f3a3562aed32eb20f080471711bb0f34df251093e0eb10978a  docs/process-lifecycle/template-idle-drain/checks/serial.tar.gz
+3e63fff4993fed717f615a46ea8934f3cf9fe31ebe2bf70a7713f4b4ead11fc5  docs/process-lifecycle/template-idle-drain/independent/owner/physical-frames.json
+9747236bc1b910722db2d2cc0929bfb9c434bb12a1ca03c888c85080bd8748f2  docs/process-lifecycle/template-idle-drain/independent/owner/serial.log.gz
+83dfecdff02f35c1657b638be189ace9e1178093ac3fe8449e1cdecf9b29545f  docs/process-lifecycle/template-idle-drain/independent/pin/physical-frames.json
+1016e1391b3733b26943118ef0405c79823ff31bdbd020c5a18db30d2fddb80b  docs/process-lifecycle/template-idle-drain/independent/pin/serial.log.gz
 ba165bb182aec27e31069171202dc8d0e0c4e8b1658bf3d0d5ff7d7b482a5fc9  docs/process-lifecycle/template-idle-drain/official-entry.txt
 4e1ea8711dad7f001647b4d64c82cb0e4dd966291d1bae6338cb35c48c2523c1  docs/process-lifecycle/template-idle-drain/official-serial.log.gz
 8cb14ff345cf7adf909ea9cf0d585681bf98ac1f469ff05da5d2c0568f41e6e5  docs/process-lifecycle/template-idle-drain/primary/raw.json.gz
 91bfa6c72b44dfe86651a976327bebdc9c4c8388e9623ad8d60aff39855f0a1f  docs/process-lifecycle/template-idle-drain/primary/serial.tar.gz
 ac29803107327e80bc03346e9bcf942f60099b1d27c2f1a49dcaf48ff381b4d1  docs/process-lifecycle/template-idle-drain/primary/summary.json
-eb0434a592b493a441e925136fd56099e60030855604c9184d1ca0bfb2c60428  docs/process-lifecycle/template-idle-drain/README.md
+4f08e9de256d5365d50075a9fa03eb9cda1dd1ec7d95c45d6dde947c45397c11  docs/process-lifecycle/template-idle-drain/README.md
 af3a91126096302b9c269ad834b699482335e6f76a79da00ce6c1e0f0bf946d6  docs/process-lifecycle/template-idle-drain/replication/raw.json.gz
 7295cf8f20287a3419d7ead7e2a2089c273b065e9ae5a21514198879361c2954  docs/process-lifecycle/template-idle-drain/replication/serial.tar.gz
 9849c9df1389d608af9aef6de5daea729b7861fa932d954253141ffe256e529d  docs/process-lifecycle/template-idle-drain/replication/summary.json

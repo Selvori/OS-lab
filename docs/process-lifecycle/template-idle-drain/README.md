@@ -44,6 +44,12 @@ QEMU virt、128 MiB、双 hart，timebase 10 MHz。每次开机为三种策略�
 
 最终专项六次开机使用握手，确保竞争子进程保持可运行。竞争让出始终记录 2 个忙批、0 空闲批。竞争者结束后，`sleep(0)` 仍用普通分派。策略 8 的独占排空需 11–14 次 `SYS_YIELD`，策略 6 为 249–251 次。在有积压且独占运行期间，策略 8 每次开机的最慢单次 `SYS_YIELD` 为 120.5–226.6 µs，排空后 32 次普通让出的每次开机最大值为 13.9–48.4 µs。这是来宾测得的完整系统调用往返，包含最后一批、调度和模拟器波动。第一次追加专项时发现子进程可能在文件标记写完前被定时抢占，改成先握手、再开始有竞争的关闭。内核与性能样本沿用已签署版本。
 
+## 正式内核的独立物理验证
+
+原对话以 `f28556f` 构建正式 ELF，运行只用常规 syscall 的来宾程序。在关键状态暂停 QEMU，由宿主核对 Sv39 映射、每帧引用及用户空闲链表。两条分支各保留五页时，2038 个未钉原帧引用为零且均在空闲链表上，其余 10 个物理帧各有一份引用。两个分支回收后，2048 个原帧均在链表上。[五窗物理快照](independent/pin/physical-frames.json) · [串口](independent/pin/serial.log.gz)
+
+单页用例中，创建者保留原映射时，同一个帧的引用依冻结与排空顺序经过 1 → 2 → 1。创建者撤映射后引用归零并回池。使用既有宿主检查器，参数为 `--policy 8 --granularity page`，分开运行 `--case pin` 和 `--case owner`。[单页物理快照](independent/owner/physical-frames.json) · [串口](independent/owner/serial.log.gz) · [宿主检查器](../template-bounded-reclaim/independent/physical.py) · [来宾源码](../template-bounded-reclaim/independent/guest.c)
+
 ## 复算与复跑
 
 ~~~sh
