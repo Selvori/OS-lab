@@ -23,6 +23,16 @@ def sample(vm, command, success):
         parts = line.split()
         if len(parts) >= 2 and all(piece.isdecimal() for piece in parts[1:]):
             rows[parts[0]].append(list(map(int, parts[1:])))
+    if command.startswith("bclose "):
+        _, idle, start, _, quiet, *_ = rows["CLOSE"][0]
+        assert [r[0] for r in rows["STORE"]] == list(range(2048))
+        assert [r[0] for r in rows["FRAME"]] == list(range(2048))
+        assert len({r[1] for r in rows["FRAME"]}) == 2048
+        if not idle:
+            progress = rows["PROGRESS"]
+            assert 1 < len(progress) < 4096
+            assert [r[0] for r in progress] == list(range(len(progress)))
+            assert progress[0][1] <= start <= quiet <= progress[-1][1]
     return dict(command=command, rows=rows)
 
 

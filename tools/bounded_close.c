@@ -7,18 +7,24 @@ static int observer(void)
     long address = MAP(0, 2 * OBSERVATIONS * sizeof(unsigned long) / PAGE);
     CHECK(address == BASE);
     unsigned long (*data)[2] = (void *)address;
-    CHECK(publish("/c-ready", 1));
+    CHECK(await("/c-arm", false));
     unsigned count = 0;
     volatile unsigned work = 17;
-    while (count < OBSERVATIONS) {
+    for (;;) {
+        CHECK(count < OBSERVATIONS);
         for (unsigned i = 0; i < 128; ++i) work = work * 33 + i;
         unsigned long t = now();
         data[count][0] = t;
         data[count++][1] = work;
+        if (count == 1) CHECK(publish("/c-ready", 1));
+        /* On receipt of the end marker, record one last completed unit. */
+        if (count > 1 && !(count & 31) && peek("/c-end")) break;
         pause_guest(false);
-        if (!(count & 31) && peek("/c-end")) break;
     }
-    CHECK(await("/c-end", true));
+    CHECK(count < OBSERVATIONS);
+    for (unsigned i = 0; i < 128; ++i) work = work * 33 + i;
+    data[count][0] = now();
+    data[count++][1] = work;
     for (unsigned i = 0; i < count; ++i) ROW("PROGRESS", i, data[i][0], data[i][1]);
     return 73;
 }
@@ -56,7 +62,7 @@ int main(int argc, char **argv)
     CHECK(!PROBE(PROBE_SNAPSHOT, &before));
     long side = idle ? -1 : call(SYS_FORK, 0, 0, 0);
     if (!side) return observer();
-    CHECK(idle || (side > 0 && await("/c-ready", false)));
+    CHECK(idle || side > 0);
     CHECK(MAP(0, PAGES) == BASE);
     volatile unsigned char *heap = (void *)BASE;
     for (unsigned i = 0; i < PAGES; ++i) heap[i * PAGE] = original(i);
@@ -68,6 +74,7 @@ int main(int argc, char **argv)
     CHECK(rc == 1);
     long child = call(SYS_SPAWN, 0, 0, 0);
     CHECK(child > 0);
+    CHECK(idle || (publish("/c-arm", 1) && await("/c-ready", false)));
     unsigned long start = now();
     CHECK(!call(SYS_RELEASE, 0, 0, 0));
     unsigned long closed = now();
@@ -108,7 +115,10 @@ int main(int argc, char **argv)
     unlink_marker("/c-go");
     unlink_marker("/c-written");
     unlink_marker("/c-end");
-    if (!idle) unlink_marker("/c-ready");
+    if (!idle) {
+        unlink_marker("/c-arm");
+        unlink_marker("/c-ready");
+    }
     say("CLOSE PASS\n");
     return 0;
 }
