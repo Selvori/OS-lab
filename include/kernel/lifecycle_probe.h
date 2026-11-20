@@ -1,5 +1,6 @@
 #ifndef SEELE_LIFECYCLE_PROBE_H
 #define SEELE_LIFECYCLE_PROBE_H
+#include <kernel/types.h>
 
 #define SYS_LIFECYCLE_PROBE 63
 #define PROBE_SNAPSHOT 0
@@ -10,6 +11,58 @@
 #define PROBE_HEAP_DETAIL 5
 #define PROBE_TEMPLATE 6
 #define PROBE_BALANCE 7
+#define PROBE_RECLAIM 8
+#define PROBE_WATCH 9
+#define PROBE_FRAME_EVENT 10
+#define PROBE_AUDIT 11
+#define PROBE_RECLAIM_TRACE 12
+#define PROBE_QUIET 13
+#define PROBE_PROCESS 14
+#define PROBE_PROCESS_ZOMBIE 256
+
+struct reclaim_stats {
+    unsigned long retains, retain_locks, ref_drops, drop_locks;
+    unsigned long drops, returned, pending, max_pending;
+    unsigned long batches, busy, idle, confirm_max, release_max;
+    unsigned long confirm_total, batch_total, batch_max, finalize_ticks, finalize_max, finalized;
+    unsigned long slots_matching, slots_other, redirtied, rotation;
+    unsigned long peak_backlog, backlog, closed_zombies;
+    unsigned long finalize_tables, finalize_kernel, finalize_user;
+};
+
+struct reclaim_watch {
+    unsigned long begin, pages;
+};
+
+struct reclaim_frame {
+    unsigned long index, frame, last_borrow, template_drop, pool_return;
+};
+
+struct reclaim_trace {
+    unsigned long index, ticks, confirmed, released, idle, finalized;
+};
+
+#ifdef LIFECYCLE_COUNTS
+#define reclaim_count(field, n) do { if (lifecycle_active) reclaim_stats.field += (n); } while (0)
+#define reclaim_max(field, n) do { \
+    if (lifecycle_active && reclaim_stats.field < (n)) reclaim_stats.field = (n); \
+} while (0)
+#else
+#define reclaim_count(field, n) ((void)(n))
+#define reclaim_max(field, n) ((void)(n))
+#endif
+#ifdef LIFECYCLE_PROBE
+extern struct reclaim_stats reclaim_stats;
+bool lifecycle_reclaim_recording(void);
+void lifecycle_reclaim_trace(uint64 ticks, unsigned confirmed, unsigned dropped, bool idle,
+                             unsigned finalized);
+void lifecycle_original_watch(uintptr_t frame, unsigned event);
+#else
+#define lifecycle_original_watch(frame, event) ((void)0)
+#endif
+#define ORIGINAL_BORROW 0
+#define ORIGINAL_DROP 1
+#define ORIGINAL_RETURN 2
 struct template_stats {
     unsigned long copied_slots, retains, exit_slots, bitmap_words, private_drops;
     unsigned long resident_page_ticks, first_write_ticks, first_writes;

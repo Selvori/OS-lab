@@ -148,7 +148,7 @@ static struct page_zone *zone_for_address(uintptr_t address)
     return NULL;
 }
 
-void page_free(void *memory)
+bool page_free(void *memory)
 {
     uintptr_t address = (uintptr_t)memory;
 
@@ -166,7 +166,7 @@ void page_free(void *memory)
         bool last = --*refs == 0;
         spinlock_release(&zone->lock);
         if (!last)
-            return;
+            return false;
     }
     /* The last releaser owns the frame until it publishes it on the free list. */
     memset(memory, 0xa5, PAGE_SIZE);
@@ -177,10 +177,15 @@ void page_free(void *memory)
     zone->freelist = page;
     zone->free_count++;
     spinlock_release(&zone->lock);
+#ifdef LIFECYCLE_PROBE
+    if (zone == &zones[PAGE_ZONE_USER])
+        lifecycle_original_watch(address, ORIGINAL_RETURN);
+#endif
     lifecycle_page(zone == &zones[PAGE_ZONE_USER], false);
+    return true;
 }
 
-void page_release_user_batch(void **pages, size_t count)
+size_t page_release_user_batch(void **pages, size_t count)
 {
     assert(count && count <= PAGE_USER_REF_BATCH_MAX, "user release batch size");
     struct page_zone *zone = &zones[PAGE_ZONE_USER];
@@ -195,7 +200,7 @@ void page_release_user_batch(void **pages, size_t count)
     }
     spinlock_release(&zone->lock);
     if (last == 0)
-        return;
+        return 0;
 
     /* Zero-reference frames remain private until the filled list is published. */
     struct free_page *head = NULL;
@@ -212,8 +217,11 @@ void page_release_user_batch(void **pages, size_t count)
     zone->freelist = head;
     zone->free_count += last;
     spinlock_release(&zone->lock);
-    for (size_t i = 0; i < last; ++i)
+    for (size_t i = 0; i < last; ++i) {
+        lifecycle_original_watch((uintptr_t)pages[i], ORIGINAL_RETURN);
         lifecycle_page(true, false);
+    }
+    return last;
 }
 
 uint64 page_free_count(page_zone_type_t type)

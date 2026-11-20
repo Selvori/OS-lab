@@ -15,6 +15,9 @@ struct proc {
     int pid;
     struct proc *template_handle;
     struct branch_heap *branch;
+    struct template_job *reclaim_job;
+    unsigned template_branches;
+    bool template_ref_batch;
     unsigned template_refs;
     bool template_owned, template_reclaim, template_tracking, mixed_heap;
     uint16_t template_reclaimed;

@@ -23,6 +23,11 @@ static void owner_context(void)
     assert(arch_cpu_id() == scheduler_owner && !arch_irq_enabled(), "process owner context");
 }
 
+const struct proc *proc_slot(unsigned slot)
+{
+    return &procs[slot];
+}
+
 struct proc *proc_current(void) { return current[arch_cpu_id()]; }
 
 void proc_init(void)
@@ -39,6 +44,7 @@ void proc_destroy(struct proc *p)
            p->state != PROC_SLEEPING, "destroy active process");
     files_drop(p);
     user_heap_destroy(p);
+    template_index_destroy(p);
     if (p->stack_mapped) {
         pte_t *pte = sv39_walk(kernel_vm_root(), p->kstack, false);
         assert(pte && (*pte & PTE_V), "kernel stack leaf missing");
@@ -286,6 +292,7 @@ void proc_scheduler(void)
             struct proc *p = &procs[i];
             if (p->state != PROC_RUNNABLE) continue;
             ran = true;
+            template_reclaim_step(false);
             current[scheduler_owner] = p;
             p->state = PROC_RUNNING;
             ++p->switches;
@@ -293,7 +300,7 @@ void proc_scheduler(void)
             assert(!arch_irq_enabled() && p->state != PROC_RUNNING, "scheduler return");
             current[scheduler_owner] = NULL;
         }
-        if (!ran) {
+        if (!ran && !template_reclaim_step(true)) {
             /* WFI wakes on a locally enabled pending timer even with SIE=0.
              * Deliver it on the boot stack before checking runnable state. */
             __asm__ volatile("wfi");
@@ -321,7 +328,7 @@ long template_freeze(unsigned policy)
     if (p->template_handle || p->branch) return -16;
     struct proc *image = proc_allocate(p);
     if (!image) return -12;
-    if (user_heap_clone(image, p)) {
+    if (template_index_init(image, policy) || user_heap_clone(image, p)) {
         proc_destroy(image);
         return -12;
     }
@@ -340,8 +347,10 @@ long template_freeze(unsigned policy)
         }
     }
     image->template_refs = 1;
-    image->template_owned = policy != TEMPLATE_TABLE_REFS;
-    image->template_reclaim = policy == TEMPLATE_WINDOW_RECLAIM;
+    image->template_ref_batch = policy == TEMPLATE_TABLE_REFS_BATCH;
+    image->template_owned = policy != TEMPLATE_TABLE_REFS && !image->template_ref_batch;
+    image->template_reclaim = policy == TEMPLATE_WINDOW_RECLAIM ||
+                              policy == TEMPLATE_WINDOW_BATCH;
     p->template_handle = image;
     return 1;
 }
@@ -369,7 +378,34 @@ long template_spawn(void)
 void template_put(struct proc *image)
 {
     assert(image->template_refs, "template reference underflow");
-    if (!--image->template_refs) proc_destroy(image);
+    if (--image->template_refs) return;
+#ifdef LIFECYCLE_PROBE
+    bool tracing = lifecycle_reclaim_recording();
+    uint64 start = tracing ? lifecycle_time() : 0;
+#endif
+#ifdef LIFECYCLE_COUNTS
+    unsigned long tables = lifecycle_sample.table_free;
+    unsigned long kernel = lifecycle_sample.kernel_free;
+    unsigned long user = lifecycle_sample.user_free;
+#endif
+    proc_destroy(image);
+    reclaim_count(finalized, 1);
+#ifdef LIFECYCLE_COUNTS
+    reclaim_count(finalize_tables, lifecycle_sample.table_free - tables);
+    reclaim_count(finalize_kernel, lifecycle_sample.kernel_free - kernel);
+    reclaim_count(finalize_user, lifecycle_sample.user_free - user);
+#endif
+#ifdef LIFECYCLE_PROBE
+    if (tracing) {
+        uint64 ticks = lifecycle_time() - start;
+        reclaim_stats.finalize_ticks += ticks;
+        if (ticks > reclaim_stats.finalize_max)
+            reclaim_stats.finalize_max = ticks;
+#ifndef LIFECYCLE_COUNTS
+        ++reclaim_stats.finalized;
+#endif
+    }
+#endif
 }
 
 long template_close(struct proc *p)
@@ -378,14 +414,17 @@ long template_close(struct proc *p)
     if (!image) return -22;
     owner_context();
     p->template_handle = NULL;
-    if (image->template_reclaim && image->template_refs > 1) {
+    if (image->template_reclaim && image->template_branches) {
         unsigned branches = 0;
         for (unsigned i = 0; i < NPROC; ++i)
             branches += branch_count_borrows(&procs[i], image);
-        assert(branches == image->template_refs - 1, "template branch count");
+        assert(branches == image->template_branches, "template branch count");
         image->template_tracking = true;
-        template_reclaim_unborrowed(image);
     }
+    if (image->reclaim_job)
+        template_close_job(image);
+    else if (image->template_tracking)
+        template_reclaim_unborrowed(image);
     template_put(image);
     return 0;
 }

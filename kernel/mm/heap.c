@@ -201,7 +201,7 @@ void user_heap_destroy(struct proc *p)
     heap_context(p);
     lifecycle_heap_scope(true);
     if (p->branch) branch_detach(p);
-    else if (p->pgtbl && p->heap_top != 0)
+    else if (p->pgtbl && p->heap_top != 0 && !template_index_drained(p))
         user_vm_clear_heap(p->pgtbl, USER_HEAP_START, p->heap_top);
     lifecycle_heap_scope(false);
     while (p->mmap) {
@@ -234,6 +234,8 @@ int user_heap_clone(struct proc *dst, const struct proc *src)
         uintptr_t end = free ? free->begin : src->heap_top;
         if (user_vm_clone_heap_span(dst->pgtbl, src->pgtbl, va, end))
             return -12;
+        if (dst->reclaim_job)
+            template_index_span(dst, va, end);
         if (!free) break;
         va = region_end(free);
         free = free->next;

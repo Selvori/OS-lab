@@ -23,9 +23,10 @@ void page_retain_user(void *page);
 /* One owned reference per entry. Release uses the array as scratch space;
  * callers must revoke any mappings before handing over their references. */
 void page_retain_user_batch(void *const *pages, size_t count);
-void page_release_user_batch(void **pages, size_t count);
+/* Release calls return the number of frames actually published to the pool. */
+size_t page_release_user_batch(void **pages, size_t count);
 unsigned page_user_refs(void *page);
-void page_free(void *page);
+bool page_free(void *page);
 uint64 page_free_count(page_zone_type_t zone);
 uintptr_t page_zone_start(page_zone_type_t zone);
 uintptr_t page_zone_end(page_zone_type_t zone);

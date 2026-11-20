@@ -76,3 +76,14 @@ $(addprefix $(BUILD)/apps/,$(addsuffix .elf,tbench tcheck tpin wpin wcheck)): in
 
 $(BUILD)/apps/lifetest.elf: tools/lifecycle_cases.c $(APP_DEPS) include/kernel/lifecycle_probe.h
 	$(compile_user_program)
+
+$(BUILD)/apps/bopen.elf: tools/bounded_open.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
+$(BUILD)/apps/bcheck.elf: tools/bounded_check.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
+$(BUILD)/apps/bclose.elf: tools/bounded_close.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
+$(BUILD)/apps/bedges.elf: tools/bounded_edges.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
+$(BUILD)/apps/bfail.elf: tools/bounded_failure.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
