@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     CHECK(argc == 2);
     bool external = equal(argv[1], "ref");
     unsigned policy = external ? 6 : argv[1][0] - '0';
-    CHECK(policy == 2 || (policy >= 4 && policy <= 7));
+    CHECK(policy <= 7);
     unsigned pages = external ? 1 : PAGES;
     struct lifecycle_sample before, balance, steady;
     CHECK(!PROBE(PROBE_SNAPSHOT, &before));

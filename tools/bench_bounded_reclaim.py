@@ -79,7 +79,7 @@ def collect(out, mode, pairs, quick, checks):
                         for label in (3, 6, 7):
                             boot["checks"].append(sample(vm, f"bfail {label}", "FAILURE PASS"))
                     if "bcheck" in names:
-                        for label in ("ref", "2", "4", "5", "6", "7"):
+                        for label in ("ref", *map(str, range(8))):
                             boot["checks"].append(sample(vm, f"bcheck {label}", "CHECK PASS"))
                 elif mode == "time":
                     policies = (0, 3, 1, 6) if i % 2 == 0 else (6, 1, 3, 0)
