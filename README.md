@@ -26,3 +26,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [普通 COW 堆帧引用分批更新](docs/process-lifecycle/user-frame-ref-batches/README.md) 在私有堆克隆和整体清理路径中每批更新至多 32 个引用。QEMU 的 8 MiB 只读普通 fork 至 wait 中位数由 0.905 降至 0.443 ms。
 
 [普通私有堆 COW 顺序写提前分离](docs/process-lifecycle/sequential-cow-prefetch/README.md) 在同一 Sv39 末级表命中相邻堆页写缺页后，最多提前复制四页。QEMU 的 8 MiB 全写整轮中位数从 30.181 ms 降至 15.675 ms，复测基线为 28.896 ms。集中写四页会额外复制两页，方案保留在独立研究分支。
+
+[模板关闭后的有界逐页回收](docs/process-lifecycle/template-bounded-reclaim/README.md)通过显式 `freeze(6)` 选择。8 MiB 五窗十页钉住负载在分支存续期间归还 2038 帧，单调度机会全队列限额为 32 次确认、8 次减引用、1 次固定析构。开放期含最终排空的摊销未通过 5% 门槛。
