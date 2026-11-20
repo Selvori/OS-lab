@@ -18,7 +18,7 @@ import test_lab4 as qemu
 from bench_bounded_reclaim import sample
 
 POLICIES = (1, 6, 8)
-ORDERS = list(permutations(POLICIES))
+TERMINAL_POLICIES = (1, 8, 9)
 TIMEBASE_HZ = 10_000_000
 COMMANDS = (
     ("byield 6", "YIELD PASS"),
@@ -31,6 +31,12 @@ COMMANDS = (
     ("byield ref1", "OWNER PASS"),
     ("byield ref6", "OWNER PASS"),
     ("byield ref8", "OWNER PASS"),
+)
+TERMINAL_COMMANDS = (
+    ("byield 9", "YIELD PASS"),
+    ("bcheck 9", "CHECK PASS"),
+    ("byield ref9", "OWNER PASS"),
+    ("byield sparse9", "SPARSE PASS"),
 )
 
 
@@ -61,16 +67,17 @@ def open_case(vm, policy, tasks, mode):
     if mode == "counts":
         assert rows["REF"][0][:2] == [0, 0]
         assert rows["FIX"][0][4] == 1
-        if policy in (6, 8):
+        if policy in (6, 8, 9):
             assert rows["REF"][0][4:10] == [2048, 0, 0, 1, 2048, 0]
             batches, busy, idle, confirm_max, release_max, confirmed, *_ = rows["SCH"][0]
             assert batches == busy + idle == 256
-            assert confirm_max == 32 and release_max == 8 and confirmed == 33
+            assert release_max == 8
+            assert (confirm_max, confirmed) == ((0, 0) if policy == 9 else (32, 33))
             assert (idle == 0 if policy == 6 else idle > 0)
     return case
 
 
-def boot(out, mode, index, order, built):
+def boot(out, mode, index, order, built, commands=COMMANDS):
     os.environ["MAKEFLAGS"] = f"BUILD={built['build']} LIFECYCLE={mode}"
     label = f"{mode}-{index:02d}"
     sd = dict(boot=index, order=order)
@@ -82,7 +89,7 @@ def boot(out, mode, index, order, built):
         try:
             vm.until(b"seele$ ")
             if mode == "check":
-                sd["checks"] = [sample(vm, command, success) for command, success in COMMANDS]
+                sd["checks"] = [sample(vm, command, success) for command, success in commands]
             else:
                 sd["warm"] = [open_case(vm, p, 2, mode) for p in order]
                 sd["samples"] = [open_case(vm, p, 64, mode) for p in order]
@@ -98,7 +105,7 @@ def save(path, value):
                                    mtime=0))
 
 
-def collect(out, quick, checks_only):
+def collect(out, quick, checks_only, terminal):
     out.mkdir(parents=True, exist_ok=True)
     qemu.OUT = out
     data = dict(commit=first_line("git", "rev-parse", "HEAD"),
@@ -107,15 +114,20 @@ def collect(out, quick, checks_only):
                 gcc=first_line("riscv64-linux-gnu-gcc", "--version"),
                 harts=2, memory_mib=128, timebase_hz=TIMEBASE_HZ, modes={})
     modes = ("check",) if checks_only else ("check", "time", "counts")
+    policies = TERMINAL_POLICIES if terminal else POLICIES
+    orders = list(permutations(policies))
+    plan = {"check": [None] * 6, "time": orders * (4 if terminal else 2), "counts": orders}
+    commands = COMMANDS + TERMINAL_COMMANDS if terminal else COMMANDS
+    if terminal:
+        data["policies"] = policies
     builds = {mode: build_mode(out, mode) for mode in modes}
     for mode, built in builds.items():
         files = dict(built["apps"], kernel=built["build"] / "kernel.elf")
         group = dict(build=built["command"], hashes={n: digest(p) for n, p in files.items()},
                      boots=[])
         data["modes"][mode] = group
-        orders = {"check": [None] * 6, "time": ORDERS * 2, "counts": ORDERS}[mode]
-        for index, order in enumerate(orders[:1] if quick else orders):
-            group["boots"].append(boot(out, mode, index, order, built))
+        for index, order in enumerate(plan[mode][:1] if quick else plan[mode]):
+            group["boots"].append(boot(out, mode, index, order, built, commands))
             print(f"{mode} boot {index + 1}: {order or 'guest checks'}", flush=True)
             save(out / "raw.json.gz", data)
     if not checks_only:
@@ -131,6 +143,7 @@ def interval(values):
 
 
 def summarize(data):
+    policies = tuple(data.get('policies', POLICIES))
     results = {}
     rows = []
     ticks_us = data["timebase_hz"] / 1e6
@@ -142,14 +155,17 @@ def summarize(data):
             row[policy] = dict(freeze_us=setup / ticks_us, spawn_us=spawn / ticks_us / n,
                                close_us=close / ticks_us, drain_us=drain / ticks_us,
                                total_us=total / ticks_us / n)
-        assert set(row) == set(POLICIES)
+        assert set(row) == set(policies)
         rows.append(row)
-    for p in POLICIES:
+    for p in policies:
         results[p] = {name: median(row[p][name] for row in rows) for name in rows[0][p]}
     comparisons = {}
-    for candidate, control in ((6, 1), (8, 6), (8, 1)):
+    terminal = policies == TERMINAL_POLICIES
+    pairs_to_compare = ((9, 8), (9, 1), (8, 1)) if terminal else ((6, 1), (8, 6), (8, 1))
+    metrics = ("total_us", "drain_us", "close_us", "spawn_us") if terminal else ("total_us", "drain_us")
+    for candidate, control in pairs_to_compare:
         comparison = {}
-        for metric in ("total_us", "drain_us"):
+        for metric in metrics:
             pairs = [(row[candidate][metric], row[control][metric]) for row in rows]
             comparison[metric] = dict(delta=interval([a - b for a, b in pairs]),
                                       pct=interval([100 * (a / b - 1) for a, b in pairs]))
@@ -164,9 +180,11 @@ if __name__ == "__main__":
     mode.add_argument("--quick", action="store_true")
     mode.add_argument("--summarize", action="store_true")
     mode.add_argument("--checks-only", action="store_true")
+    parser.add_argument("--terminal", action="store_true",
+                        help="compare 1/8/9 with 24 time boots and terminal frame checks")
     args = parser.parse_args()
     if not args.summarize:
-        collect(args.out.resolve(), args.quick, args.checks_only)
+        collect(args.out.resolve(), args.quick, args.checks_only, args.terminal)
     if args.checks_only:
         raise SystemExit(0)
     with gzip.open(args.out / "raw.json.gz", "rt", encoding="utf-8") as raw:

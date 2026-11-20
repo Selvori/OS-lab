@@ -13,6 +13,7 @@ enum template_policy {
     TEMPLATE_PAGE_RECLAIM,
     TEMPLATE_RECORD_ONLY = 7,
     TEMPLATE_IDLE_RECLAIM = 8,
+    TEMPLATE_TERMINAL_RECLAIM = 9,
     TEMPLATE_POLICY_COUNT,
 };
 struct split_plan { pagetable_t fresh[HEAP_WINDOWS]; };

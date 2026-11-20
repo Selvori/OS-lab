@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
     CHECK(argc == 4);
     unsigned policy = number(argv[1]), n = number(argv[2]), stride = number(argv[3]);
-    CHECK((policy <= 6 || policy == 8) && n >= 1 && n <= 64 && stride * 3 < PAGES);
+    CHECK((policy <= 6 || policy == 8 || policy == 9) && n >= 1 && n <= 64 && stride * 3 < PAGES);
     volatile unsigned char *heap = (void *)BASE;
     struct lifecycle_sample before, after, balance;
     struct template_stats template;

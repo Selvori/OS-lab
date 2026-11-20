@@ -42,8 +42,8 @@ int main(int argc, char **argv)
     CHECK(argc == 2);
     bool external = equal(argv[1], "ref");
     unsigned policy = external ? 6 : argv[1][0] - '0';
-    CHECK(policy <= 8);
-    bool per_page = policy == 6 || policy == 8;
+    CHECK(policy <= 9);
+    bool per_page = policy == 6 || policy == 8 || policy == 9;
     unsigned pages = external ? 1 : PAGES;
     struct lifecycle_sample before, balance, steady;
     CHECK(!PROBE(PROBE_SNAPSHOT, &before));
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     CHECK(!PROBE(PROBE_RECLAIM, &stats));
     CHECK(!stats.pending && !stats.backlog && stats.confirm_max <= 32 && stats.release_max <= 8);
     if (per_page && !external) CHECK(stats.redirtied);
-    if (policy == 8) {
+    if (policy == 8 || policy == 9) {
         unsigned long dropped = 0, confirmed = 0, finalized = 0;
         for (unsigned long i = 0; i < stats.batches; ++i) {
             struct reclaim_trace batch = {.index = i};

@@ -22,7 +22,7 @@ struct template_job {
     struct proc *yield_owner;
     struct template_job *next[WORK_KINDS];
     unsigned policy, queued, remaining;
-    bool closed;
+    bool closed, terminal;
     uint64 original[HEAP_WINDOWS][WORDS_PER_WINDOW];
     uint64 held[HEAP_WINDOWS][WORDS_PER_WINDOW];
     uint64 safe[HEAP_WINDOWS][WORDS_PER_WINDOW];
@@ -185,7 +185,9 @@ void template_close_job(struct proc *image, struct proc *closer)
     assert(image->template_refs == 1 + image->template_branches, "template close refs");
     ++image->template_refs;
     job->closed = true;
-    if (job->policy == TEMPLATE_IDLE_RECLAIM && !image->template_branches) {
+    bool branchless = !image->template_branches;
+    job->terminal = branchless && job->policy == TEMPLATE_TERMINAL_RECLAIM;
+    if (branchless && (job->policy == TEMPLATE_IDLE_RECLAIM || job->terminal)) {
         job->yield_owner = closer;
         closer->yield_reclaim = job;
     }
@@ -209,10 +211,11 @@ void template_close_job(struct proc *image, struct proc *closer)
     reclaim_max(peak_backlog, backlog);
 #endif
     for (unsigned w = 0; w < HEAP_WINDOWS; ++w) {
-        if (job->policy != TEMPLATE_WINDOW_BATCH)
-            dirty_words(job, w, job->blocked[w]);
-        else if (!image->template_borrowers[w])
+        if (job->terminal ||
+            (job->policy == TEMPLATE_WINDOW_BATCH && !image->template_borrowers[w]))
             allow_window(job, w);
+        else if (job->policy != TEMPLATE_WINDOW_BATCH)
+            dirty_words(job, w, job->blocked[w]);
     }
     queue_work(job);
 }
@@ -263,28 +266,48 @@ static unsigned release_pages(struct template_job *job, unsigned budget)
     unsigned w = __builtin_ctz(job->ready_windows);
     unsigned word = __builtin_ctz(job->ready[w]);
     uint64 *held = &job->held[w][word];
-    uint64 allowed = job->policy == TEMPLATE_WINDOW_BATCH ? *held : job->safe[w][word];
+    uint64 allowed = (job->terminal || job->policy == TEMPLATE_WINDOW_BATCH) ?
+                     *held : job->safe[w][word];
     pte_t *leaf = table(job->image, w) + 64 * word;
     void *frames[RELEASE_LIMIT];
     unsigned n = 0;
     assert(allowed && !(allowed & ~*held), "template release candidate");
-    for (; allowed && n < budget; ++n) {
-        unsigned i = __builtin_ctzl(allowed);
-        uint64 bit = 1UL << i;
-        assert(leaf[i] & PTE_V, "template held leaf missing");
-        frames[n] = (void *)sv39_pte_to_pa(leaf[i]);
-        leaf[i] = 0;
-        *held &= ~bit;
-        job->safe[w][word] &= ~bit;
-        allowed &= ~bit;
+    if (job->terminal) {
+        /* Dense words need only one bit scan per run of present leaves. */
+        do {
+            unsigned i = __builtin_ctzl(allowed);
+            uint64 tail = allowed >> i;
+            do {
+                pte_t entry = leaf[i];
+                assert(entry & PTE_V, "template held leaf missing");
+                frames[n++] = (void *)sv39_pte_to_pa(entry);
+                leaf[i++] = 0;
+                tail >>= 1;
+            } while ((tail & 1) && n < budget);
+            allowed = tail ? tail << i : 0;
+        } while (allowed && n < budget);
+        *held = allowed;
+    } else {
+        for (; allowed && n < budget; ++n) {
+            unsigned i = __builtin_ctzl(allowed);
+            uint64 bit = 1UL << i;
+            assert(leaf[i] & PTE_V, "template held leaf missing");
+            frames[n] = (void *)sv39_pte_to_pa(leaf[i]);
+            leaf[i] = 0;
+            *held &= ~bit;
+            job->safe[w][word] &= ~bit;
+            allowed &= ~bit;
+        }
     }
     if (!allowed) {
         job->ready[w] &= ~(1U << word);
         if (!job->ready[w]) job->ready_windows &= ~(1U << w);
     }
     /* A shared leaf can only be cleared after every borrow was revoked and
-     * fenced. Page table storage is kept until the last branch unlinks it. */
-    sfence_vma();
+     * fenced. For terminal jobs the handle is gone, the image root never ran,
+     * and all branch links were removed and fenced before close. The creator
+     * and any ordinary forks use independent PTEs and frame references. */
+    if (!job->terminal) sfence_vma();
 #ifdef LIFECYCLE_PROBE
     if (lifecycle_reclaim_recording()) {
         for (unsigned i = 0; i < n; ++i)
