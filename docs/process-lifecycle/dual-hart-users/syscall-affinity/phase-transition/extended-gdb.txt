@@ -1,0 +1,48 @@
+0x00000000000010e4 in ?? ()
+
+Thread 2 (Thread 1.2 (CPU#1 [halted ])):
+mhartid        0x1	1
+pc             0x80208b14	0x80208b14 <user_worker_loop+76>
+priv           0x1	prv:1 [Supervisor]
+satp           0x80000000000802c5	-9223372036854250811
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+mhartid        0x0	0
+pc             0x10e4	0x10e4
+priv           0x0	prv:0 [User/Application]
+satp           0x800000000008033f	-9223372036854250689
+* CPU #0: thread_id=113276
+  CPU #1: thread_id=113277
+[Inferior 1 (process 1) detached]
+0x00000000000010e4 in ?? ()
+
+Thread 2 (Thread 1.2 (CPU#1 [halted ])):
+mhartid        0x1	1
+pc             0x80208b14	0x80208b14 <user_worker_loop+76>
+priv           0x1	prv:1 [Supervisor]
+satp           0x80000000000802c5	-9223372036854250811
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+mhartid        0x0	0
+pc             0x10e4	0x10e4
+priv           0x0	prv:0 [User/Application]
+satp           0x800000000008033f	-9223372036854250689
+* CPU #0: thread_id=113276
+  CPU #1: thread_id=113277
+[Inferior 1 (process 1) detached]
+0x00000000000010e4 in ?? ()
+
+Thread 2 (Thread 1.2 (CPU#1 [running])):
+mhartid        0x1	1
+pc             0x10e4	0x10e4
+priv           0x0	prv:0 [User/Application]
+satp           0x800000000008033f	-9223372036854250689
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+mhartid        0x0	0
+pc             0x10e4	0x10e4
+priv           0x0	prv:0 [User/Application]
+satp           0x8000000000080338	-9223372036854250696
+* CPU #0: thread_id=113276
+  CPU #1: thread_id=113277
+[Inferior 1 (process 1) detached]

@@ -1,0 +1,69 @@
+{
+  "label": "dual",
+  "kernel_sha256": "dd87bac3a609b0ad69cf79819b50fa6edf5c9473031d6abcb76600f029809472",
+  "guest_sha256": "ccccf7f47ced6c1c9371f7994a4b42733891dba8c06a3bf4737352cb3e74d2bb",
+  "disk_sha256": "7a449a563c7ff9fe3c29ff1d988220244521c3d8481fb851d613c20f80475575",
+  "rounds_each": 85000000,
+  "verified_status": [
+    895398383,
+    45421316
+  ],
+  "samples": [
+    [
+      {
+        "hart": 0,
+        "privilege": 0,
+        "pc": "0x10e4",
+        "satp": "0x800000000008033e"
+      },
+      {
+        "hart": 1,
+        "privilege": 0,
+        "pc": "0x10e4",
+        "satp": "0x8000000000080337"
+      }
+    ],
+    [
+      {
+        "hart": 0,
+        "privilege": 1,
+        "pc": "0x80207f3c",
+        "satp": "0x80000000000802c4"
+      },
+      {
+        "hart": 1,
+        "privilege": 1,
+        "pc": "0x80208b10",
+        "satp": "0x80000000000802c4"
+      }
+    ],
+    [
+      {
+        "hart": 0,
+        "privilege": 1,
+        "pc": "0x80205470",
+        "satp": "0x80000000000802c4"
+      },
+      {
+        "hart": 1,
+        "privilege": 1,
+        "pc": "0x80208b10",
+        "satp": "0x80000000000802c4"
+      }
+    ],
+    [
+      {
+        "hart": 0,
+        "privilege": 3,
+        "pc": "0x800004f8",
+        "satp": "0x80000000000802c4"
+      },
+      {
+        "hart": 1,
+        "privilege": 1,
+        "pc": "0x80208b10",
+        "satp": "0x80000000000802c4"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "label": "adaptive-phase",
+  "kernel_sha256": "c156fd8b4f315af842ca0578403818095ca85768642b628cfd641e38fad33564",
+  "guest_sha256": "6b5d85eae5e642119f19fc9c6070d72533a3f8bb87bab7aa4a8ba05a38cbbabb",
+  "disk_sha256": "e8e13a127695f63e62b79de09096e45e2ac65a755fbecf891484da1ae7c4a399",
+  "rounds_each": 85000000,
+  "verified_status": [
+    895398383,
+    45421316
+  ],
+  "samples": [
+    [
+      {
+        "hart": 0,
+        "privilege": 0,
+        "pc": "0x10e4",
+        "satp": "0x800000000008033f"
+      },
+      {
+        "hart": 1,
+        "privilege": 0,
+        "pc": "0x10e4",
+        "satp": "0x8000000000080338"
+      }
+    ],
+    [
+      {
+        "hart": 0,
+        "privilege": 1,
+        "pc": "0x80205470",
+        "satp": "0x80000000000802c5"
+      },
+      {
+        "hart": 1,
+        "privilege": 1,
+        "pc": "0x80208b14",
+        "satp": "0x80000000000802c5"
+      }
+    ]
+  ]
+}
