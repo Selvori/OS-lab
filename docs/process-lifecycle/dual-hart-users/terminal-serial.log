@@ -1,0 +1,52 @@
+qemu-system-riscv64 -machine virt -bios default -accel tcg,thread=multi -m 128M -smp 2 -nographic -global virtio-mmio.force-legacy=false -drive file=/home/selvori/Work/Seele/build/dual-hart/formal-smoke/terminal.img,if=none,format=raw,id=seele-disk -device virtio-blk-device,drive=seele-disk -kernel build/dual-hart/formal-smoke/kernel-2-check/kernel.elf
+
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 1
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 1 is booting!
+memory: kernel 0x00000000802c5000-0x0000000082213000, 8014 free pages
+memory: user   0x0000000082213000-0x0000000088000000, 24045 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 1 enabled Sv39 with root 0x00000000802c5000
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+cpu 0 enabled Sv39 with root 0x00000000802c5000
+cpu 0 SBI timer ready: 100 Hz
+cpu 0 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=1
+Seele shell. Type help for commands.
+seele$ byield ref9
+TRACE 256 0 2048 1
+REF 0 0 0 0 2048 0 0 1 2048 0
+SCH 256 89 167 0 8 0 0 0 0 0
+FIX 132120 5230 3808 3808 1 9 12 1
+OWNER 9 2048 2048 0 2048
+OWNER PASS
+seele$ byield sparse9
+TRACE 253 0 2022 1
+REF 0 0 0 0 2022 2022 0 1 2022 0
+SCH 253 128 125 0 8 0 0 0 0 0
+FIX 348055 4281 1192 1192 1 9 12 1
+SPARSE 2048 26 2022 2022
+SPARSE PASS
+seele$ QEMU: Terminated

@@ -38,3 +38,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [模板关闭后的空闲排空](docs/process-lifecycle/template-idle-drain/README.md) 以显式 `freeze(8)` 在顶层空闲调度机会处理零分支关闭作业。
 
 [零分支关闭后的末次引用释放](docs/process-lifecycle/template-terminal-release/README.md) 以显式 `freeze(9)` 缩短实际排空，并保留活分支逐页回收。报告包含 5% 门槛、双分支五窗和带洞物理帧检查。
+
+[普通进程的双 hart 用户态研究](docs/process-lifecycle/dual-hart-users/README.md) 通过 `DUAL_HART_USERS=1` 在 QEMU virt 开启。四组同负载配对的完成时间中位数由 329.77 ms 降至 173.65 ms，GDB 同时见证两颗 hart 在不同用户页表下执行 U 态。

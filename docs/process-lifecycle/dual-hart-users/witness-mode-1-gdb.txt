@@ -1,0 +1,16 @@
+0x0000000000001136 in ?? ()
+
+Thread 2 (Thread 1.2 (CPU#1 [halted ])):
+mhartid        0x1	1
+pc             0x80207d5e	0x80207d5e <arch_park+4>
+priv           0x1	prv:1 [Supervisor]
+satp           0x80000000000802c2	-9223372036854250814
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+mhartid        0x0	0
+pc             0x1136	0x1136
+priv           0x0	prv:0 [User/Application]
+satp           0x800000000008032e	-9223372036854250706
+* CPU #0: thread_id=93844
+  CPU #1: thread_id=93845
+[Inferior 1 (process 1) detached]
