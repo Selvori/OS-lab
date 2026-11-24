@@ -46,3 +46,7 @@ make CONFIG=riscv64-visionfive2-uboot build image
 ```
 
 开启原型时，默认构建目录带 `-dual-hart` 和已选的生命周期探针模式。自定义 `BUILD` 时为每种配置使用独立目录。见证工具依赖 `gdb-multiarch`。
+
+## 密集系统调用的后续迭代
+
+[启动 hart 亲和策略与配对数据](syscall-affinity/README.md) 用 PCB 中既有系统调用计数抑制频繁陷入任务的远端派发。双子进程密集 getpid 较初版配对中位耗时下降 19.45%，双子进程纯计算仍保持约 2 倍加速。
