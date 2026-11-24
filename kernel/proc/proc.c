@@ -21,6 +21,8 @@ static unsigned next_pid;
 static bool yielded_to_reclaim;
 #ifdef DUAL_HART_USERS
 static struct proc *remote_proc;
+/* One sample per owner U-mode timer. IPI returns may shorten a scheduler turn. */
+#define OFFLOAD_SYSCALL_LIMIT 16
 #endif
 
 /* Stop starting idle turns 100 us after the voluntary context switch. */
@@ -187,9 +189,13 @@ void proc_yield(bool voluntary)
 }
 
 #ifdef DUAL_HART_USERS
-void proc_preempt_user(void)
+void proc_preempt_user(bool timer)
 {
     struct proc *p = proc_current();
+    if (timer) {
+        p->prefer_owner = p->syscalls - p->timer_syscalls >= OFFLOAD_SYSCALL_LIMIT;
+        p->timer_syscalls = p->syscalls;
+    }
     p->user_ready = true;
     proc_yield(false);
     panic("resumed discarded user interrupt continuation");
@@ -223,7 +229,7 @@ static void dispatch_remote(unsigned local)
     if (remote_proc) return;
     for (unsigned offset = 1; offset < NPROC; ++offset) {
         struct proc *p = &procs[(local + offset) % NPROC];
-        if (p->state != PROC_RUNNABLE || !p->user_ready ||
+        if (p->state != PROC_RUNNABLE || !p->user_ready || p->prefer_owner ||
             p == initproc || p->branch || p->template_handle || p->yield_reclaim)
             continue;
         p->state = PROC_REMOTE;

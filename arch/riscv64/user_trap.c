@@ -26,14 +26,14 @@ static void handle_user_trap(struct proc *p, uint64 cause, uint64 value)
         if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_TIMER) {
             p->user_timers++;
 #ifdef DUAL_HART_USERS
-            proc_preempt_user();
+            proc_preempt_user(true);
 #else
             proc_yield(false);
 #endif
         }
 #ifdef DUAL_HART_USERS
         if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_SOFT)
-            proc_preempt_user();
+            proc_preempt_user(false);
 #endif
         if ((cause & ~SCAUSE_INTERRUPT) == IRQ_S_EXT) p->user_external++;
     } else {

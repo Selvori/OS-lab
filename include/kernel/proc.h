@@ -45,7 +45,8 @@ struct proc {
     bool stack_mapped, faulted;
 #ifdef DUAL_HART_USERS
     bool user_ready; /* Runnable with no saved kernel continuation. */
-    uint64 remote_cause, remote_value;
+    bool prefer_owner;
+    uint64 timer_syscalls, remote_cause, remote_value;
 #endif
     struct template_job *yield_reclaim;
 };
@@ -58,7 +59,7 @@ long proc_wait(uintptr_t status_address);
 int proc_sleep_ticks(uint64 duration);
 void proc_yield(bool voluntary);
 #ifdef DUAL_HART_USERS
-void proc_preempt_user(void) __attribute__((noreturn));
+void proc_preempt_user(bool timer) __attribute__((noreturn));
 #endif
 void proc_sleep(void *chan);
 void proc_wakeup(void *chan);
