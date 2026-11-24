@@ -17,6 +17,13 @@ long sbi_set_timer(uint64 deadline)
 {
     return sbi_call(0x54494d45, 0, deadline, 0, 0);
 }
+#ifdef DUAL_HART_USERS
+long sbi_send_ipi(uint64 hart)
+{
+    /* SBI v0.2 IPI: select bit zero with the target hart as the mask base. */
+    return sbi_call(0x735049, 0, 1, hart, 0);
+}
+#endif
 void sbi_putchar(char c) { (void)sbi_call(1, 0, (uint8)c, 0, 0); }
 int arch_start_cpu(uint64 cpu)
 {

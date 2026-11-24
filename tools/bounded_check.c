@@ -93,7 +93,14 @@ int main(int argc, char **argv)
             if (pin) ROW("PIN", i, f.frame, f.template_drop, f.pool_return);
         }
     }
-    CHECK(publish("/b-end", 1) && wait_for(a) && wait_for(b) && drain(true, false));
+    CHECK(publish("/b-end", 1));
+    int status;
+    long first = call(SYS_WAIT, (long)&status, 0, 0);
+    CHECK((first == a || first == b) && status == 73);
+    long second = call(SYS_WAIT, (long)&status, 0, 0);
+    CHECK(second == (first == a ? b : a) && status == 73);
+    ROW("WAIT", first, second);
+    CHECK(drain(true, false));
     observed(pages, &drops, &returns);
     CHECK(returns == pages);
     struct reclaim_stats stats;

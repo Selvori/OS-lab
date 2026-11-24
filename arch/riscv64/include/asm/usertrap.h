@@ -9,6 +9,7 @@
 #define UTF_GP 296
 #ifndef __ASSEMBLER__
 #include <kernel/types.h>
+#include <kernel/vm.h>
 struct user_trapframe {
     uint64 x[32];
     uint64 epc, kernel_satp, kernel_sp, kernel_trap, kernel_hart, kernel_gp;
@@ -23,5 +24,7 @@ _Static_assert(offsetof(struct user_trapframe, kernel_gp) == UTF_GP, "gp");
 _Static_assert(sizeof(struct user_trapframe) == 304, "user frame size");
 void trap_user_handler(void) __attribute__((noreturn));
 void trap_user_return(void) __attribute__((noreturn));
+void trap_user_enter(struct user_trapframe *tf, pagetable_t root, uintptr_t sp,
+                     void (*handler)(void)) __attribute__((noreturn));
 #endif
 #endif

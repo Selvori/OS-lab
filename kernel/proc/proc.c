@@ -7,10 +7,11 @@
 #include <kernel/string.h>
 #include <kernel/vm.h>
 #include <asm/csr.h>
+#include <asm/user_worker.h>
 #include <platform.h>
 #include <kernel/template.h>
 
-/* Only scheduler_owner touches this table. Other harts service devices only. */
+/* Only scheduler_owner accesses PCBs. A worker may borrow a user context. */
 static struct proc procs[NPROC];
 static struct proc *initproc;
 static struct context scheduler_context;
@@ -18,6 +19,9 @@ static struct proc *current[NCPU];
 static uint64 scheduler_owner, sched_ticks;
 static unsigned next_pid;
 static bool yielded_to_reclaim;
+#ifdef DUAL_HART_USERS
+static struct proc *remote_proc;
+#endif
 
 /* Stop starting idle turns 100 us after the voluntary context switch. */
 #define RECLAIM_YIELD_TICKS (TIMEBASE_HZ / 10000)
@@ -45,7 +49,8 @@ void proc_destroy(struct proc *p)
 {
     owner_context();
     assert(p && p != proc_current() && p->state != PROC_RUNNING &&
-           p->state != PROC_SLEEPING, "destroy active process");
+           p->state != PROC_SLEEPING && p->state != PROC_REMOTE,
+           "destroy active process");
     files_drop(p);
     user_heap_destroy(p);
     template_index_destroy(p);
@@ -153,6 +158,9 @@ long proc_fork(void)
     files_fork(child, parent);
     child->parent = parent;
     child->pid = (int)next_pid++;
+#ifdef DUAL_HART_USERS
+    child->user_ready = true;
+#endif
     child->state = PROC_RUNNABLE;
     return child->pid;
 }
@@ -177,6 +185,55 @@ void proc_yield(bool voluntary)
     p->state = PROC_RUNNABLE;
     proc_sched();
 }
+
+#ifdef DUAL_HART_USERS
+void proc_preempt_user(void)
+{
+    struct proc *p = proc_current();
+    p->user_ready = true;
+    proc_yield(false);
+    panic("resumed discarded user interrupt continuation");
+}
+
+/* A handed-off process has no runnable kernel continuation. The scheduler
+ * rebuilds one on its owner stack only after the worker releases the context. */
+static void reset_user_context(struct proc *p, void (*entry)(void))
+{
+    p->ctx = (struct context) {
+        .ra = (uintptr_t)entry,
+        .sp = p->kstack + PAGE_SIZE,
+    };
+}
+
+static void collect_remote(void)
+{
+    struct proc *p = remote_proc;
+    if (!p || !user_worker_collect(&p->remote_cause, &p->remote_value))
+        return;
+    remote_proc = NULL;
+    assert(p->state == PROC_REMOTE, "remote process state");
+    p->user_ready = p->remote_cause == (SCAUSE_INTERRUPT | IRQ_S_TIMER);
+    if (p->user_ready) ++p->user_timers;
+    reset_user_context(p, p->user_ready ? trap_user_return : trap_user_resume_remote);
+    p->state = PROC_RUNNABLE;
+}
+
+static void dispatch_remote(unsigned local)
+{
+    if (remote_proc) return;
+    for (unsigned offset = 1; offset < NPROC; ++offset) {
+        struct proc *p = &procs[(local + offset) % NPROC];
+        if (p->state != PROC_RUNNABLE || !p->user_ready ||
+            p == initproc || p->branch || p->template_handle || p->yield_reclaim)
+            continue;
+        p->state = PROC_REMOTE;
+        ++p->switches;
+        remote_proc = p;
+        user_worker_submit(p->tf, p->pgtbl);
+        return;
+    }
+}
+#endif
 
 void proc_sleep(void *chan)
 {
@@ -300,25 +357,40 @@ void proc_scheduler(void)
             deferred = NULL;
         bool ran = false;
         for (unsigned i = 0; i < NPROC; ++i) {
+#ifdef DUAL_HART_USERS
+            collect_remote();
+#endif
             struct proc *p = &procs[i];
             if (p->state != PROC_RUNNABLE || p == deferred) continue;
             /* A runnable competitor cancels the defer when selected. */
             deferred = NULL;
             ran = true;
             template_reclaim_step(false);
+#ifdef DUAL_HART_USERS
+            dispatch_remote(i);
+            p->user_ready = false;
+#endif
             current[scheduler_owner] = p;
             p->state = PROC_RUNNING;
             ++p->switches;
             swtch(&scheduler_context, &p->ctx);
             assert(!arch_irq_enabled() && p->state != PROC_RUNNING, "scheduler return");
             current[scheduler_owner] = NULL;
+#ifdef DUAL_HART_USERS
+            if (p->user_ready) reset_user_context(p, trap_user_return);
+#endif
             if (yielded_to_reclaim) {
                 yielded_to_reclaim = false;
                 deferred = p;
                 defer_start = csr_read(time);
             }
         }
-        if (!ran && !template_reclaim_step(true)) {
+        bool can_reclaim_idle = true;
+#ifdef DUAL_HART_USERS
+        /* A worker still running user code is a competitor, not an idle turn. */
+        can_reclaim_idle = !remote_proc;
+#endif
+        if (!ran && (!can_reclaim_idle || !template_reclaim_step(true))) {
             if (deferred) {
                 /* No runnable competitor or work. Reselect the yielder. */
                 deferred = NULL;

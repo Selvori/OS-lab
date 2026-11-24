@@ -9,6 +9,7 @@
 #include <kernel/timer.h>
 #include <platform.h>
 #include <asm/csr.h>
+#include <asm/user_worker.h>
 #include <drivers/irq/plic.h>
 #include <drivers/serial/uart16550.h>
 
@@ -74,7 +75,11 @@ void main(void)
     /* 全局设备已就绪；每核设置自己的路由后，最后才开总开关。 */
     plic_inithart();
     timer_inithart();
-    csr_write(sie, SIE_SEIE | SIE_STIE);
+    uint64 interrupt_mask = SIE_SEIE | SIE_STIE;
+#ifdef DUAL_HART_USERS
+    interrupt_mask |= SIE_SSIE;
+#endif
+    csr_write(sie, interrupt_mask);
     printf("cpu %d SBI timer ready: %d Hz\n", cpuid, (int)TIMER_HZ);
     printf("cpu %d UART external interrupt route ready\n", cpuid);
     arch_irq_enable();
@@ -86,6 +91,9 @@ void main(void)
         proc_scheduler();
     }
 
+#ifdef DUAL_HART_USERS
+    user_worker_loop();
+#endif
     /* wfi 等待串口或定时事件；处理后返回，继续等待。 */
     arch_park();
 }

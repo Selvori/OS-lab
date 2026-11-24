@@ -10,7 +10,7 @@ struct context { uint64 ra, sp, s[12]; };
 _Static_assert(offsetof(struct context, s) == 16, "switch offsets");
 _Static_assert(sizeof(struct context) == 112, "switch size");
 enum proc_state { PROC_UNUSED, PROC_USED, PROC_RUNNABLE, PROC_RUNNING,
-                  PROC_SLEEPING, PROC_ZOMBIE };
+                  PROC_SLEEPING, PROC_ZOMBIE, PROC_REMOTE };
 struct proc {
     int pid;
     struct proc *template_handle;
@@ -43,6 +43,10 @@ struct proc {
     uint64 deadline;
     int status;
     bool stack_mapped, faulted;
+#ifdef DUAL_HART_USERS
+    bool user_ready; /* Runnable with no saved kernel continuation. */
+    uint64 remote_cause, remote_value;
+#endif
     struct template_job *yield_reclaim;
 };
 void proc_init(void);
@@ -53,6 +57,9 @@ long proc_fork(void);
 long proc_wait(uintptr_t status_address);
 int proc_sleep_ticks(uint64 duration);
 void proc_yield(bool voluntary);
+#ifdef DUAL_HART_USERS
+void proc_preempt_user(void) __attribute__((noreturn));
+#endif
 void proc_sleep(void *chan);
 void proc_wakeup(void *chan);
 void proc_tick(void);

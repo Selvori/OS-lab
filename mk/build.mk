@@ -1,6 +1,14 @@
 KERNEL_C := kernel/main.c kernel/lib/console.c kernel/lib/print.c \
 	kernel/lib/string.c kernel/lock/spinlock.c kernel/mm/page.c kernel/mm/vm.c kernel/mm/user.c kernel/mm/heap.c kernel/mm/template.c kernel/proc/proc.c kernel/proc/syscall.c \
 	kernel/fs/block.c kernel/fs/fs.c kernel/fs/file.c kernel/proc/exec.c
+ifeq ($(DUAL_HART_USERS),1)
+ifneq ($(PLATFORM),qemu-virt)
+$(error DUAL_HART_USERS=1 requires qemu-virt)
+endif
+BUILD := $(BUILD)-dual-hart$(addprefix -,$(filter time counts check,$(LIFECYCLE)))
+CPPFLAGS += -DDUAL_HART_USERS
+ARCH_C += arch/riscv64/user_worker.c
+endif
 ifneq ($(filter time counts check,$(LIFECYCLE)),)
 CPPFLAGS += -DLIFECYCLE_PROBE
 KERNEL_C += kernel/proc/lifecycle_probe.c
@@ -73,6 +81,9 @@ $(BUILD)/apps/lifejob.elf: tools/lifecycle_job.c $(APP_DEPS)
 	$(compile_user_program)
 
 $(addprefix $(BUILD)/apps/,$(addsuffix .elf,tbench tcheck tpin wpin wcheck)): include/kernel/lifecycle_probe.h
+
+$(BUILD)/apps/dualbench.elf: tools/dual_hart_bench.c $(APP_DEPS)
+	$(compile_user_program)
 
 $(BUILD)/apps/lifetest.elf: tools/lifecycle_cases.c $(APP_DEPS) include/kernel/lifecycle_probe.h
 	$(compile_user_program)

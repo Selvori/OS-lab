@@ -10,6 +10,7 @@
 #define IRQ_S_SOFT  1
 #define IRQ_S_TIMER 5
 #define IRQ_S_EXT   9
+#define SIE_SSIE (1UL << IRQ_S_SOFT)
 #define SIE_STIE (1UL << IRQ_S_TIMER)
 #define SIE_SEIE (1UL << IRQ_S_EXT)
 

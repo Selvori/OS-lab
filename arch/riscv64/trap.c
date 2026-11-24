@@ -86,6 +86,11 @@ bool trap_device_interrupt(uint64 cause)
     if (!(cause & SCAUSE_INTERRUPT))
         return false;
     switch (cause & ~SCAUSE_INTERRUPT) {
+#ifdef DUAL_HART_USERS
+    case IRQ_S_SOFT:
+        __asm__ volatile("csrc sip, %0" :: "r"(SIE_SSIE) : "memory");
+        return true;
+#endif
     case IRQ_S_TIMER:
         timer_interrupt_handler();
         return true;
