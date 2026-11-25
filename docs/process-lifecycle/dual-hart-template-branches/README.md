@@ -59,3 +59,5 @@ for mode in time witness check; do
 done
 (cd docs/process-lifecycle/dual-hart-template-branches && sha256sum -c SHA256SUMS)
 ~~~
+
+[短任务配对计时与跨核原帧独立验收](independent/README.md) 记录计算量较小时的完成及排空时间，以及两个活跃子进程在模板关闭前后的页表、引用计数与实际还池帧。

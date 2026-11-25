@@ -1,0 +1,13 @@
+0x00000000000011ac in ?? ()
+Hardware assisted breakpoint 1 at 0x80205880: file kernel/proc/proc.c, line 525.
+
+Thread 1 hit Breakpoint 1, template_close (p=0x8021e5d0 <procs+520>) at kernel/proc/proc.c:525
+525	    struct proc *image = p->template_handle;
+CLOSE_OWNER 1 2 80344000
+
+Thread 2 (Thread 1.2 (CPU#1 [running])):
+HREG 1 0 11ac 8000000000080344
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+HREG 0 1 80205880 80000000000802c5
+[Inferior 1 (process 1) detached]

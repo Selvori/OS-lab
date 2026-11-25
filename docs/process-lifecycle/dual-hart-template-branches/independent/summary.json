@@ -1,0 +1,98 @@
+[
+  {
+    "policy": 1,
+    "iterations": 1,
+    "metric": "waited",
+    "baseline_ms": 1.8569,
+    "parallel_ms": 1.87185,
+    "paired_percent": 1.0425964401903798,
+    "paired_range_percent": [
+      -4.704201502804528,
+      5.536967080410138
+    ]
+  },
+  {
+    "policy": 1,
+    "iterations": 1,
+    "metric": "through_drain",
+    "baseline_ms": 1.9707,
+    "parallel_ms": 1.9767,
+    "paired_percent": -0.8433241136391989,
+    "paired_range_percent": [
+      -4.052287581699343,
+      8.287236222085648
+    ]
+  },
+  {
+    "policy": 9,
+    "iterations": 1,
+    "metric": "waited",
+    "baseline_ms": 1.6067,
+    "parallel_ms": 1.734,
+    "paired_percent": 8.838907272634389,
+    "paired_range_percent": [
+      -0.16156092711117065,
+      13.779963122311
+    ]
+  },
+  {
+    "policy": 9,
+    "iterations": 1,
+    "metric": "through_drain",
+    "baseline_ms": 26.02935,
+    "parallel_ms": 26.0669,
+    "paired_percent": 0.19946354757487406,
+    "paired_range_percent": [
+      -1.7153799714680118,
+      5.673094638580123
+    ]
+  },
+  {
+    "policy": 1,
+    "iterations": 2000000,
+    "metric": "waited",
+    "baseline_ms": 7.03595,
+    "parallel_ms": 4.4683,
+    "paired_percent": -35.46346782356915,
+    "paired_range_percent": [
+      -37.17373887865968,
+      -32.67662756474349
+    ]
+  },
+  {
+    "policy": 1,
+    "iterations": 2000000,
+    "metric": "through_drain",
+    "baseline_ms": 7.14355,
+    "parallel_ms": 4.61995,
+    "paired_percent": -34.233808826294855,
+    "paired_range_percent": [
+      -36.639687335421456,
+      -32.120154555652505
+    ]
+  },
+  {
+    "policy": 9,
+    "iterations": 2000000,
+    "metric": "waited",
+    "baseline_ms": 6.72535,
+    "parallel_ms": 4.29715,
+    "paired_percent": -37.08366091665485,
+    "paired_range_percent": [
+      -39.2143652235046,
+      -33.344921928140636
+    ]
+  },
+  {
+    "policy": 9,
+    "iterations": 2000000,
+    "metric": "through_drain",
+    "baseline_ms": 31.43045,
+    "parallel_ms": 28.92565,
+    "paired_percent": -7.795509565440528,
+    "paired_range_percent": [
+      -9.854347562570576,
+      -5.185811720504708
+    ]
+  }
+]

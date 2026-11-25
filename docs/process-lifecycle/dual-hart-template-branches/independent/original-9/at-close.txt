@@ -1,0 +1,14 @@
+0x00000000000011ac in ?? ()
+Hardware assisted breakpoint 1 at 0x802057cc: file kernel/proc/proc.c, line 514.
+
+Thread 1 hit Breakpoint 1, template_close (p=0x8021e5c8 <procs+512>) at kernel/proc/proc.c:514
+warning: Source file is more recent than executable.
+514	        if (ticks > reclaim_stats.finalize_max)
+CLOSE_OWNER 1 -1 0
+
+Thread 2 (Thread 1.2 (CPU#1 [halted ])):
+HREG 1 1 80208b14 80000000000802c5
+
+Thread 1 (Thread 1.1 (CPU#0 [running])):
+HREG 0 1 802057cc 80000000000802c5
+[Inferior 1 (process 1) detached]
