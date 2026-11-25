@@ -173,7 +173,8 @@ static void queue_work(struct template_job *job)
 
 static void allow_window(struct template_job *job, unsigned w)
 {
-    job->ready[w] = job->blocked[w];
+    /* A live-branch job can already have fully or partly ready words. */
+    job->ready[w] |= job->blocked[w];
     job->blocked[w] = 0;
     if (job->ready[w])
         job->ready_windows |= 1U << w;
@@ -222,6 +223,9 @@ void template_close_job(struct proc *image, struct proc *closer)
 
 static void confirm_word(struct template_job *job)
 {
+    /* The last detach may have promoted an already queued job. Its queue
+     * entry keeps its place in the rotation and retires on this turn. */
+    if (job->terminal) return;
     bool starting = !job->scan_slot;
     if (starting) {
         unsigned w = __builtin_ctz(job->dirty_windows);
@@ -310,7 +314,7 @@ static unsigned release_pages(struct template_job *job, unsigned budget)
      * publishing the drop. The private mixed first table follows the same
      * rule. A currently leased branch therefore cannot translate a slot
      * selected for release, even if it is still using other original pages.
-     * Terminal jobs start with all branch links already detached and fenced.
+     * Terminal release starts after all branch links are detached and fenced.
      * The creator and ordinary forks have independent PTEs and references. */
     if (!job->terminal) sfence_vma();
 #ifdef LIFECYCLE_PROBE
@@ -769,7 +773,21 @@ void branch_detach(struct proc *p)
     --image->template_branches;
     struct template_job *job = image->reclaim_job;
     if (job && job->closed) {
-        if (job->policy != TEMPLATE_WINDOW_BATCH) {
+        if (!image->template_branches && job->policy == TEMPLATE_TERMINAL_RECLAIM) {
+            /* No borrower can attach to a closed image. Every word with held
+             * bits is either blocked or already ready. Merge the nine word
+             * masks without walking PTEs or dropping frames in wait/exec. */
+            job->terminal = true;
+            job->dirty_windows = 0;
+            job->scan_slot = 0;
+            for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
+                allow_window(job, w);
+            struct proc *owner = proc_current();
+            if (job->remaining && owner && !owner->yield_reclaim) {
+                job->yield_owner = owner;
+                owner->yield_reclaim = job;
+            }
+        } else if (job->policy != TEMPLATE_WINDOW_BATCH) {
             for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
                 dirty_words(job, w, job->blocked[w]);
         }
