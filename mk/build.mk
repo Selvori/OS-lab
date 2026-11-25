@@ -85,6 +85,9 @@ $(addprefix $(BUILD)/apps/,$(addsuffix .elf,tbench tcheck tpin wpin wcheck)): in
 $(BUILD)/apps/dualbench.elf: tools/dual_hart_bench.c $(APP_DEPS)
 	$(compile_user_program)
 
+$(BUILD)/apps/tdbench.elf: tools/template_dual_hart_bench.c $(APP_DEPS) tools/bounded_guest.h include/kernel/lifecycle_probe.h
+	$(compile_user_program)
+
 $(BUILD)/apps/lifetest.elf: tools/lifecycle_cases.c $(APP_DEPS) include/kernel/lifecycle_probe.h
 	$(compile_user_program)
 

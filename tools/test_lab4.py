@@ -13,11 +13,13 @@ def build(label):
                        stderr=subprocess.STDOUT, check=True)
 
 class Machine:
-    def __init__(self, label, make_args=()):
+    def __init__(self, label, make_args=(), *, argv=None):
         self.label = label
         self.log = bytearray()
         self.pending = bytearray()
-        self.p = subprocess.Popen(['make', CONFIG, *make_args, 'run'], cwd=ROOT,
+        if argv is None:
+            argv = ['make', CONFIG, *make_args, 'run']
+        self.p = subprocess.Popen(argv, cwd=ROOT,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             bufsize=0, start_new_session=True)
     def until(self, marker, timeout=12):
