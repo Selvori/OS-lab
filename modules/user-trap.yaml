@@ -1,5 +1,5 @@
 module: user_trap
-owns: [arch/riscv64/trampoline.S, arch/riscv64/user_trap.c, arch/riscv64/include/asm/usertrap.h, arch/riscv64/trap.c, include/kernel/trap.h]
+owns: [arch/riscv64/trampoline.S, arch/riscv64/user_trap.c, arch/riscv64/user_worker.c, arch/riscv64/include/asm/usertrap.h, arch/riscv64/include/asm/user_worker.h, arch/riscv64/trap.c, include/kernel/trap.h]
 state: PCB trapframe with x0-x31, epc, kernel satp/sp/handler/hart/gp
 rules:
   - C and assembly offsets are shared and checked statically
@@ -14,17 +14,29 @@ functions:
     post: Handler runs on kernel mapping with complete frame
   trap_user_handler:
     pre: Current process, kernel satp/tp/gp, SIE=0, saved SPP=0
-    effects: Set kernel stvec; save sepc; dispatch ecall/timer/external; resolve COW store faults and retry unchanged epc; after user timer service yield to scheduler; unresolved faults end process
+    effects: Set kernel stvec, save sepc, dispatch ecall or supported interrupts, and retry resolved COW stores. A user timer triggers rescheduling. Dual-hart IPI notification can prompt an immediate scheduler pass.
     post: Valid trap returns via trap_user_return; unknown syscall returns -38; child faults end process; init fault panics
+  worker_trap:
+    pre: Worker on its permanent trap stack and kernel satp, saved SPP=0, SIE=0
+    effects: Set kernel stvec, save sepc and service local interrupts. Resume user execution after software or external interrupts. A timer, ecall or synchronous fault transfers cause and value to the worker loop.
+    post: The worker publishes completion from its loop stack after the trampoline has fenced the switch back to kernel satp.
+  trap_user_resume_remote:
+    pre: Boot-hart dispatch after acquiring a worker handback for an ecall or synchronous fault
+    effects: Use the saved registers, epc, cause and value to run the normal syscall or fault path.
+    post: Resume user execution or finish the process according to the result.
   trap_user_return:
     pre: Current live process, kernel satp and stack, no locks
-    effects: Disable IRQ; fill kernel fields; set user stvec/sepc; clear SPP/SUM/MXR/FS/VS and set SPIE
+    effects: Disable IRQ and enter the shared trampoline using the boot hart's process stack and handler. The worker enters through trap_user_enter with its own trap stack and handler.
     post: Jump shared user_return; no C access after user satp activation
+  trap_user_enter:
+    pre: Kernel satp, IRQ off, valid user root, selected handler and trusted kernel stack
+    effects: Fill kernel fields, set user stvec and sepc, clear SPP/SUM/MXR/FS/VS and set SPIE.
+    post: Enter the shared assembly user_return path.
   user_return:
     pre: a0=TRAPFRAME, a1=user satp, SIE=0, shared trampoline
     effects: Switch satp with TLB fences; restore user integers and sscratch; sret
     post: U-mode at epc with user stack and interrupts enabled
   trap_device_interrupt:
     pre: Kernel satp/gp/tp, SIE off, complete user or kernel frame saved by caller
-    effects: Service SBI timer or PLIC/UART; does not alter saved epc
+    effects: Service SBI timer or PLIC/UART, or clear the software interrupt in the dual-hart build. Preserve saved epc.
     post: Return true for serviced interrupt, false for unsupported cause; unknown device panics

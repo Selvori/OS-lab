@@ -1,6 +1,11 @@
 module: process
 owns: [include/kernel/proc.h, kernel/proc/proc.c, arch/riscv64/switch.S]
-state: 16 PCB slots, init pointer, boot scheduler context, owner current pointer
+state: 16 PCB slots, init pointer, boot scheduler context and current process
+rules:
+  - The boot hart owns the PCB table, scheduling and process kernel continuations.
+  - With DUAL_HART_USERS=1, the QEMU worker uses one published user context at a time, with its own trap stack.
+  - PROC_REMOTE keeps an assigned process out of local dispatch and destruction until the worker returns its user context.
+  - Eligible template branches come from freeze(1) or freeze(9). The init process, a template-handle owner, a reclamation yielder and a process with local preference stay on the boot hart.
 functions:
   proc_init:
     pre: Boot hart, IRQ off, no processes
@@ -8,16 +13,28 @@ functions:
     post: All slots UNUSED
   proc_make_first:
     pre: Owner, IRQ off, initialized VM and pools
-    effects: Allocate init PID 0, private user resources and guarded kernel stack
+    effects: Allocate init PID 0 with a guarded kernel stack. Try /bin/sh and retain the embedded user program when loading fails.
     post: RUNNABLE init or full rollback
   proc_scheduler:
     pre: Owner on boot stack, IRQ off, no spinlocks
-    effects: Forever cycle slots; dispatch RUNNABLE; enable IRQ and wfi when idle
+    effects: Scan RUNNABLE slots, advance bounded template reclamation and dispatch. In the dual-hart build, collect the worker and optionally assign a second eligible user context.
     post: Never returns; current is NULL outside a dispatch
   proc_yield:
     pre: RUNNING owner process in kernel satp, IRQ off, no locks
-    effects: Set RUNNABLE and swtch to scheduler
+    effects: Set RUNNABLE and switch to the scheduler. An explicit yield by a reclaim-job owner may defer its own redispatch for additional idle reclaim steps.
     post: Resumes same kernel continuation when dispatched again, IRQ off
+  proc_preempt_user:
+    pre: DUAL_HART_USERS build, boot-hart user interrupt path, IRQ off
+    effects: Mark the process ready for user-only dispatch and yield. At U-mode timer interrupts, set local preference if the syscall count advanced by at least 16 since the previous sample.
+    post: Reschedule through a fresh return-to-user continuation.
+  dispatch_remote:
+    pre: DUAL_HART_USERS build, boot scheduler, IRQ off and a local process selected
+    effects: If the worker is idle, select another eligible RUNNABLE process, set PROC_REMOTE and publish its trapframe and user root.
+    post: Local dispatch excludes the assigned process until handback.
+  collect_remote:
+    pre: DUAL_HART_USERS build, boot scheduler, IRQ off
+    effects: Acquire a completed handback and rebuild the owner-side continuation for direct user return on timer or trap handling on ecall or fault.
+    post: A collected process becomes RUNNABLE again.
   proc_sleep:
     pre: RUNNING owner, IRQ off, channel valid, no locks
     effects: Atomically publish SLEEPING and channel then switch
@@ -29,7 +46,7 @@ functions:
   proc_fork:
     pre: RUNNING owner process, IRQ off
     effects: Allocate private tables/tf/kstack/nodes; retain user frames; copy integer user frame; commit parent COW permissions and invalidate local TLB
-    post: Parent gets child PID, child saved a0=0 at post-ecall PC; failure negative with parent unchanged
+    post: Parent gets child PID, child saved a0=0 at post-ecall PC. A template branch receives -95. Failure preserves the parent's state.
   proc_wait:
     pre: RUNNING owner, IRQ off, status VA zero or complete writable user int
     effects: Reap zombie child, or sleep on parent channel and recheck
@@ -40,15 +57,15 @@ functions:
     post: Return 0 no earlier than duration processed ticks, or -22 invalid
   proc_tick:
     pre: Timer service on any hart, IRQ off
-    effects: Owner advances shared sleep tick and wakes due sleepers; other harts do not access PCB
-    post: No switches; user trap explicitly calls yield after device service
+    effects: The boot hart advances the scheduler tick and wakes due sleepers. Other harts return without touching PCB state.
+    post: Device service completes before the user trap path reschedules or hands back.
   proc_finish:
     pre: RUNNING owner with IRQ off
-    effects: Reject init exit; reparent children to init; drop descriptors and cwd; set ZOMBIE and wake parent; switch away
+    effects: Reject init exit, reparent children, close any template handle, drop descriptors and cwd, publish ZOMBIE, wake the parent and switch away.
     post: Child never resumes; init syscall returns -1
   proc_destroy:
-    pre: Owner IRQ off; target inactive UNUSED partial allocation or ZOMBIE; not current
-    effects: Release heap and fixed user frame references, free private tables/trapframe, revoke kernel stack alias and local TLB
+    pre: Boot hart with IRQ off. Target is inactive, distinct from current and has no worker assignment.
+    effects: Release heap ownership and fixed frames, free private tables and trapframe, revoke the kernel stack alias and fence locally. Template branch teardown detaches shared table links first.
     post: Slot UNUSED with all per-process resources returned
   swtch:
     pre: Kernel satp, IRQ off, no locks; distinct valid contexts and aligned new sp

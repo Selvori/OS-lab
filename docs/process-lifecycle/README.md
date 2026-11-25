@@ -1,12 +1,14 @@
 # 进程创建与回收研究
 
-[后续批量回收实验、数据与复跑](batch-reclaim/README.md)
+本文记录深拷贝与标准 COW 的早期对照，调度配置和测试结果对应当时的提交。参见[后续批量回收实验](batch-reclaim/README.md)、[当前架构规格](../../design.yaml)、[普通进程双 hart](dual-hart-users/README.md)和[末支交回后的有界回收](template-last-detach-drain/README.md)。
 
 起点为 Lab 9 的 `f43d455a584df6d3102af4e87479a3794da2396a`。QEMU Lab 9 正式回归通过，包含磁盘 Shell、描述符与打开对象上限、共享偏移、exec 成功与失败、520 字节重启读回及内嵌 Lab 6 回退。
 
 在同一套 QEMU 用户负载上比较深拷贝与独立页表的标准写时复制，验证生命周期、失败回滚和资源余额。调度沿用启动核独占模型，研究范围到预热父进程对照。见[预热基准与比较](comparison.md)。
 
 ## 深拷贝的测量口径
+
+在深拷贝基线提交 `aaf1420` 中执行。
 
 ~~~sh
 python3 tools/test_lab9.py

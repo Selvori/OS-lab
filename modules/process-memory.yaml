@@ -2,11 +2,11 @@ module: process-memory
 functions:
   user_heap_clone:
     pre: Owner IRQ off; empty destination, stable source
-    effects: Copy free interval nodes and retain each successfully mapped heap frame as COW/NX
-    post: Identical heap with independent metadata or caller destroys partial destination; source unchanged until commit
+    effects: Copy free interval nodes. For ordinary fork, walk mapped spans and retain mapped frames as COW/NX. For template spawn, attach the branch using the template policy.
+    post: Equivalent heap with private free interval metadata. The caller destroys any partial destination on failure and commits ordinary parent COW permissions before publishing a child.
   user_copyout:
     pre: Owner process with private root, IRQ off, kernel satp; trusted source
-    effects: Validate logical write range and stage all COW allocations; commit frame changes then copy by physical aliases
+    effects: Validate the entire logical write range and stage COW frames and any needed branch table splits. Commit mappings, fence before dropping old ownership, then copy through physical aliases.
     post: Return 0, -14 invalid range or -12 allocation failure; failure leaves original frames and bytes intact
   user_vm_create:
     pre: Retained or newly allocated user frames and private root

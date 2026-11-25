@@ -5,9 +5,9 @@ layout: Fixed page arena [0x3000, 0x1003000); heap_top is its exclusive upper bo
 rules:
   - Free intervals describe virtual holes, never allocated physical memory
   - First fit for address zero; otherwise strict fixed-address allocation without replacement
-  - Eager zeroed user-pool pages, RWU and NX; fork shares mapped frames with COW; no lazy allocation
+  - mmap eagerly maps zeroed RWU/NX frames. Ordinary fork shares mapped frames via COW. Template branches can share leaf tables and borrow original frames.
   - No raw user pointers or dynamically allocated metadata
-  - Pool lock protects node pop/push only; per-process lists belong to owner hart with IRQ off
+  - The pool lock protects freelist operations. The boot hart owns interval lists and heap edits with IRQ off, after handback if assigned to the worker.
 functions:
   mmap_pool_init:
     pre: Boot hart, before secondary publication and process creation
@@ -22,14 +22,14 @@ functions:
     effects: Reserve one node representing the entire arena
     post: Return 0 with free arena, or -12 without allocated nodes
   user_heap_alloc:
-    pre: Private initialized heap and root, owner hart with IRQ off and kernel satp
-    effects: Validate hint/pages; find interval; reserve split metadata; allocate and map pages; commit interval split
+    pre: Initialized heap and process root, boot hart with IRQ off and kernel satp
+    effects: Validate hint and page count, find a free interval, reserve split metadata, prepare branch table splits when needed, map pages and commit the interval change.
     post: Return page VA or -22/-12; failure restores pages, tables, nodes and list exactly
   user_heap_free:
-    pre: Private initialized heap and root, owner hart with IRQ off and kernel satp
-    effects: Validate full live page range and metadata availability; unmap/free/prune; insert or coalesce neighbors
+    pre: Initialized heap and process root, boot hart with IRQ off and kernel satp
+    effects: Validate the live range and reserve metadata. Split shared tables as needed, revoke mappings, release references or borrows, then insert or coalesce the free interval.
     post: Return 0 or -22/-12; failure has no externally visible mutation
   user_heap_destroy:
     pre: Owner with IRQ off and kernel satp; inactive target or current process replacing its heap in exec
-    effects: Drop references to remaining mapped heap pages and all region nodes
+    effects: Clear ordinary heap leaves or detach template branch links, retire remaining heap ownership and return all region nodes.
     post: No heap frames or metadata owned by PCB

@@ -1,18 +1,20 @@
 module: user_vm
 owns: [include/kernel/user.h, kernel/mm/user.c, arch/riscv64/mm/sv39.c]
-state: Private Sv39 root with one reference per owned user leaf
+state: Private Sv39 root per process. Template branches may link shared heap leaf tables and borrow frames from a template.
 rules:
   - VA_MAX=1<<38; TRAMPOLINE=VA_MAX-4096; TRAPFRAME=TRAMPOLINE-4096
   - User stack below trapframe; per-slot supervisor kernel stack alias below user stack; guard below each alias
   - USER_BASE=4096; one RXU code page then one logically RWU data page; heap starts after data; heap_top is the arena limit
-  - Private root has no broad kernel identity mappings
+  - Private root has no broad kernel identity mappings.
+  - The worker uses its own permanent trap stack after switching to kernel satp.
+  - The boot hart changes a process root after any worker handback. A branch splits a shared heap leaf table before modifying that table's entries.
 functions:
   user_copyin:
     pre: Valid inactive or current user root; kernel identity aliases accessible
     effects: Validate length/overflow and all readable user leaves before copying
     post: Return 0 with full copy or -1 without touching destination
   sv39_free_tables:
-    pre: Inactive private root, exclusively owned page-table nodes
+    pre: Inactive private root, after any worker handback and after detaching links to shared template tables
     effects: Recursively free nonleaf table pages only
     post: Root freed; leaf physical frames remain owned by caller
   user_vm_create:
@@ -20,7 +22,7 @@ functions:
     effects: Map code/data/stack and supervisor special pages
     post: Valid layout or failure; caller owns rollback of all private resources
   vm_unmappages:
-    pre: Owner-private heap root; kernel satp with IRQ off
+    pre: Ordinary owned heap leaves, boot hart with IRQ off and kernel satp. Template branches use branch_unmap.
     effects: Validate all owned user leaves before unmapping, local TLB flush, drop frame references and prune
     post: Whole range removed or error with no mutation
   sv39_prune_empty:

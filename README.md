@@ -1,15 +1,24 @@
 # Seele · 进程创建与回收
 
-本分支在 Lab 9 基础上实现标准写时复制 fork 和按 Sv39 末级表批量回收，并保留可检出的深拷贝与标准 COW 基准。父子独立建表、共享用户帧。写缺页和内核代写按需复制，wait 在父栈回收。磁盘 Shell 与程序 exec 保留 Lab 9 用法。
+本分支在 Lab 9 的磁盘 Shell 和 exec 基础上实现了写时复制 fork、按 Sv39 末级表批量回收、模板派生和有界回收。普通 fork 为父子进程分别建表并共享用户帧。写缺页和内核代写按需复制，wait 在父栈回收。
+
+QEMU 默认由启动 hart 运行用户进程。`DUAL_HART_USERS=1` 允许另一颗 hart 执行一个符合条件的用户上下文，涵盖普通进程和 `freeze(1)`、`freeze(9)` 派生的分支。调度、系统调用、COW、页表修改和回收由启动 hart 处理。工作 hart 切回内核页表并刷新本地翻译后交回现场。VisionFive 2 由启动 hart 运行用户进程。详见[当前架构规格](design.yaml)、[进程与调度](modules/process.yaml)、[用户陷阱](modules/user-trap.yaml)和[系统调用](modules/syscall.yaml)。
 
 ~~~sh
 make CONFIG=riscv64-qemu-virt-sbi run
-python3 tools/test_lifecycle.py
-python3 tools/bench_lifecycle.py --suite warm --variant batch-unmap --output build/process-lifecycle/warm.json
+make CONFIG=riscv64-qemu-virt-sbi DUAL_HART_USERS=1 run
 make CONFIG=riscv64-visionfive2-uboot build image
 ~~~
 
-[批量回收报告与复跑](docs/process-lifecycle/batch-reclaim/README.md) · [深拷贝与标准 COW 比较](docs/process-lifecycle/comparison.md) · [研究过程及验收](docs/process-lifecycle/README.md) · [资源所有权](docs/process-lifecycle/ownership.md) · [Lab 9 功能与板端用法](docs/lab-9-baseline.md)
+QEMU 双核配置默认使用独立构建目录和磁盘镜像。以下回归从完整 Git checkout 运行，脚本用 Git 跟踪列表核对测试前后的源文件哈希。
+
+~~~sh
+python3 tools/test_lifecycle.py
+~~~
+
+深拷贝、标准 COW 和各项优化的对照版本及测量命令见下方报告。
+
+[批量回收报告与复跑](docs/process-lifecycle/batch-reclaim/README.md) · [深拷贝与标准 COW 比较](docs/process-lifecycle/comparison.md) · [研究过程及验收](docs/process-lifecycle/README.md) · [标准 COW 基线的资源所有权](docs/process-lifecycle/ownership.md) · [Lab 9 功能与板端用法](docs/lab-9-baseline.md)
 
 [Sv39 模板所有权协议、可执行模型和基准](docs/process-lifecycle/template-ownership/README.md)
 
@@ -35,11 +44,9 @@ make CONFIG=riscv64-visionfive2-uboot build image
 
 显式 `freeze(8)` 在模板关闭时无活分支且关闭者主动让出的条件下，通过调度器空闲轮排空。QEMU 主样本的排空中位数较策略 6 从 7.666 ms 降至 1.716 ms，五窗活分支仍提前回池 2038 页。[空闲排空结果及复跑](docs/process-lifecycle/template-idle-drain/README.md)
 
-[模板关闭后的空闲排空](docs/process-lifecycle/template-idle-drain/README.md) 以显式 `freeze(8)` 在顶层空闲调度机会处理零分支关闭作业。
-
 [零分支关闭后的末次引用释放](docs/process-lifecycle/template-terminal-release/README.md) 以显式 `freeze(9)` 缩短实际排空，并保留活分支逐页回收。报告包含 5% 门槛、双分支五窗和带洞物理帧检查。
 
-[普通进程的双 hart 用户态研究](docs/process-lifecycle/dual-hart-users/README.md) 通过 `DUAL_HART_USERS=1` 在 QEMU virt 开启。四组同负载配对的完成时间中位数由 329.77 ms 降至 173.65 ms，GDB 同时见证两颗 hart 在不同用户页表下执行 U 态。
+[普通进程的双 hart 用户态研究](docs/process-lifecycle/dual-hart-users/syscall-affinity/README.md) 中，相同的双进程纯计算负载在四组配对开机中的完成时间中位数由 438.00 ms 降至 218.69 ms。GDB 同时观察到两个 hart 在不同用户页表下执行 U 态。启动 hart 在用户态定时器采样时观察系统调用次数，密集调用的任务会暂留本地。
 
 [模板分支双 hart 执行与回收见证](docs/process-lifecycle/dual-hart-template-branches/README.md) 在同一 QEMU 双 hart 开关下开放策略 1 和 9 的用户态派发。关闭后两条真实兄弟分支仍可并行，8 MiB 双分支计算配对中位加速为 1.97× 和 1.96×。回收器在策略 9 的双 U 态五窗见证中归还 2038 个原帧。
 

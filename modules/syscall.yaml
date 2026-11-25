@@ -1,24 +1,27 @@
 module: syscall
-owns: [include/kernel/syscall.h, kernel/proc/syscall.c, user/init.S, user/user.ld]
+owns: [include/kernel/syscall.h, kernel/proc/syscall.c, kernel/fs/file.c, user/lib.h, user/init.S, user/user.ld]
 state: User ABI a7=number, a0-a2=args, a0=signed result
 rules:
   - Self-designed minimal ABI; course slides specify no syscall IDs
   - write=1, getpid=2, ticks=3, exit=4, mmap=5, munmap=6, fork=7, wait=8, sleep=9, yield=10
-  - write supports fd 1 only, max 256 bytes, prevalidates entire buffer
+  - open=11, read=12, close=13, dup=14, fstat=15, readdir=16, mkdir=17, unlink=18, chdir=19, getcwd=20, sync=21, exec=22
+  - freeze=23, spawn=24, release=25. freeze returns 1 in the creator. A spawned branch resumes at the saved freeze return point with 0.
+  - write accepts a writable console or file descriptor and validates the whole buffer before I/O. read and write accept at most 256 bytes per call.
+  - Research syscall 63 is available in LIFECYCLE=time, counts or check builds. freeze(7) requires LIFECYCLE=check.
   - mmap takes page hint and page count; munmap takes page address and page count
   - Errors are -9 bad fd, -14 invalid memory, -22 invalid size, -38 unknown call, -12 out of heap resources
 functions:
   syscall_dispatch:
-    pre: Current user ecall frame, saved epc advanced, IRQ off, kernel stvec/satp
-    effects: Validate and dispatch write/getpid/ticks/exit/mmap/munmap/fork/wait/sleep/yield
+    pre: Live boot-hart process with an ecall frame, saved epc advanced, IRQ off, kernel stvec and satp. Worker ecalls reach this path after handback.
+    effects: Dispatch process, heap and template calls or delegate file operations to file_syscall.
     post: Set saved a0 result or finish process; never access raw user pointers
   _start:
-    pre: U-mode entry USER_BASE; sp=TRAPFRAME; registers initialized
+    pre: Embedded fallback image in U-mode at USER_BASE with sp=TRAPFRAME and initialized registers
     effects: Check page heap allocation/free/zero/reuse, cross-page write, getpid and registers, data/stack, errors and ticks, then fork/wait/sleep/preemption/lifecycle checks; init stays alive
     post: Init prints LAB6 PASS then sleeps forever; child status is collected by wait
 
-lab6_errors:
-  - fork -11 table/ID capacity, -12 allocation or node failure
+process_errors:
+  - fork -11 table/ID capacity, -12 allocation or node failure, -95 unsupported inside a template branch
   - wait -10 no children, -14 invalid optional writable int32 buffer
   - sleep -22 duration exceeds signed 32-bit positive range
   - init exit returns -1; child exit does not return

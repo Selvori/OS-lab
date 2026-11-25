@@ -1,44 +1,63 @@
 system:
   name: Seele
-  scope: Process lifecycle research on the Lab 9 branch baseline
+  scope: Current Seele kernel on the Lab 9 baseline, including COW, templates and optional dual-hart user execution
   provenance: Self-authored from lab-4.pptx, lab-5.pdf and lab-6.pptx; no course YAML was supplied
 machine:
   board: [QEMU virt RV64, VisionFive2 JH7110]
   firmware: OpenSBI S-mode entry; SBI HSM and TIME
-  memory: 128 MiB platform DRAM; kernel identity mapping; separate page pools
-  harts: Boot hart owns all user processes and scheduler; others service kernel interrupts
+  memory: Kernel manages a 128 MiB DRAM range on each platform, with identity mappings and separate page pools
+  harts:
+    qemu_default: Two harts. The boot hart runs user processes and the scheduler. The secondary services device interrupts.
+    qemu_dual_hart_users: DUAL_HART_USERS=1 enables the secondary as a worker for one eligible user context at a time.
+    visionfive2: Four harts. The boot hart runs user processes and the scheduler. Secondaries service device interrupts.
 mechanisms:
   paging: Sv39, 4 KiB pages, ASID 0, sfence.vma around satp changes
   context: Integer registers only; FS/VS off in user mode
   traps: Separate kernel_vector and shared high trampoline user_vector
-  interrupts: Existing per-hart SBI timer and UART/PLIC; user timer preemption; kernel handlers remain nonpreemptible
+  interrupts: Per-hart SBI timer and UART/PLIC, with SBI IPI notification in the dual-hart build. User time slices may be preempted.
+  ownership: The boot hart owns PCB state, scheduling, syscalls, COW, mapping changes, file state and reclamation.
+  offload: The worker executes a borrowed user context and services local device interrupts on its own trap stack.
+  templates: freeze creates a non-executable template, spawn derives a branch and release closes the handle. Branches may share heap leaf tables and borrow original frames under the selected policy.
 rules:
   - Complete contracts before implementation; sign off separate spec and code commits
   - Never modify xv6 or QEMU reference repositories
-  - Never schedule one process on multiple harts
+  - At most one hart executes a given process at any instant
   - Kernel executes C only with kernel satp, gp, tp and supervisor stack
   - User page table never exposes kernel DRAM or MMIO with PTE_U
   - Null page is unmapped; code RXU; data and one stack page logically RWU, with W cleared while COW
   - Trampoline RX and trapframe RW are supervisor-only; kernel stack is supervisor RW
-  - Ordinary interrupts preserve epc; user ecall advances epc by exactly 4
+  - Ordinary interrupts preserve epc. The boot hart advances epc by four bytes when dispatching a user ecall.
   - stvec is kernel_vector during kernel handlers; interrupts off during page-table transitions
   - Copy user buffers by validating PTE_U and PTE_R and reading their physical aliases
-  - Publish shared table topology before secondary harts; only the owner accesses the mutable process-stack leaf
-  - Destroy inactive user tables only; shared kernel table structure persists
+  - Publish shared kernel table topology before secondary initialization. The boot hart alone uses per-process kernel stack aliases.
+  - Destroy inactive private user tables after any worker handback and detach shared heap-table links before freeing branch-owned nodes
   - Heap free intervals are sorted, disjoint and coalesced; mapped logically writable user pages are their complement
-  - Heap mutation is owner-only with IRQ off, kernel satp active and no concurrent table walkers
-  - Flush local TLB before reusing removed frames; prune empty private table nodes
+  - The boot hart changes a process heap with interrupts off and kernel satp active. An active worker may use another root, including shared read-only template mappings.
+  - Revoke affected translations before reusing frames. The worker switches to kernel satp and fences locally before publishing handback.
   - Failures preserve mappings, free intervals and resource counts
-non_goals: [SMP user scheduling, migration, kernel preemption, shared page tables, general ELF loader, demand paging, floating point, vectors]
+non_goals: [independent per-hart schedulers, kernel continuation migration, kernel preemption, general ELF loader, demand paging, floating point, vectors]
+
+dual_hart_invariants:
+  - The boot hart selects an eligible RUNNABLE process with no pending kernel continuation, marks it PROC_REMOTE and publishes its trapframe and user root through a release/acquire mailbox.
+  - The init process, a template-handle owner, a process helping drain a reclaim job and a task marked for local execution stay on the boot hart.
+  - Template branches derived from freeze(1) and freeze(9) can be dispatched to the worker.
+  - The worker hands back at a local timer interrupt, ecall or synchronous fault. Other supported device interrupts are serviced locally before user execution resumes.
+  - Handback includes the saved user registers, epc, trap cause and trap value. The boot hart reconstructs the kernel continuation and handles returned ecalls and faults.
+  - At boot-hart U-mode timer samples, 16 or more syscalls since the previous sample set local preference. A later sample below 16 clears it.
+
+template_reclaim_invariants:
+  - A live branch prevents the release of any original frame it can still translate. Private replacements and removals revoke translations before dropping borrow state.
+  - Closing a handle prevents further spawn. For freeze(9), after the last branch detaches and fences, the job can release held references without further borrower scans.
+  - A reclaim step handles at most 32 confirmations, eight reference drops and one finalization across the queue. Runnable competitors take priority over an explicit yielder's extra idle steps.
 
 lab6_invariants:
   - Sixteen PCB slots; init PID 0 never exits; IDs are not slot numbers
-  - Only boot hart reads or writes process state, parent, channel and scheduler tick
+  - The boot hart owns process state, parent, sleep channel and scheduler tick. The worker uses the user trapframe and root published to its mailbox.
   - Condition check, sleep publication, wakeup and switches all have IRQ off
   - No spinlocks or push_off nesting across swtch; scheduler runs on boot stack
   - Each private kernel stack has a unique shared-kernel alias and guard page
-  - All kernel contexts share kernel satp; trampoline selects user root on return
-  - Only RUNNABLE processes are dispatched; timer preemption uses one tick quantum
+  - Kernel contexts use the shared kernel satp. The trampoline selects the process root for user execution.
+  - Dispatch selects RUNNABLE processes. A user timer is a rescheduling point.
   - Exit keeps a ZOMBIE; parent wait reclaims from a different kernel stack
   - Orphans are adopted by init and init is awakened for already-zombie adoptees
   - Fork publishes RUNNABLE only after all allocations and metadata succeed and parent translations are invalidated
@@ -56,7 +75,7 @@ lab8_invariants:
   - Failed metadata I/O disables the current mount; ordered writes are not a journal
 
 lab9_invariants:
-  - Only the scheduler owner modifies file references and cwd; descriptors are not kernel handles exposed by address
+  - The boot hart owns file references and cwd. User descriptors are integer indices into each process table.
   - Validate user ranges before I/O or advancing shared offsets
   - UART RX is shared between harts under a spinlock; no spinlock is held across process switches
   - Exec keeps process identity, descriptors and cwd; bounded argument image and replacement heap are prepared before committing
