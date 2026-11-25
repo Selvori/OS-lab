@@ -1,0 +1,218 @@
+{
+  "owner": 0,
+  "checks": [
+    {
+      "policy": 1,
+      "iterations": 26000000,
+      "spawns": [
+        92,
+        93
+      ],
+      "exits": [
+        [
+          93,
+          967808733
+        ],
+        [
+          92,
+          472992988
+        ]
+      ],
+      "ticks": {
+        "spawn1": 1106,
+        "spawn2": 1037,
+        "both_waited": 384436,
+        "close": 448,
+        "close_to_wait": 380859,
+        "post_wait_drain": 894,
+        "close_to_drained": 381753,
+        "queue_after_wait": 0
+      }
+    },
+    {
+      "policy": 9,
+      "iterations": 26000000,
+      "spawns": [
+        95,
+        96
+      ],
+      "exits": [
+        [
+          96,
+          304772320
+        ],
+        [
+          95,
+          1957440223
+        ]
+      ],
+      "ticks": {
+        "spawn1": 1564,
+        "spawn2": 1049,
+        "both_waited": 373794,
+        "close": 442,
+        "close_to_wait": 369872,
+        "post_wait_drain": 352969,
+        "close_to_drained": 722841,
+        "queue_after_wait": 3
+      }
+    }
+  ],
+  "pin": {
+    "label": "witness-parallel-9-pin",
+    "owner": 0,
+    "branches": [
+      [
+        2,
+        1,
+        3,
+        2150928384,
+        2150879232,
+        1,
+        2,
+        3,
+        1,
+        10,
+        0
+      ],
+      [
+        3,
+        1,
+        6,
+        2150961152,
+        2150879232,
+        1,
+        2,
+        3,
+        1,
+        10,
+        0
+      ]
+    ],
+    "threads": {
+      "0": 129157,
+      "1": 129158
+    },
+    "code_range": [
+      "0x1110",
+      "0x1138"
+    ],
+    "harts": [
+      [
+        1,
+        "0x1126",
+        0,
+        "0x8000000000080351"
+      ],
+      [
+        0,
+        "0x1126",
+        0,
+        "0x8000000000080349"
+      ]
+    ],
+    "completion": {
+      "policy": 9,
+      "iterations": 600000000,
+      "spawns": [
+        2,
+        3
+      ],
+      "exits": [
+        [
+          2,
+          380325378
+        ],
+        [
+          3,
+          971433475
+        ]
+      ],
+      "ticks": {
+        "spawn1": 2375,
+        "spawn2": 13294,
+        "both_waited": 12122501,
+        "close": 8765,
+        "close_to_wait": 11778259,
+        "post_wait_drain": 1069,
+        "close_to_drained": 11779328,
+        "queue_after_wait": 0
+      }
+    },
+    "pinned_indices": {
+      "2": [
+        0,
+        509,
+        1021,
+        1533,
+        2045
+      ],
+      "3": [
+        1,
+        510,
+        1022,
+        1534,
+        2046
+      ]
+    }
+  },
+  "remote_cow": {
+    "owner": 1,
+    "evidence": {
+      "WORKER": [
+        0,
+        9223372036855300806,
+        24576,
+        2150932480
+      ],
+      "REPLAY": [
+        1,
+        9223372036855300806,
+        2,
+        3,
+        15,
+        24576,
+        2150932480
+      ],
+      "BEFORE": [
+        1,
+        2,
+        1,
+        0
+      ],
+      "AFTER": [
+        1,
+        2,
+        1
+      ]
+    },
+    "completion": {
+      "policy": 9,
+      "iterations": 600000000,
+      "spawns": [
+        2,
+        3
+      ],
+      "exits": [
+        [
+          2,
+          380325378
+        ],
+        [
+          3,
+          971433475
+        ]
+      ],
+      "ticks": {
+        "spawn1": 2441,
+        "spawn2": 1060,
+        "both_waited": 12346049,
+        "close": 1839,
+        "close_to_wait": 12092063,
+        "post_wait_drain": 1160,
+        "close_to_drained": 12093223,
+        "queue_after_wait": 0
+      }
+    }
+  }
+}

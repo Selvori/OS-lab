@@ -1,0 +1,1524 @@
+{
+  "artifacts": {
+    "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+    "tdbench": "106a7e4f1edd74746dea858ca93bac77c30ace25a5d82711e25f980669fd4e33",
+    "bopen": "8af9baf30ca91acc79367ebd44fda65cf3013abb7f2041f12afa2a109d0349c5",
+    "disk": "9778095d2a2f885be5b2227ccfe0043e40c25f7ce7a93e05728ae823a0dceaba",
+    "kernel_parallel": "1195bca01165d56c1d6138ae66c07ca8c6ba622937e1f38c24f545ab8528c26c",
+    "baseline": "9e3a6535bef19eb7aee68122a49f9b9b6bbeed7a",
+    "candidate": "14a92b3998adc00a05cc215edcf8fc5c844204e5",
+    "source_clean": true,
+    "qemu": "QEMU emulator version 5.1.0",
+    "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+    "timebase_hz": 10000000,
+    "cpus": 2,
+    "accel": "tcg,thread=multi",
+    "kernel_base": "c156fd8b4f315af842ca0578403818095ca85768642b628cfd641e38fad33564"
+  },
+  "boots": [
+    {
+      "pair": 1,
+      "position": 1,
+      "variant": "base",
+      "owner": 0,
+      "warmup": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              3,
+              1754210307
+            ],
+            [
+              2,
+              1481809922
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1881,
+            "spawn2": 653,
+            "both_waited": 3285973,
+            "close": 1168,
+            "close_to_wait": 3282114,
+            "post_wait_drain": 5065,
+            "close_to_drained": 3287179,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 662,
+            "spawn2": 614,
+            "both_waited": 3257473,
+            "close": 988,
+            "close_to_wait": 3255042,
+            "post_wait_drain": 214756,
+            "close_to_drained": 3469798,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              8,
+              968728584
+            ],
+            [
+              9,
+              1241128969
+            ]
+          ],
+          "ticks": {
+            "spawn1": 681,
+            "spawn2": 612,
+            "both_waited": 3307101,
+            "close": 406,
+            "close_to_wait": 3305241,
+            "post_wait_drain": 907,
+            "close_to_drained": 3306148,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              12,
+              2058330124
+            ],
+            [
+              11,
+              1785929739
+            ]
+          ],
+          "ticks": {
+            "spawn1": 652,
+            "spawn2": 628,
+            "both_waited": 3251785,
+            "close": 514,
+            "close_to_wait": 3249815,
+            "post_wait_drain": 197105,
+            "close_to_drained": 3446920,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1519,
+          "spawn_sum": 9151,
+          "close": 2817,
+          "drain": 475,
+          "freeze_to_drained": 73291,
+          "reap_sum": 13037,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5973,
+            3832,
+            3812,
+            4243,
+            3782,
+            4251,
+            3809,
+            4152,
+            5057,
+            3794,
+            4270,
+            3779,
+            4342,
+            3788,
+            4879,
+            3796
+          ]
+        },
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1484,
+          "spawn_sum": 16806,
+          "close": 678,
+          "drain": 33664,
+          "freeze_to_drained": 115262,
+          "reap_sum": 16093,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5199,
+            3812,
+            4070,
+            5019,
+            4681,
+            3788,
+            3776,
+            4156,
+            3812,
+            4173,
+            10525,
+            8114,
+            5491,
+            3758,
+            4192,
+            3844
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "position": 2,
+      "variant": "parallel",
+      "owner": 1,
+      "warmup": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              3,
+              1754210307
+            ],
+            [
+              2,
+              1481809922
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1819,
+            "spawn2": 639,
+            "both_waited": 1687224,
+            "close": 782,
+            "close_to_wait": 1683706,
+            "post_wait_drain": 1037,
+            "close_to_drained": 1684743,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 652,
+            "spawn2": 611,
+            "both_waited": 1674641,
+            "close": 986,
+            "close_to_wait": 1672224,
+            "post_wait_drain": 195224,
+            "close_to_drained": 1867448,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              9,
+              1241128969
+            ],
+            [
+              8,
+              968728584
+            ]
+          ],
+          "ticks": {
+            "spawn1": 674,
+            "spawn2": 628,
+            "both_waited": 1678889,
+            "close": 423,
+            "close_to_wait": 1676994,
+            "post_wait_drain": 1006,
+            "close_to_drained": 1678000,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              12,
+              2058330124
+            ],
+            [
+              11,
+              1785929739
+            ]
+          ],
+          "ticks": {
+            "spawn1": 643,
+            "spawn2": 976,
+            "both_waited": 1660475,
+            "close": 426,
+            "close_to_wait": 1658272,
+            "post_wait_drain": 193366,
+            "close_to_drained": 1851638,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1909,
+          "spawn_sum": 9991,
+          "close": 3221,
+          "drain": 466,
+          "freeze_to_drained": 73945,
+          "reap_sum": 13184,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5592,
+            4230,
+            3805,
+            3815,
+            4237,
+            3794,
+            4184,
+            3795,
+            5327,
+            3800,
+            3792,
+            4177,
+            4299,
+            4999,
+            3802,
+            3785
+          ]
+        },
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1520,
+          "spawn_sum": 11129,
+          "close": 631,
+          "drain": 34083,
+          "freeze_to_drained": 115228,
+          "reap_sum": 14529,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5185,
+            3810,
+            4289,
+            3788,
+            4155,
+            8683,
+            8490,
+            6497,
+            3774,
+            4065,
+            5385,
+            4161,
+            3898,
+            3769,
+            4146,
+            3881
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "position": 1,
+      "variant": "parallel",
+      "owner": 1,
+      "warmup": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              3,
+              1754210307
+            ],
+            [
+              2,
+              1481809922
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1771,
+            "spawn2": 747,
+            "both_waited": 1737878,
+            "close": 1449,
+            "close_to_wait": 1733753,
+            "post_wait_drain": 211683,
+            "close_to_drained": 1945436,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              5,
+              151527429
+            ],
+            [
+              6,
+              423927814
+            ]
+          ],
+          "ticks": {
+            "spawn1": 680,
+            "spawn2": 635,
+            "both_waited": 1647614,
+            "close": 540,
+            "close_to_wait": 1645601,
+            "post_wait_drain": 2478,
+            "close_to_drained": 1648079,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              8,
+              968728584
+            ],
+            [
+              9,
+              1241128969
+            ]
+          ],
+          "ticks": {
+            "spawn1": 660,
+            "spawn2": 1031,
+            "both_waited": 1699564,
+            "close": 424,
+            "close_to_wait": 1697289,
+            "post_wait_drain": 218888,
+            "close_to_drained": 1916177,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              12,
+              2058330124
+            ],
+            [
+              11,
+              1785929739
+            ]
+          ],
+          "ticks": {
+            "spawn1": 668,
+            "spawn2": 622,
+            "both_waited": 1673151,
+            "close": 416,
+            "close_to_wait": 1671279,
+            "post_wait_drain": 1606,
+            "close_to_drained": 1672885,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1561,
+          "spawn_sum": 10225,
+          "close": 624,
+          "drain": 34599,
+          "freeze_to_drained": 107444,
+          "reap_sum": 13913,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            6168,
+            3934,
+            3837,
+            4235,
+            3809,
+            4182,
+            3880,
+            3830,
+            5116,
+            3819,
+            6936,
+            3858,
+            4187,
+            3837,
+            4266,
+            3823
+          ]
+        },
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1454,
+          "spawn_sum": 10749,
+          "close": 3029,
+          "drain": 498,
+          "freeze_to_drained": 85538,
+          "reap_sum": 14897,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            4655,
+            4274,
+            3808,
+            3793,
+            4174,
+            4676,
+            9307,
+            7985,
+            4746,
+            3872,
+            5959,
+            3817,
+            3785,
+            6454,
+            3819,
+            4339
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "position": 2,
+      "variant": "base",
+      "owner": 1,
+      "warmup": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              2,
+              1481809922
+            ],
+            [
+              3,
+              1754210307
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1678,
+            "spawn2": 649,
+            "both_waited": 3257228,
+            "close": 1720,
+            "close_to_wait": 3252908,
+            "post_wait_drain": 207945,
+            "close_to_drained": 3460853,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1060,
+            "spawn2": 620,
+            "both_waited": 3272763,
+            "close": 449,
+            "close_to_wait": 3270472,
+            "post_wait_drain": 905,
+            "close_to_drained": 3271377,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              8,
+              968728584
+            ],
+            [
+              9,
+              1241128969
+            ]
+          ],
+          "ticks": {
+            "spawn1": 669,
+            "spawn2": 624,
+            "both_waited": 3255868,
+            "close": 425,
+            "close_to_wait": 3253991,
+            "post_wait_drain": 204363,
+            "close_to_drained": 3458354,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              11,
+              1785929739
+            ],
+            [
+              12,
+              2058330124
+            ]
+          ],
+          "ticks": {
+            "spawn1": 720,
+            "spawn2": 664,
+            "both_waited": 3294202,
+            "close": 833,
+            "close_to_wait": 3291819,
+            "post_wait_drain": 909,
+            "close_to_drained": 3292728,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1592,
+          "spawn_sum": 8793,
+          "close": 615,
+          "drain": 33822,
+          "freeze_to_drained": 104811,
+          "reap_sum": 13214,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            6205,
+            3871,
+            4255,
+            3961,
+            3798,
+            4141,
+            4859,
+            4237,
+            4691,
+            4258,
+            3807,
+            3811,
+            4166,
+            3806,
+            4184,
+            3810
+          ]
+        },
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1961,
+          "spawn_sum": 9495,
+          "close": 3192,
+          "drain": 475,
+          "freeze_to_drained": 71480,
+          "reap_sum": 12697,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            4659,
+            3789,
+            3778,
+            3758,
+            4191,
+            3756,
+            3782,
+            4082,
+            3741,
+            4103,
+            3886,
+            3750,
+            4065,
+            3819,
+            4123,
+            5323
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "position": 1,
+      "variant": "base",
+      "owner": 0,
+      "warmup": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              2,
+              1481809922
+            ],
+            [
+              3,
+              1754210307
+            ]
+          ],
+          "ticks": {
+            "spawn1": 2302,
+            "spawn2": 642,
+            "both_waited": 3260451,
+            "close": 787,
+            "close_to_wait": 3256569,
+            "post_wait_drain": 1686,
+            "close_to_drained": 3258255,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 667,
+            "spawn2": 621,
+            "both_waited": 3277732,
+            "close": 1379,
+            "close_to_wait": 3274902,
+            "post_wait_drain": 207200,
+            "close_to_drained": 3482102,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              9,
+              1241128969
+            ],
+            [
+              8,
+              968728584
+            ]
+          ],
+          "ticks": {
+            "spawn1": 654,
+            "spawn2": 614,
+            "both_waited": 3226519,
+            "close": 411,
+            "close_to_wait": 3224663,
+            "post_wait_drain": 968,
+            "close_to_drained": 3225631,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              12,
+              2058330124
+            ],
+            [
+              11,
+              1785929739
+            ]
+          ],
+          "ticks": {
+            "spawn1": 662,
+            "spawn2": 616,
+            "both_waited": 3248062,
+            "close": 437,
+            "close_to_wait": 3246185,
+            "post_wait_drain": 196795,
+            "close_to_drained": 3442980,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1478,
+          "spawn_sum": 9622,
+          "close": 2776,
+          "drain": 524,
+          "freeze_to_drained": 72314,
+          "reap_sum": 13150,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5877,
+            3828,
+            3872,
+            4178,
+            3793,
+            4137,
+            3832,
+            3977,
+            4148,
+            3804,
+            4192,
+            4996,
+            4222,
+            3791,
+            3813,
+            4169
+          ]
+        },
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1547,
+          "spawn_sum": 9843,
+          "close": 658,
+          "drain": 33313,
+          "freeze_to_drained": 101867,
+          "reap_sum": 13070,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            4705,
+            4162,
+            3788,
+            4154,
+            3759,
+            3833,
+            4094,
+            3760,
+            4468,
+            3821,
+            3762,
+            4115,
+            3754,
+            5330,
+            3790,
+            4144
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "position": 2,
+      "variant": "parallel",
+      "owner": 1,
+      "warmup": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              3,
+              1754210307
+            ],
+            [
+              2,
+              1481809922
+            ]
+          ],
+          "ticks": {
+            "spawn1": 2041,
+            "spawn2": 639,
+            "both_waited": 1720793,
+            "close": 920,
+            "close_to_wait": 1717033,
+            "post_wait_drain": 1070,
+            "close_to_drained": 1718103,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 661,
+            "spawn2": 618,
+            "both_waited": 1667684,
+            "close": 984,
+            "close_to_wait": 1665262,
+            "post_wait_drain": 200494,
+            "close_to_drained": 1865756,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              9,
+              1241128969
+            ],
+            [
+              8,
+              968728584
+            ]
+          ],
+          "ticks": {
+            "spawn1": 663,
+            "spawn2": 619,
+            "both_waited": 1655721,
+            "close": 411,
+            "close_to_wait": 1653869,
+            "post_wait_drain": 986,
+            "close_to_drained": 1654855,
+            "queue_after_wait": 0
+          }
+        },
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              12,
+              2058330124
+            ],
+            [
+              11,
+              1785929739
+            ]
+          ],
+          "ticks": {
+            "spawn1": 662,
+            "spawn2": 616,
+            "both_waited": 1655624,
+            "close": 420,
+            "close_to_wait": 1653763,
+            "post_wait_drain": 195388,
+            "close_to_drained": 1849151,
+            "queue_after_wait": 3
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1473,
+          "spawn_sum": 9176,
+          "close": 2829,
+          "drain": 456,
+          "freeze_to_drained": 72612,
+          "reap_sum": 13234,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            6163,
+            3863,
+            4190,
+            3812,
+            4201,
+            4281,
+            3836,
+            4178,
+            4602,
+            4190,
+            3855,
+            3822,
+            4132,
+            3796,
+            4155,
+            3863
+          ]
+        },
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1477,
+          "spawn_sum": 9034,
+          "close": 679,
+          "drain": 33887,
+          "freeze_to_drained": 104508,
+          "reap_sum": 14272,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5135,
+            4862,
+            4249,
+            3817,
+            4118,
+            3843,
+            3799,
+            4174,
+            3772,
+            4092,
+            4161,
+            3797,
+            4199,
+            3768,
+            4362,
+            5341
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "position": 1,
+      "variant": "parallel",
+      "owner": 0,
+      "warmup": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              2,
+              1481809922
+            ],
+            [
+              3,
+              1754210307
+            ]
+          ],
+          "ticks": {
+            "spawn1": 1806,
+            "spawn2": 662,
+            "both_waited": 1719963,
+            "close": 1492,
+            "close_to_wait": 1715840,
+            "post_wait_drain": 196916,
+            "close_to_drained": 1912756,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 653,
+            "spawn2": 621,
+            "both_waited": 1670577,
+            "close": 449,
+            "close_to_wait": 1668696,
+            "post_wait_drain": 928,
+            "close_to_drained": 1669624,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              8,
+              968728584
+            ],
+            [
+              9,
+              1241128969
+            ]
+          ],
+          "ticks": {
+            "spawn1": 674,
+            "spawn2": 631,
+            "both_waited": 1662537,
+            "close": 2183,
+            "close_to_wait": 1658889,
+            "post_wait_drain": 197813,
+            "close_to_drained": 1856702,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              11,
+              1785929739
+            ],
+            [
+              12,
+              2058330124
+            ]
+          ],
+          "ticks": {
+            "spawn1": 664,
+            "spawn2": 623,
+            "both_waited": 1658077,
+            "close": 414,
+            "close_to_wait": 1656213,
+            "post_wait_drain": 949,
+            "close_to_drained": 1657162,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1890,
+          "spawn_sum": 9635,
+          "close": 641,
+          "drain": 36211,
+          "freeze_to_drained": 109505,
+          "reap_sum": 13137,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5878,
+            4418,
+            3960,
+            3955,
+            4298,
+            4004,
+            4306,
+            3935,
+            4322,
+            5099,
+            3942,
+            4207,
+            3946,
+            4355,
+            3936,
+            4429
+          ]
+        },
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1503,
+          "spawn_sum": 9571,
+          "close": 2864,
+          "drain": 503,
+          "freeze_to_drained": 78064,
+          "reap_sum": 13014,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5089,
+            3879,
+            4331,
+            3849,
+            4365,
+            3866,
+            3867,
+            7196,
+            3881,
+            5990,
+            4375,
+            3897,
+            3862,
+            4283,
+            5141,
+            4316
+          ]
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "position": 2,
+      "variant": "base",
+      "owner": 1,
+      "warmup": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            2,
+            3
+          ],
+          "exits": [
+            [
+              2,
+              1481809922
+            ],
+            [
+              3,
+              1754210307
+            ]
+          ],
+          "ticks": {
+            "spawn1": 2148,
+            "spawn2": 651,
+            "both_waited": 3244095,
+            "close": 1752,
+            "close_to_wait": 3239256,
+            "post_wait_drain": 202069,
+            "close_to_drained": 3441325,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            5,
+            6
+          ],
+          "exits": [
+            [
+              6,
+              423927814
+            ],
+            [
+              5,
+              151527429
+            ]
+          ],
+          "ticks": {
+            "spawn1": 671,
+            "spawn2": 624,
+            "both_waited": 3193068,
+            "close": 471,
+            "close_to_wait": 3191138,
+            "post_wait_drain": 938,
+            "close_to_drained": 3192076,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "measured": [
+        {
+          "policy": 9,
+          "iterations": 128000000,
+          "spawns": [
+            8,
+            9
+          ],
+          "exits": [
+            [
+              9,
+              1241128969
+            ],
+            [
+              8,
+              968728584
+            ]
+          ],
+          "ticks": {
+            "spawn1": 664,
+            "spawn2": 617,
+            "both_waited": 3248596,
+            "close": 427,
+            "close_to_wait": 3246732,
+            "post_wait_drain": 204910,
+            "close_to_drained": 3451642,
+            "queue_after_wait": 3
+          }
+        },
+        {
+          "policy": 1,
+          "iterations": 128000000,
+          "spawns": [
+            11,
+            12
+          ],
+          "exits": [
+            [
+              11,
+              1785929739
+            ],
+            [
+              12,
+              2058330124
+            ]
+          ],
+          "ticks": {
+            "spawn1": 669,
+            "spawn2": 625,
+            "both_waited": 3287603,
+            "close": 414,
+            "close_to_wait": 3285733,
+            "post_wait_drain": 1021,
+            "close_to_drained": 3286754,
+            "queue_after_wait": 0
+          }
+        }
+      ],
+      "serial_bopen": [
+        {
+          "policy": 9,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1527,
+          "spawn_sum": 10847,
+          "close": 671,
+          "drain": 33706,
+          "freeze_to_drained": 116015,
+          "reap_sum": 15320,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5983,
+            7771,
+            8534,
+            6447,
+            3930,
+            4315,
+            3873,
+            5733,
+            3829,
+            4119,
+            3822,
+            3845,
+            4179,
+            3807,
+            5033,
+            3810
+          ]
+        },
+        {
+          "policy": 1,
+          "rounds": 16,
+          "stride": 512,
+          "freeze": 1524,
+          "spawn_sum": 9792,
+          "close": 2840,
+          "drain": 478,
+          "freeze_to_drained": 71727,
+          "reap_sum": 14027,
+          "copied_slots": 0,
+          "user_peak": 0,
+          "kernel_peak": 0,
+          "spawn_to_wait": [
+            5042,
+            3903,
+            4151,
+            3785,
+            3795,
+            4145,
+            3839,
+            4159,
+            3801,
+            3796,
+            4429,
+            3850,
+            4181,
+            3777,
+            5497,
+            3821
+          ]
+        }
+      ]
+    }
+  ]
+}

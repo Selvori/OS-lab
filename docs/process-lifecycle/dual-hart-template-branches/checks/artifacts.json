@@ -1,0 +1,22 @@
+{
+  "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+  "tdbench": "106a7e4f1edd74746dea858ca93bac77c30ace25a5d82711e25f980669fd4e33",
+  "bopen": "8af9baf30ca91acc79367ebd44fda65cf3013abb7f2041f12afa2a109d0349c5",
+  "bcheck": "b22de250bde6365146fe2a69b71fb7caefd2553af21a2e73d12d7d42d5782e9b",
+  "bclose": "19a9086199eb391a7bf55d9ba9db07df86292ae597d5176c186e998e0c9ca596",
+  "byield": "646427a22bb806a629b07587febcf67dc48470dfc9f4199f01d8324c4eb8fad0",
+  "bedges": "1154db023f1f2ebe65ebaa901836bc341c4000521f3c42c9ca2568ed2365c2c6",
+  "bfail": "fec71b82b434ea8ad2b77b58a9f1385de9b2276a8fd87b7941ce5e150a620daa",
+  "lifetest": "b4b847bd15b6b9761ed8639520524f5ffbb9e68292834b9b4170dff928a8bda2",
+  "lifejob": "c165ddcd336376463cc51bd059f19dff29750a30551aff9701bb0a8ce4cc1dd0",
+  "disk": "bcfab31c7732617d303174d0a43c310c6f9f6fe2fc062901fa0fbd8f009d0d57",
+  "kernel_parallel": "f51ec78a4092886b8917ed9f6f8af75e7d664eeff85ed3b6eeefecde20c83594",
+  "baseline": "9e3a6535bef19eb7aee68122a49f9b9b6bbeed7a",
+  "candidate": "14a92b3998adc00a05cc215edcf8fc5c844204e5",
+  "source_clean": true,
+  "qemu": "QEMU emulator version 5.1.0",
+  "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+  "timebase_hz": 10000000,
+  "cpus": 2,
+  "accel": "tcg,thread=multi"
+}

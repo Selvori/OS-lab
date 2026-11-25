@@ -1,0 +1,2 @@
+  Entry point address:               0x80200000
+  Entry point address:               0x80200000

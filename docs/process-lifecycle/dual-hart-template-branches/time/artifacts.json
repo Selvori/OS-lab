@@ -1,0 +1,16 @@
+{
+  "sh": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+  "tdbench": "106a7e4f1edd74746dea858ca93bac77c30ace25a5d82711e25f980669fd4e33",
+  "bopen": "8af9baf30ca91acc79367ebd44fda65cf3013abb7f2041f12afa2a109d0349c5",
+  "disk": "9778095d2a2f885be5b2227ccfe0043e40c25f7ce7a93e05728ae823a0dceaba",
+  "kernel_parallel": "1195bca01165d56c1d6138ae66c07ca8c6ba622937e1f38c24f545ab8528c26c",
+  "baseline": "9e3a6535bef19eb7aee68122a49f9b9b6bbeed7a",
+  "candidate": "14a92b3998adc00a05cc215edcf8fc5c844204e5",
+  "source_clean": true,
+  "qemu": "QEMU emulator version 5.1.0",
+  "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+  "timebase_hz": 10000000,
+  "cpus": 2,
+  "accel": "tcg,thread=multi",
+  "kernel_base": "c156fd8b4f315af842ca0578403818095ca85768642b628cfd641e38fad33564"
+}
