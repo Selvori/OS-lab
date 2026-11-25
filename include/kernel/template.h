@@ -18,6 +18,9 @@ enum template_policy {
 };
 struct split_plan { pagetable_t fresh[HEAP_WINDOWS]; };
 int branch_attach(struct proc *p, struct proc *image);
+#ifdef DUAL_HART_USERS
+bool branch_can_offload(const struct proc *p);
+#endif
 void branch_detach(struct proc *p);
 int branch_prepare(struct proc *p, uintptr_t begin, uintptr_t end, struct split_plan *plan);
 void branch_commit(struct proc *p, struct split_plan *plan);

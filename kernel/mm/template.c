@@ -244,6 +244,8 @@ static void confirm_word(struct template_job *job)
         const struct branch_heap *b = proc_slot(job->scan_slot - 1)->branch;
         if (b && b->image == job->image) {
             reclaim_count(slots_matching, 1);
+            /* Drops are monotonic, including for a leased branch. The owner
+             * records them only after return to the kernel root and fences. */
             job->intersection &= b->dropped[w][word];
         } else {
             reclaim_count(slots_other, 1);
@@ -303,10 +305,13 @@ static unsigned release_pages(struct template_job *job, unsigned budget)
         job->ready[w] &= ~(1U << word);
         if (!job->ready[w]) job->ready_windows &= ~(1U << w);
     }
-    /* A shared leaf can only be cleared after every borrow was revoked and
-     * fenced. For terminal jobs the handle is gone, the image root never ran,
-     * and all branch links were removed and fenced before close. The creator
-     * and any ordinary forks use independent PTEs and frame references. */
+    /* For a per-page job, any branch that dropped this slot either split
+     * away from this leaf table or detached entirely, with a fence before
+     * publishing the drop. The private mixed first table follows the same
+     * rule. A currently leased branch therefore cannot translate a slot
+     * selected for release, even if it is still using other original pages.
+     * Terminal jobs start with all branch links already detached and fenced.
+     * The creator and ordinary forks have independent PTEs and references. */
     if (!job->terminal) sfence_vma();
 #ifdef LIFECYCLE_PROBE
     if (lifecycle_reclaim_recording()) {
@@ -487,6 +492,13 @@ static void take_refs(struct proc *p, unsigned w)
     leaf_refs(table(p, w), first_slot(w), true, p->branch->image->template_ref_batch);
 }
 
+#ifdef DUAL_HART_USERS
+bool branch_can_offload(const struct proc *p)
+{
+    return p->branch->image->template_parallel;
+}
+#endif
+
 int branch_attach(struct proc *p, struct proc *image)
 {
     struct branch_heap *b = page_alloc(PAGE_ZONE_KERNEL);
@@ -652,6 +664,8 @@ static void end_window_borrow(struct branch_heap *b, unsigned w)
 
 void branch_drop_borrow(struct proc *p, uintptr_t va)
 {
+    assert(p == proc_current() && p->state == PROC_RUNNING,
+           "drop borrow outside owner process");
     struct branch_heap *b = p->branch;
     struct template_job *job = b->image->reclaim_job;
     unsigned w = va / SV39_LEAF_SPAN;
@@ -715,6 +729,7 @@ void branch_unmap(struct proc *p, uintptr_t va, size_t pages)
 
 void branch_detach(struct proc *p)
 {
+    assert(p->state != PROC_REMOTE, "detach leased branch");
     struct branch_heap *b = p->branch;
     for (unsigned w = 0; w < HEAP_WINDOWS; ++w) {
         if (!w && !b->mixed_heap) continue;

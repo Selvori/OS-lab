@@ -45,6 +45,7 @@ struct proc {
     bool stack_mapped, faulted;
 #ifdef DUAL_HART_USERS
     bool user_ready; /* Runnable with no saved kernel continuation. */
+    bool template_parallel; /* Policy permits branch U-mode leases. */
     bool prefer_owner;
     uint64 timer_syscalls, remote_cause, remote_value;
 #endif

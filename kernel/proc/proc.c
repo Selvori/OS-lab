@@ -230,7 +230,8 @@ static void dispatch_remote(unsigned local)
     for (unsigned offset = 1; offset < NPROC; ++offset) {
         struct proc *p = &procs[(local + offset) % NPROC];
         if (p->state != PROC_RUNNABLE || !p->user_ready || p->prefer_owner ||
-            p == initproc || p->branch || p->template_handle || p->yield_reclaim)
+            p == initproc || p->template_handle || p->yield_reclaim ||
+            (p->branch && !branch_can_offload(p)))
             continue;
         p->state = PROC_REMOTE;
         ++p->switches;
@@ -396,7 +397,10 @@ void proc_scheduler(void)
         /* A worker still running user code is a competitor, not an idle turn. */
         can_reclaim_idle = !remote_proc;
 #endif
-        if (!ran && (!can_reclaim_idle || !template_reclaim_step(true))) {
+        /* Make one bounded busy turn even if the only competitor is remote.
+         * Then wait for an interrupt before scanning again in that case. */
+        bool reclaimed = !ran && template_reclaim_step(can_reclaim_idle);
+        if (!ran && (!can_reclaim_idle || !reclaimed)) {
             if (deferred) {
                 /* No runnable competitor or work. Reselect the yielder. */
                 deferred = NULL;
@@ -452,6 +456,10 @@ long template_freeze(unsigned policy)
     image->template_owned = policy != TEMPLATE_TABLE_REFS && !image->template_ref_batch;
     image->template_reclaim = policy == TEMPLATE_WINDOW_RECLAIM ||
                               policy == TEMPLATE_WINDOW_BATCH;
+#ifdef DUAL_HART_USERS
+    image->template_parallel = policy == TEMPLATE_FRAME_REFS ||
+                               policy == TEMPLATE_TERMINAL_RECLAIM;
+#endif
     p->template_handle = image;
     return 1;
 }
@@ -472,6 +480,9 @@ long template_spawn(void)
     files_fork(child, image);
     child->parent = p;
     child->pid = (int)next_pid++;
+#ifdef DUAL_HART_USERS
+    child->user_ready = true;
+#endif
     child->state = PROC_RUNNABLE;
     return child->pid;
 }
