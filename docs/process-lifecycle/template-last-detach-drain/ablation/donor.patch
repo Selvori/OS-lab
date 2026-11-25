@@ -1,0 +1,16 @@
+--- a/kernel/mm/template.c
++++ b/kernel/mm/template.c
+@@ -769,6 +769,13 @@
+     --image->template_branches;
+     struct template_job *job = image->reclaim_job;
+     if (job && job->closed) {
++        if (!image->template_branches && job->policy == TEMPLATE_TERMINAL_RECLAIM) {
++            struct proc *owner = proc_current();
++            if (job->remaining && owner && !owner->yield_reclaim) {
++                job->yield_owner = owner;
++                owner->yield_reclaim = job;
++            }
++        }
+         if (job->policy != TEMPLATE_WINDOW_BATCH) {
+             for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
+                 dirty_words(job, w, job->blocked[w]);

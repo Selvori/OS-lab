@@ -1,0 +1,199 @@
+{
+  "policy": 9,
+  "kernel_sha256": "baf683dab8cd7b090ba1cc98ac8fb38868b5db82454626180cc2f8389be375ed",
+  "disk_sha256": "22f3428a84aef3b94fa1d63d5579865a37dbcb7bbc66b2be49b54c00402b2c81",
+  "guest_sha256": "42a242f121e4b9a29a31157cd53c46a264f1c068853c43c9887447acf418a9bf",
+  "virtual_addresses": [
+    12288,
+    16384,
+    2097152,
+    4194304
+  ],
+  "phases": [
+    {
+      "stage": "open",
+      "original": [
+        2183237632,
+        2183241728,
+        2183245824,
+        2183249920
+      ],
+      "refs": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "on_free_list": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "roots": [
+        2150907904,
+        2150940672
+      ],
+      "mappings": [
+        [
+          2183237632,
+          null,
+          2183245824,
+          null
+        ],
+        [
+          2183237632,
+          null,
+          2183245824,
+          null
+        ]
+      ],
+      "leaf_tables": [
+        [
+          2150924288,
+          2150899712
+        ],
+        [
+          2150957056,
+          2150899712
+        ]
+      ],
+      "readers": 2,
+      "harts": [
+        {
+          "hart": 0,
+          "priv": 0,
+          "pc": 4524,
+          "satp": 9223372036855300940
+        },
+        {
+          "hart": 1,
+          "priv": 0,
+          "pc": 4524,
+          "satp": 9223372036855300932
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "stage": "closed",
+      "original": [
+        2183237632,
+        2183241728,
+        2183245824,
+        2183249920
+      ],
+      "refs": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "on_free_list": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "roots": [
+        2150907904,
+        2150940672
+      ],
+      "mappings": [
+        [
+          2183237632,
+          null,
+          2183245824,
+          null
+        ],
+        [
+          2183237632,
+          null,
+          2183245824,
+          null
+        ]
+      ],
+      "leaf_tables": [
+        [
+          2150924288,
+          2150899712
+        ],
+        [
+          2150957056,
+          2150899712
+        ]
+      ],
+      "readers": 2,
+      "harts": [
+        {
+          "hart": 0,
+          "priv": 0,
+          "pc": 4524,
+          "satp": 9223372036855300932
+        },
+        {
+          "hart": 1,
+          "priv": 0,
+          "pc": 4524,
+          "satp": 9223372036855300940
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "stage": "final",
+      "original": [
+        2183237632,
+        2183241728,
+        2183245824,
+        2183249920
+      ],
+      "refs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "on_free_list": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "roots": [
+        null,
+        null
+      ],
+      "mappings": [],
+      "leaf_tables": [],
+      "readers": 0,
+      "harts": [],
+      "attempts": 1
+    }
+  ],
+  "family": [
+    1,
+    2,
+    3
+  ],
+  "at_close": {
+    "creator": 1,
+    "assigned_pid": 3,
+    "remote_running_reader": true,
+    "harts": [
+      {
+        "hart": 0,
+        "priv": 0,
+        "pc": 4524,
+        "satp": 9223372036855300940
+      },
+      {
+        "hart": 1,
+        "priv": 1,
+        "pc": 2149603590,
+        "satp": 9223372036855300805
+      }
+    ]
+  },
+  "passed": true
+}

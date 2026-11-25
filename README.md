@@ -42,3 +42,5 @@ make CONFIG=riscv64-visionfive2-uboot build image
 [普通进程的双 hart 用户态研究](docs/process-lifecycle/dual-hart-users/README.md) 通过 `DUAL_HART_USERS=1` 在 QEMU virt 开启。四组同负载配对的完成时间中位数由 329.77 ms 降至 173.65 ms，GDB 同时见证两颗 hart 在不同用户页表下执行 U 态。
 
 [模板分支双 hart 执行与回收见证](docs/process-lifecycle/dual-hart-template-branches/README.md) 在同一 QEMU 双 hart 开关下开放策略 1 和 9 的用户态派发。关闭后两条真实兄弟分支仍可并行，8 MiB 双分支计算配对中位加速为 1.97× 和 1.96×。回收器在策略 9 的双 U 态五窗见证中归还 2038 个原帧。
+
+关闭句柄后仍有活分支的 `freeze(9)`，在最后一个借用者解除映射后可以直接释放剩余原帧。8 MiB 双分支短任务的末次 wait 后排空从 22.04 ms 降至 3.70 ms，已退出子进程的最后一次 wait 从 114.85 µs 到 117.50 µs。[配对基准、四种组合与物理页证据](docs/process-lifecycle/template-last-detach-drain/README.md)

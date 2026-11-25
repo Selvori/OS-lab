@@ -1,0 +1,38 @@
+{
+  "baseline": "a09d365d155ea57e39e479ae573b696f2b76e030",
+  "implementation": "130be23d64babea74ab6241110cfd4fbda5abe1b",
+  "runner": "a4133a3ae10cfa6922052d7f48092f728f497069",
+  "qemu": "QEMU emulator version 5.1.0",
+  "gcc": "riscv64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+  "options": [
+    "-smp",
+    "2",
+    "-accel",
+    "tcg,thread=multi",
+    "-m",
+    "128M"
+  ],
+  "timebase_hz": 10000000,
+  "primary": {
+    "old": "1195bca01165d56c1d6138ae66c07ca8c6ba622937e1f38c24f545ab8528c26c",
+    "new": "baf683dab8cd7b090ba1cc98ac8fb38868b5db82454626180cc2f8389be375ed",
+    "disk": "9778095d2a2f885be5b2227ccfe0043e40c25f7ce7a93e05728ae823a0dceaba"
+  },
+  "zombie_checks": {
+    "old": "f51ec78a4092886b8917ed9f6f8af75e7d664eeff85ed3b6eeefecde20c83594",
+    "new": "c8ce20de659a64671e444ca0dcc39d7da89a4509695e02e86f70c5b05bdf570b",
+    "disk": "57cbcfeb904dbcf6d8e289c81c501e3228c4fa25e364d09745cb6d284374c0ba"
+  },
+  "ablation": {
+    "old": "1195bca01165d56c1d6138ae66c07ca8c6ba622937e1f38c24f545ab8528c26c",
+    "terminal": "79ef82a330cf32dfad48005d76eeb5da730eab45154f49afedef513e44035381",
+    "donor": "e087ba355602370b193e6cbdb30f890e32ca755864ff3a4c3fd311a3945fe6cd",
+    "both": "baf683dab8cd7b090ba1cc98ac8fb38868b5db82454626180cc2f8389be375ed"
+  },
+  "tdbench": "106a7e4f1edd74746dea858ca93bac77c30ace25a5d82711e25f980669fd4e33",
+  "latewait": "8f262630042bef2846aad038e611471ea1d68dc897c52a8b34481b0336a3d543",
+  "shell": "0c3e9bfe155c38daa98d8147e4830edcc4355d2ac21b5f1b13741b799f89f6ce",
+  "held": "42a242f121e4b9a29a31157cd53c46a264f1c068853c43c9887447acf418a9bf",
+  "vf_elf": "1e17b5be90c6bc71a8a91336573b34cc998b00ec0f849fb1a92464e95b33bce2",
+  "vf_fit": "acd05788e63c59921d4d3f24abf130b935bb9f5c8f042adb11120e4297b65854"
+}

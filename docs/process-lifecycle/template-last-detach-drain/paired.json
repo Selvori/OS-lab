@@ -1,0 +1,4900 @@
+{
+  "sha256": {
+    "old": "1195bca01165d56c1d6138ae66c07ca8c6ba622937e1f38c24f545ab8528c26c",
+    "new": "baf683dab8cd7b090ba1cc98ac8fb38868b5db82454626180cc2f8389be375ed",
+    "disk": "9778095d2a2f885be5b2227ccfe0043e40c25f7ce7a93e05728ae823a0dceaba"
+  },
+  "timebase_hz": 10000000,
+  "boots": [
+    {
+      "pair": 1,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                1017233273
+              ],
+              [
+                3,
+                1018897798
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1737,
+              "spawn2": 783,
+              "both_waited": 37872,
+              "close": 1274,
+              "close_to_wait": 33920,
+              "post_wait_drain": 213278,
+              "close_to_drained": 247198,
+              "queue_after_wait": 3,
+              "through_drain": 251150
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                559980677
+              ],
+              [
+                6,
+                1233359494
+              ]
+            ],
+            "ticks": {
+              "spawn1": 713,
+              "spawn2": 1013,
+              "both_waited": 45761,
+              "close": 469,
+              "close_to_wait": 43409,
+              "post_wait_drain": 258257,
+              "close_to_drained": 301666,
+              "queue_after_wait": 3,
+              "through_drain": 304018
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                8,
+                968728584
+              ],
+              [
+                9,
+                1241128969
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1083,
+              "spawn2": 1538,
+              "both_waited": 1711985,
+              "close": 728,
+              "close_to_wait": 1708373,
+              "post_wait_drain": 224138,
+              "close_to_drained": 1932511,
+              "queue_after_wait": 3,
+              "through_drain": 1936123
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                978665100
+              ],
+              [
+                11,
+                305286283
+              ]
+            ],
+            "ticks": {
+              "spawn1": 693,
+              "spawn2": 638,
+              "both_waited": 44163,
+              "close": 466,
+              "close_to_wait": 42208,
+              "post_wait_drain": 1222,
+              "close_to_drained": 43430,
+              "queue_after_wait": 0,
+              "through_drain": 45385
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                14,
+                1037207573
+              ],
+              [
+                15,
+                1038872098
+              ]
+            ],
+            "ticks": {
+              "spawn1": 737,
+              "spawn2": 632,
+              "both_waited": 13944,
+              "close": 447,
+              "close_to_wait": 11939,
+              "post_wait_drain": 216497,
+              "close_to_drained": 228436,
+              "queue_after_wait": 3,
+              "through_drain": 230441
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                18,
+                723970706
+              ],
+              [
+                17,
+                50591889
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 1000,
+              "both_waited": 42986,
+              "close": 451,
+              "close_to_wait": 40675,
+              "post_wait_drain": 211406,
+              "close_to_drained": 252081,
+              "queue_after_wait": 3,
+              "through_drain": 254392
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                21,
+                214966293
+              ],
+              [
+                20,
+                2090049556
+              ]
+            ],
+            "ticks": {
+              "spawn1": 710,
+              "spawn2": 661,
+              "both_waited": 1691447,
+              "close": 455,
+              "close_to_wait": 1689463,
+              "post_wait_drain": 223215,
+              "close_to_drained": 1912678,
+              "queue_after_wait": 3,
+              "through_drain": 1914662
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                23,
+                1943381143
+              ],
+              [
+                24,
+                469276312
+              ]
+            ],
+            "ticks": {
+              "spawn1": 681,
+              "spawn2": 645,
+              "both_waited": 44627,
+              "close": 532,
+              "close_to_wait": 39226,
+              "post_wait_drain": 900,
+              "close_to_drained": 40126,
+              "queue_after_wait": 0,
+              "through_drain": 45527
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                26,
+                1057181873
+              ],
+              [
+                27,
+                1058846398
+              ]
+            ],
+            "ticks": {
+              "spawn1": 717,
+              "spawn2": 642,
+              "both_waited": 14396,
+              "close": 447,
+              "close_to_wait": 12426,
+              "post_wait_drain": 213258,
+              "close_to_drained": 225684,
+              "queue_after_wait": 3,
+              "through_drain": 227654
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                29,
+                1688686749
+              ],
+              [
+                30,
+                214581918
+              ]
+            ],
+            "ticks": {
+              "spawn1": 703,
+              "spawn2": 648,
+              "both_waited": 40036,
+              "close": 447,
+              "close_to_wait": 38072,
+              "post_wait_drain": 213866,
+              "close_to_drained": 251938,
+              "queue_after_wait": 3,
+              "through_drain": 253902
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1063886880
+              ],
+              [
+                33,
+                1336287265
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1083,
+              "spawn2": 655,
+              "both_waited": 1710030,
+              "close": 466,
+              "close_to_wait": 1707661,
+              "post_wait_drain": 222304,
+              "close_to_drained": 1929965,
+              "queue_after_wait": 3,
+              "through_drain": 1932334
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                35,
+                1433992355
+              ],
+              [
+                36,
+                2107371172
+              ]
+            ],
+            "ticks": {
+              "spawn1": 672,
+              "spawn2": 617,
+              "both_waited": 48731,
+              "close": 423,
+              "close_to_wait": 46859,
+              "post_wait_drain": 1393,
+              "close_to_drained": 48252,
+              "queue_after_wait": 0,
+              "through_drain": 50124
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                1077156173
+              ],
+              [
+                39,
+                1078820698
+              ]
+            ],
+            "ticks": {
+              "spawn1": 670,
+              "spawn2": 629,
+              "both_waited": 16081,
+              "close": 442,
+              "close_to_wait": 14172,
+              "post_wait_drain": 220471,
+              "close_to_drained": 234643,
+              "queue_after_wait": 3,
+              "through_drain": 236552
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                41,
+                1179297961
+              ],
+              [
+                42,
+                1852676778
+              ]
+            ],
+            "ticks": {
+              "spawn1": 695,
+              "spawn2": 628,
+              "both_waited": 42499,
+              "close": 445,
+              "close_to_wait": 40572,
+              "post_wait_drain": 214113,
+              "close_to_drained": 254685,
+              "queue_after_wait": 3,
+              "through_drain": 256612
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                37724204
+              ],
+              [
+                45,
+                310124589
+              ]
+            ],
+            "ticks": {
+              "spawn1": 702,
+              "spawn2": 658,
+              "both_waited": 1706520,
+              "close": 456,
+              "close_to_wait": 1704541,
+              "post_wait_drain": 207173,
+              "close_to_drained": 1911714,
+              "queue_after_wait": 3,
+              "through_drain": 1913693
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                924603567
+              ],
+              [
+                48,
+                1597982384
+              ]
+            ],
+            "ticks": {
+              "spawn1": 657,
+              "spawn2": 616,
+              "both_waited": 43152,
+              "close": 411,
+              "close_to_wait": 41306,
+              "post_wait_drain": 952,
+              "close_to_drained": 42258,
+              "queue_after_wait": 0,
+              "through_drain": 44104
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "build": "new",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                3,
+                1018897798
+              ],
+              [
+                2,
+                1017233273
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1892,
+              "spawn2": 640,
+              "both_waited": 40027,
+              "close": 1638,
+              "close_to_wait": 35702,
+              "post_wait_drain": 41632,
+              "close_to_drained": 77334,
+              "queue_after_wait": 3,
+              "through_drain": 81659
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                6,
+                1233359494
+              ],
+              [
+                5,
+                559980677
+              ]
+            ],
+            "ticks": {
+              "spawn1": 720,
+              "spawn2": 671,
+              "both_waited": 41505,
+              "close": 463,
+              "close_to_wait": 39486,
+              "post_wait_drain": 47317,
+              "close_to_drained": 86803,
+              "queue_after_wait": 3,
+              "through_drain": 88822
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                8,
+                968728584
+              ],
+              [
+                9,
+                1241128969
+              ]
+            ],
+            "ticks": {
+              "spawn1": 734,
+              "spawn2": 704,
+              "both_waited": 1709189,
+              "close": 492,
+              "close_to_wait": 1707101,
+              "post_wait_drain": 46641,
+              "close_to_drained": 1753742,
+              "queue_after_wait": 3,
+              "through_drain": 1755830
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                11,
+                305286283
+              ],
+              [
+                12,
+                978665100
+              ]
+            ],
+            "ticks": {
+              "spawn1": 681,
+              "spawn2": 970,
+              "both_waited": 45940,
+              "close": 451,
+              "close_to_wait": 43674,
+              "post_wait_drain": 1632,
+              "close_to_drained": 45306,
+              "queue_after_wait": 0,
+              "through_drain": 47572
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                14,
+                1037207573
+              ],
+              [
+                15,
+                1038872098
+              ]
+            ],
+            "ticks": {
+              "spawn1": 685,
+              "spawn2": 632,
+              "both_waited": 15960,
+              "close": 449,
+              "close_to_wait": 14034,
+              "post_wait_drain": 33970,
+              "close_to_drained": 48004,
+              "queue_after_wait": 3,
+              "through_drain": 49930
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                17,
+                50591889
+              ],
+              [
+                18,
+                723970706
+              ]
+            ],
+            "ticks": {
+              "spawn1": 688,
+              "spawn2": 649,
+              "both_waited": 38464,
+              "close": 447,
+              "close_to_wait": 36521,
+              "post_wait_drain": 35893,
+              "close_to_drained": 72414,
+              "queue_after_wait": 3,
+              "through_drain": 74357
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                20,
+                2090049556
+              ],
+              [
+                21,
+                214966293
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1161,
+              "spawn2": 655,
+              "both_waited": 1727074,
+              "close": 452,
+              "close_to_wait": 1724644,
+              "post_wait_drain": 34628,
+              "close_to_drained": 1759272,
+              "queue_after_wait": 3,
+              "through_drain": 1761702
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                469276312
+              ],
+              [
+                23,
+                1943381143
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 618,
+              "both_waited": 45594,
+              "close": 411,
+              "close_to_wait": 43709,
+              "post_wait_drain": 1340,
+              "close_to_drained": 45049,
+              "queue_after_wait": 0,
+              "through_drain": 46934
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                1058846398
+              ],
+              [
+                26,
+                1057181873
+              ]
+            ],
+            "ticks": {
+              "spawn1": 681,
+              "spawn2": 631,
+              "both_waited": 14807,
+              "close": 446,
+              "close_to_wait": 12871,
+              "post_wait_drain": 49518,
+              "close_to_drained": 62389,
+              "queue_after_wait": 3,
+              "through_drain": 64325
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                30,
+                214581918
+              ],
+              [
+                29,
+                1688686749
+              ]
+            ],
+            "ticks": {
+              "spawn1": 700,
+              "spawn2": 641,
+              "both_waited": 42071,
+              "close": 447,
+              "close_to_wait": 40111,
+              "post_wait_drain": 37187,
+              "close_to_drained": 77298,
+              "queue_after_wait": 3,
+              "through_drain": 79258
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1063886880
+              ],
+              [
+                33,
+                1336287265
+              ]
+            ],
+            "ticks": {
+              "spawn1": 901,
+              "spawn2": 712,
+              "both_waited": 1664458,
+              "close": 1242,
+              "close_to_wait": 1661408,
+              "post_wait_drain": 32652,
+              "close_to_drained": 1694060,
+              "queue_after_wait": 3,
+              "through_drain": 1697110
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                36,
+                2107371172
+              ],
+              [
+                35,
+                1433992355
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1142,
+              "spawn2": 687,
+              "both_waited": 51788,
+              "close": 450,
+              "close_to_wait": 49317,
+              "post_wait_drain": 928,
+              "close_to_drained": 50245,
+              "queue_after_wait": 0,
+              "through_drain": 52716
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                39,
+                1078820698
+              ],
+              [
+                38,
+                1077156173
+              ]
+            ],
+            "ticks": {
+              "spawn1": 694,
+              "spawn2": 1149,
+              "both_waited": 19707,
+              "close": 453,
+              "close_to_wait": 17247,
+              "post_wait_drain": 36613,
+              "close_to_drained": 53860,
+              "queue_after_wait": 3,
+              "through_drain": 56320
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1852676778
+              ],
+              [
+                41,
+                1179297961
+              ]
+            ],
+            "ticks": {
+              "spawn1": 699,
+              "spawn2": 651,
+              "both_waited": 43235,
+              "close": 449,
+              "close_to_wait": 41274,
+              "post_wait_drain": 41140,
+              "close_to_drained": 82414,
+              "queue_after_wait": 3,
+              "through_drain": 84375
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                45,
+                310124589
+              ],
+              [
+                44,
+                37724204
+              ]
+            ],
+            "ticks": {
+              "spawn1": 765,
+              "spawn2": 658,
+              "both_waited": 1711832,
+              "close": 465,
+              "close_to_wait": 1709761,
+              "post_wait_drain": 33955,
+              "close_to_drained": 1743716,
+              "queue_after_wait": 3,
+              "through_drain": 1745787
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                924603567
+              ],
+              [
+                48,
+                1597982384
+              ]
+            ],
+            "ticks": {
+              "spawn1": 701,
+              "spawn2": 659,
+              "both_waited": 48376,
+              "close": 431,
+              "close_to_wait": 46419,
+              "post_wait_drain": 1000,
+              "close_to_drained": 47419,
+              "queue_after_wait": 0,
+              "through_drain": 49376
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "build": "new",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                687327874
+              ],
+              [
+                3,
+                1360706691
+              ]
+            ],
+            "ticks": {
+              "spawn1": 2050,
+              "spawn2": 671,
+              "both_waited": 62963,
+              "close": 1456,
+              "close_to_wait": 58635,
+              "post_wait_drain": 38784,
+              "close_to_drained": 97419,
+              "queue_after_wait": 3,
+              "through_drain": 101747
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                151527429
+              ],
+              [
+                6,
+                423927814
+              ]
+            ],
+            "ticks": {
+              "spawn1": 718,
+              "spawn2": 667,
+              "both_waited": 1723211,
+              "close": 465,
+              "close_to_wait": 1721198,
+              "post_wait_drain": 33045,
+              "close_to_drained": 1754243,
+              "queue_after_wait": 3,
+              "through_drain": 1756256
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                9,
+                1106012297
+              ],
+              [
+                8,
+                432633480
+              ]
+            ],
+            "ticks": {
+              "spawn1": 667,
+              "spawn2": 615,
+              "both_waited": 41838,
+              "close": 448,
+              "close_to_wait": 39950,
+              "post_wait_drain": 869,
+              "close_to_drained": 40819,
+              "queue_after_wait": 0,
+              "through_drain": 42707
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                1033878523
+              ],
+              [
+                11,
+                1032213998
+              ]
+            ],
+            "ticks": {
+              "spawn1": 686,
+              "spawn2": 1043,
+              "both_waited": 14466,
+              "close": 449,
+              "close_to_wait": 12126,
+              "post_wait_drain": 32666,
+              "close_to_drained": 44792,
+              "queue_after_wait": 3,
+              "through_drain": 47132
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                15,
+                851317903
+              ],
+              [
+                14,
+                177939086
+              ]
+            ],
+            "ticks": {
+              "spawn1": 692,
+              "spawn2": 646,
+              "both_waited": 45395,
+              "close": 448,
+              "close_to_wait": 43451,
+              "post_wait_drain": 36670,
+              "close_to_drained": 80121,
+              "queue_after_wait": 3,
+              "through_drain": 82065
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                18,
+                1545248786
+              ],
+              [
+                17,
+                1272848401
+              ]
+            ],
+            "ticks": {
+              "spawn1": 698,
+              "spawn2": 654,
+              "both_waited": 1713343,
+              "close": 1006,
+              "close_to_wait": 1710825,
+              "post_wait_drain": 39392,
+              "close_to_drained": 1750217,
+              "queue_after_wait": 3,
+              "through_drain": 1752735
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                21,
+                596623509
+              ],
+              [
+                20,
+                2070728340
+              ]
+            ],
+            "ticks": {
+              "spawn1": 665,
+              "spawn2": 621,
+              "both_waited": 43039,
+              "close": 412,
+              "close_to_wait": 41180,
+              "post_wait_drain": 897,
+              "close_to_drained": 42077,
+              "queue_after_wait": 0,
+              "through_drain": 43936
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                1053852823
+              ],
+              [
+                23,
+                1052188298
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1418,
+              "spawn2": 634,
+              "both_waited": 16111,
+              "close": 442,
+              "close_to_wait": 13440,
+              "post_wait_drain": 32718,
+              "close_to_drained": 46158,
+              "queue_after_wait": 3,
+              "through_drain": 48829
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                341929115
+              ],
+              [
+                26,
+                1816033946
+              ]
+            ],
+            "ticks": {
+              "spawn1": 759,
+              "spawn2": 644,
+              "both_waited": 55514,
+              "close": 445,
+              "close_to_wait": 53507,
+              "post_wait_drain": 34271,
+              "close_to_drained": 87778,
+              "queue_after_wait": 3,
+              "through_drain": 89785
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                29,
+                246685725
+              ],
+              [
+                30,
+                519086110
+              ]
+            ],
+            "ticks": {
+              "spawn1": 700,
+              "spawn2": 655,
+              "both_waited": 1682510,
+              "close": 464,
+              "close_to_wait": 1680162,
+              "post_wait_drain": 37584,
+              "close_to_drained": 1717746,
+              "queue_after_wait": 3,
+              "through_drain": 1720094
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1561339552
+              ],
+              [
+                33,
+                87234721
+              ]
+            ],
+            "ticks": {
+              "spawn1": 684,
+              "spawn2": 638,
+              "both_waited": 48853,
+              "close": 432,
+              "close_to_wait": 46937,
+              "post_wait_drain": 1495,
+              "close_to_drained": 48432,
+              "queue_after_wait": 0,
+              "through_drain": 50348
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                35,
+                1072162598
+              ],
+              [
+                36,
+                1073827123
+              ]
+            ],
+            "ticks": {
+              "spawn1": 696,
+              "spawn2": 647,
+              "both_waited": 14632,
+              "close": 477,
+              "close_to_wait": 12646,
+              "post_wait_drain": 33219,
+              "close_to_drained": 45865,
+              "queue_after_wait": 3,
+              "through_drain": 47851
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                1306645158
+              ],
+              [
+                39,
+                1980023975
+              ]
+            ],
+            "ticks": {
+              "spawn1": 702,
+              "spawn2": 652,
+              "both_waited": 41906,
+              "close": 454,
+              "close_to_wait": 39921,
+              "post_wait_drain": 38632,
+              "close_to_drained": 78553,
+              "queue_after_wait": 3,
+              "through_drain": 80538
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1640407082
+              ],
+              [
+                41,
+                1368006697
+              ]
+            ],
+            "ticks": {
+              "spawn1": 701,
+              "spawn2": 651,
+              "both_waited": 1653880,
+              "close": 461,
+              "close_to_wait": 1651904,
+              "post_wait_drain": 33853,
+              "close_to_drained": 1685757,
+              "queue_after_wait": 3,
+              "through_drain": 1687733
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                1051950764
+              ],
+              [
+                45,
+                1725329581
+              ]
+            ],
+            "ticks": {
+              "spawn1": 668,
+              "spawn2": 615,
+              "both_waited": 42843,
+              "close": 415,
+              "close_to_wait": 40984,
+              "post_wait_drain": 956,
+              "close_to_drained": 41940,
+              "queue_after_wait": 0,
+              "through_drain": 43799
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                48,
+                1093801423
+              ],
+              [
+                47,
+                1092136898
+              ]
+            ],
+            "ticks": {
+              "spawn1": 664,
+              "spawn2": 2113,
+              "both_waited": 14913,
+              "close": 441,
+              "close_to_wait": 11530,
+              "post_wait_drain": 32488,
+              "close_to_drained": 44018,
+              "queue_after_wait": 3,
+              "through_drain": 47401
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "build": "old",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                687327874
+              ],
+              [
+                3,
+                1360706691
+              ]
+            ],
+            "ticks": {
+              "spawn1": 3208,
+              "spawn2": 4198,
+              "both_waited": 64301,
+              "close": 2029,
+              "close_to_wait": 54681,
+              "post_wait_drain": 211950,
+              "close_to_drained": 266631,
+              "queue_after_wait": 3,
+              "through_drain": 276251
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                151527429
+              ],
+              [
+                6,
+                423927814
+              ]
+            ],
+            "ticks": {
+              "spawn1": 698,
+              "spawn2": 665,
+              "both_waited": 1659287,
+              "close": 459,
+              "close_to_wait": 1657307,
+              "post_wait_drain": 200363,
+              "close_to_drained": 1857670,
+              "queue_after_wait": 3,
+              "through_drain": 1859650
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                9,
+                1106012297
+              ],
+              [
+                8,
+                432633480
+              ]
+            ],
+            "ticks": {
+              "spawn1": 716,
+              "spawn2": 673,
+              "both_waited": 47946,
+              "close": 470,
+              "close_to_wait": 45927,
+              "post_wait_drain": 885,
+              "close_to_drained": 46812,
+              "queue_after_wait": 0,
+              "through_drain": 48831
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                1033878523
+              ],
+              [
+                11,
+                1032213998
+              ]
+            ],
+            "ticks": {
+              "spawn1": 690,
+              "spawn2": 747,
+              "both_waited": 15562,
+              "close": 454,
+              "close_to_wait": 13510,
+              "post_wait_drain": 212750,
+              "close_to_drained": 226260,
+              "queue_after_wait": 3,
+              "through_drain": 228312
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                15,
+                851317903
+              ],
+              [
+                14,
+                177939086
+              ]
+            ],
+            "ticks": {
+              "spawn1": 692,
+              "spawn2": 641,
+              "both_waited": 42414,
+              "close": 446,
+              "close_to_wait": 40478,
+              "post_wait_drain": 205780,
+              "close_to_drained": 246258,
+              "queue_after_wait": 3,
+              "through_drain": 248194
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                18,
+                1545248786
+              ],
+              [
+                17,
+                1272848401
+              ]
+            ],
+            "ticks": {
+              "spawn1": 696,
+              "spawn2": 656,
+              "both_waited": 1744965,
+              "close": 456,
+              "close_to_wait": 1742993,
+              "post_wait_drain": 206526,
+              "close_to_drained": 1949519,
+              "queue_after_wait": 3,
+              "through_drain": 1951491
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                21,
+                596623509
+              ],
+              [
+                20,
+                2070728340
+              ]
+            ],
+            "ticks": {
+              "spawn1": 660,
+              "spawn2": 617,
+              "both_waited": 41182,
+              "close": 410,
+              "close_to_wait": 39336,
+              "post_wait_drain": 885,
+              "close_to_drained": 40221,
+              "queue_after_wait": 0,
+              "through_drain": 42067
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                1053852823
+              ],
+              [
+                23,
+                1052188298
+              ]
+            ],
+            "ticks": {
+              "spawn1": 693,
+              "spawn2": 641,
+              "both_waited": 16078,
+              "close": 458,
+              "close_to_wait": 14126,
+              "post_wait_drain": 224264,
+              "close_to_drained": 238390,
+              "queue_after_wait": 3,
+              "through_drain": 240342
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                341929115
+              ],
+              [
+                26,
+                1816033946
+              ]
+            ],
+            "ticks": {
+              "spawn1": 691,
+              "spawn2": 1253,
+              "both_waited": 47583,
+              "close": 453,
+              "close_to_wait": 45000,
+              "post_wait_drain": 215135,
+              "close_to_drained": 260135,
+              "queue_after_wait": 3,
+              "through_drain": 262718
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                29,
+                246685725
+              ],
+              [
+                30,
+                519086110
+              ]
+            ],
+            "ticks": {
+              "spawn1": 687,
+              "spawn2": 656,
+              "both_waited": 1684114,
+              "close": 450,
+              "close_to_wait": 1682149,
+              "post_wait_drain": 239459,
+              "close_to_drained": 1921608,
+              "queue_after_wait": 3,
+              "through_drain": 1923573
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1561339552
+              ],
+              [
+                33,
+                87234721
+              ]
+            ],
+            "ticks": {
+              "spawn1": 666,
+              "spawn2": 614,
+              "both_waited": 53102,
+              "close": 426,
+              "close_to_wait": 51241,
+              "post_wait_drain": 1369,
+              "close_to_drained": 52610,
+              "queue_after_wait": 0,
+              "through_drain": 54471
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                35,
+                1072162598
+              ],
+              [
+                36,
+                1073827123
+              ]
+            ],
+            "ticks": {
+              "spawn1": 675,
+              "spawn2": 638,
+              "both_waited": 15824,
+              "close": 438,
+              "close_to_wait": 13915,
+              "post_wait_drain": 224524,
+              "close_to_drained": 238439,
+              "queue_after_wait": 3,
+              "through_drain": 240348
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                1306645158
+              ],
+              [
+                39,
+                1980023975
+              ]
+            ],
+            "ticks": {
+              "spawn1": 686,
+              "spawn2": 999,
+              "both_waited": 44617,
+              "close": 443,
+              "close_to_wait": 42328,
+              "post_wait_drain": 212556,
+              "close_to_drained": 254884,
+              "queue_after_wait": 3,
+              "through_drain": 257173
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1640407082
+              ],
+              [
+                41,
+                1368006697
+              ]
+            ],
+            "ticks": {
+              "spawn1": 698,
+              "spawn2": 644,
+              "both_waited": 1693664,
+              "close": 458,
+              "close_to_wait": 1691702,
+              "post_wait_drain": 221080,
+              "close_to_drained": 1912782,
+              "queue_after_wait": 3,
+              "through_drain": 1914744
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                1051950764
+              ],
+              [
+                45,
+                1725329581
+              ]
+            ],
+            "ticks": {
+              "spawn1": 659,
+              "spawn2": 615,
+              "both_waited": 40844,
+              "close": 410,
+              "close_to_wait": 39003,
+              "post_wait_drain": 858,
+              "close_to_drained": 39861,
+              "queue_after_wait": 0,
+              "through_drain": 41702
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                1092136898
+              ],
+              [
+                48,
+                1093801423
+              ]
+            ],
+            "ticks": {
+              "spawn1": 676,
+              "spawn2": 637,
+              "both_waited": 14827,
+              "close": 442,
+              "close_to_wait": 12908,
+              "post_wait_drain": 206309,
+              "close_to_drained": 219217,
+              "queue_after_wait": 3,
+              "through_drain": 221136
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                1481809922
+              ],
+              [
+                3,
+                1754210307
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1863,
+              "spawn2": 636,
+              "both_waited": 1696805,
+              "close": 1262,
+              "close_to_wait": 1692893,
+              "post_wait_drain": 232851,
+              "close_to_drained": 1925744,
+              "queue_after_wait": 3,
+              "through_drain": 1929656
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                6,
+                1233359494
+              ],
+              [
+                5,
+                559980677
+              ]
+            ],
+            "ticks": {
+              "spawn1": 665,
+              "spawn2": 616,
+              "both_waited": 41770,
+              "close": 451,
+              "close_to_wait": 39875,
+              "post_wait_drain": 967,
+              "close_to_drained": 40842,
+              "queue_after_wait": 0,
+              "through_drain": 42737
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                8,
+                1027220423
+              ],
+              [
+                9,
+                1028884948
+              ]
+            ],
+            "ticks": {
+              "spawn1": 688,
+              "spawn2": 991,
+              "both_waited": 16989,
+              "close": 444,
+              "close_to_wait": 14710,
+              "post_wait_drain": 209777,
+              "close_to_drained": 224487,
+              "queue_after_wait": 3,
+              "through_drain": 226766
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                11,
+                305286283
+              ],
+              [
+                12,
+                978665100
+              ]
+            ],
+            "ticks": {
+              "spawn1": 693,
+              "spawn2": 648,
+              "both_waited": 39164,
+              "close": 450,
+              "close_to_wait": 37208,
+              "post_wait_drain": 226529,
+              "close_to_drained": 263737,
+              "queue_after_wait": 3,
+              "through_drain": 265693
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                15,
+                728047631
+              ],
+              [
+                14,
+                455647246
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 645,
+              "both_waited": 1701491,
+              "close": 452,
+              "close_to_wait": 1699535,
+              "post_wait_drain": 209118,
+              "close_to_drained": 1908653,
+              "queue_after_wait": 3,
+              "through_drain": 1910609
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                18,
+                723970706
+              ],
+              [
+                17,
+                50591889
+              ]
+            ],
+            "ticks": {
+              "spawn1": 672,
+              "spawn2": 627,
+              "both_waited": 44838,
+              "close": 420,
+              "close_to_wait": 42958,
+              "post_wait_drain": 878,
+              "close_to_drained": 43836,
+              "queue_after_wait": 0,
+              "through_drain": 45716
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                21,
+                1048859248
+              ],
+              [
+                20,
+                1047194723
+              ]
+            ],
+            "ticks": {
+              "spawn1": 692,
+              "spawn2": 659,
+              "both_waited": 15489,
+              "close": 451,
+              "close_to_wait": 13528,
+              "post_wait_drain": 216045,
+              "close_to_drained": 229573,
+              "queue_after_wait": 3,
+              "through_drain": 231534
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                469276312
+              ],
+              [
+                23,
+                1943381143
+              ]
+            ],
+            "ticks": {
+              "spawn1": 677,
+              "spawn2": 637,
+              "both_waited": 38821,
+              "close": 528,
+              "close_to_wait": 36820,
+              "post_wait_drain": 217886,
+              "close_to_drained": 254706,
+              "queue_after_wait": 3,
+              "through_drain": 256707
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                1849368603
+              ],
+              [
+                26,
+                1576968218
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1035,
+              "spawn2": 655,
+              "both_waited": 1686146,
+              "close": 448,
+              "close_to_wait": 1683849,
+              "post_wait_drain": 215343,
+              "close_to_drained": 1899192,
+              "queue_after_wait": 3,
+              "through_drain": 1901489
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                30,
+                214581918
+              ],
+              [
+                29,
+                1688686749
+              ]
+            ],
+            "ticks": {
+              "spawn1": 656,
+              "spawn2": 611,
+              "both_waited": 47285,
+              "close": 411,
+              "close_to_wait": 45448,
+              "post_wait_drain": 2764,
+              "close_to_drained": 48212,
+              "queue_after_wait": 0,
+              "through_drain": 50049
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                33,
+                1068833548
+              ],
+              [
+                32,
+                1067169023
+              ]
+            ],
+            "ticks": {
+              "spawn1": 677,
+              "spawn2": 636,
+              "both_waited": 15122,
+              "close": 440,
+              "close_to_wait": 13208,
+              "post_wait_drain": 210171,
+              "close_to_drained": 223379,
+              "queue_after_wait": 3,
+              "through_drain": 225293
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                36,
+                2107371172
+              ],
+              [
+                35,
+                1433992355
+              ]
+            ],
+            "ticks": {
+              "spawn1": 687,
+              "spawn2": 649,
+              "both_waited": 39723,
+              "close": 452,
+              "close_to_wait": 37778,
+              "post_wait_drain": 250459,
+              "close_to_drained": 288237,
+              "queue_after_wait": 3,
+              "through_drain": 290182
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                550805542
+              ],
+              [
+                39,
+                823205927
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1063,
+              "spawn2": 650,
+              "both_waited": 1705739,
+              "close": 452,
+              "close_to_wait": 1703413,
+              "post_wait_drain": 229245,
+              "close_to_drained": 1932658,
+              "queue_after_wait": 3,
+              "through_drain": 1934984
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1852676778
+              ],
+              [
+                41,
+                1179297961
+              ]
+            ],
+            "ticks": {
+              "spawn1": 657,
+              "spawn2": 617,
+              "both_waited": 47289,
+              "close": 411,
+              "close_to_wait": 45445,
+              "post_wait_drain": 973,
+              "close_to_drained": 46418,
+              "queue_after_wait": 0,
+              "through_drain": 48262
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                1087143323
+              ],
+              [
+                45,
+                1088807848
+              ]
+            ],
+            "ticks": {
+              "spawn1": 671,
+              "spawn2": 635,
+              "both_waited": 24564,
+              "close": 454,
+              "close_to_wait": 22647,
+              "post_wait_drain": 220483,
+              "close_to_drained": 243130,
+              "queue_after_wait": 3,
+              "through_drain": 245047
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                48,
+                1597982384
+              ],
+              [
+                47,
+                924603567
+              ]
+            ],
+            "ticks": {
+              "spawn1": 689,
+              "spawn2": 636,
+              "both_waited": 40287,
+              "close": 449,
+              "close_to_wait": 38350,
+              "post_wait_drain": 211077,
+              "close_to_drained": 249427,
+              "queue_after_wait": 3,
+              "through_drain": 251364
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "build": "new",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                1481809922
+              ],
+              [
+                3,
+                1754210307
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1920,
+              "spawn2": 639,
+              "both_waited": 1737749,
+              "close": 1978,
+              "close_to_wait": 1732489,
+              "post_wait_drain": 59146,
+              "close_to_drained": 1791635,
+              "queue_after_wait": 3,
+              "through_drain": 1796895
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                559980677
+              ],
+              [
+                6,
+                1233359494
+              ]
+            ],
+            "ticks": {
+              "spawn1": 667,
+              "spawn2": 620,
+              "both_waited": 48260,
+              "close": 455,
+              "close_to_wait": 46362,
+              "post_wait_drain": 868,
+              "close_to_drained": 47230,
+              "queue_after_wait": 0,
+              "through_drain": 49128
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                8,
+                1027220423
+              ],
+              [
+                9,
+                1028884948
+              ]
+            ],
+            "ticks": {
+              "spawn1": 689,
+              "spawn2": 640,
+              "both_waited": 14757,
+              "close": 443,
+              "close_to_wait": 12825,
+              "post_wait_drain": 45036,
+              "close_to_drained": 57861,
+              "queue_after_wait": 3,
+              "through_drain": 59793
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                978665100
+              ],
+              [
+                11,
+                305286283
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 724,
+              "both_waited": 59991,
+              "close": 459,
+              "close_to_wait": 57949,
+              "post_wait_drain": 33698,
+              "close_to_drained": 91647,
+              "queue_after_wait": 3,
+              "through_drain": 93689
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                15,
+                728047631
+              ],
+              [
+                14,
+                455647246
+              ]
+            ],
+            "ticks": {
+              "spawn1": 696,
+              "spawn2": 646,
+              "both_waited": 1708903,
+              "close": 450,
+              "close_to_wait": 1706953,
+              "post_wait_drain": 50896,
+              "close_to_drained": 1757849,
+              "queue_after_wait": 3,
+              "through_drain": 1759799
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                18,
+                723970706
+              ],
+              [
+                17,
+                50591889
+              ]
+            ],
+            "ticks": {
+              "spawn1": 696,
+              "spawn2": 636,
+              "both_waited": 51401,
+              "close": 429,
+              "close_to_wait": 49479,
+              "post_wait_drain": 1081,
+              "close_to_drained": 50560,
+              "queue_after_wait": 0,
+              "through_drain": 52482
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                20,
+                1047194723
+              ],
+              [
+                21,
+                1048859248
+              ]
+            ],
+            "ticks": {
+              "spawn1": 680,
+              "spawn2": 629,
+              "both_waited": 14535,
+              "close": 444,
+              "close_to_wait": 12626,
+              "post_wait_drain": 36426,
+              "close_to_drained": 49052,
+              "queue_after_wait": 3,
+              "through_drain": 50961
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                469276312
+              ],
+              [
+                23,
+                1943381143
+              ]
+            ],
+            "ticks": {
+              "spawn1": 720,
+              "spawn2": 643,
+              "both_waited": 38611,
+              "close": 450,
+              "close_to_wait": 36640,
+              "post_wait_drain": 35008,
+              "close_to_drained": 71648,
+              "queue_after_wait": 3,
+              "through_drain": 73619
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                1849368603
+              ],
+              [
+                26,
+                1576968218
+              ]
+            ],
+            "ticks": {
+              "spawn1": 692,
+              "spawn2": 643,
+              "both_waited": 1685660,
+              "close": 449,
+              "close_to_wait": 1683715,
+              "post_wait_drain": 34081,
+              "close_to_drained": 1717796,
+              "queue_after_wait": 3,
+              "through_drain": 1719741
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                30,
+                214581918
+              ],
+              [
+                29,
+                1688686749
+              ]
+            ],
+            "ticks": {
+              "spawn1": 662,
+              "spawn2": 612,
+              "both_waited": 60354,
+              "close": 413,
+              "close_to_wait": 58505,
+              "post_wait_drain": 949,
+              "close_to_drained": 59454,
+              "queue_after_wait": 0,
+              "through_drain": 61303
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                33,
+                1068833548
+              ],
+              [
+                32,
+                1067169023
+              ]
+            ],
+            "ticks": {
+              "spawn1": 680,
+              "spawn2": 634,
+              "both_waited": 17579,
+              "close": 442,
+              "close_to_wait": 15652,
+              "post_wait_drain": 49355,
+              "close_to_drained": 65007,
+              "queue_after_wait": 3,
+              "through_drain": 66934
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                36,
+                2107371172
+              ],
+              [
+                35,
+                1433992355
+              ]
+            ],
+            "ticks": {
+              "spawn1": 681,
+              "spawn2": 639,
+              "both_waited": 41348,
+              "close": 446,
+              "close_to_wait": 39423,
+              "post_wait_drain": 34620,
+              "close_to_drained": 74043,
+              "queue_after_wait": 3,
+              "through_drain": 75968
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                550805542
+              ],
+              [
+                39,
+                823205927
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1039,
+              "spawn2": 643,
+              "both_waited": 1697163,
+              "close": 449,
+              "close_to_wait": 1694873,
+              "post_wait_drain": 57549,
+              "close_to_drained": 1752422,
+              "queue_after_wait": 3,
+              "through_drain": 1754712
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1852676778
+              ],
+              [
+                41,
+                1179297961
+              ]
+            ],
+            "ticks": {
+              "spawn1": 686,
+              "spawn2": 627,
+              "both_waited": 43680,
+              "close": 422,
+              "close_to_wait": 41780,
+              "post_wait_drain": 905,
+              "close_to_drained": 42685,
+              "queue_after_wait": 0,
+              "through_drain": 44585
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                1087143323
+              ],
+              [
+                45,
+                1088807848
+              ]
+            ],
+            "ticks": {
+              "spawn1": 683,
+              "spawn2": 632,
+              "both_waited": 14615,
+              "close": 453,
+              "close_to_wait": 12692,
+              "post_wait_drain": 37439,
+              "close_to_drained": 50131,
+              "queue_after_wait": 3,
+              "through_drain": 52054
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                924603567
+              ],
+              [
+                48,
+                1597982384
+              ]
+            ],
+            "ticks": {
+              "spawn1": 687,
+              "spawn2": 642,
+              "both_waited": 40278,
+              "close": 453,
+              "close_to_wait": 38332,
+              "post_wait_drain": 32858,
+              "close_to_drained": 71190,
+              "queue_after_wait": 3,
+              "through_drain": 73136
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "build": "new",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                687327874
+              ],
+              [
+                3,
+                1360706691
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1712,
+              "spawn2": 635,
+              "both_waited": 61593,
+              "close": 793,
+              "close_to_wait": 57929,
+              "post_wait_drain": 1570,
+              "close_to_drained": 59499,
+              "queue_after_wait": 0,
+              "through_drain": 63163
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                1022226848
+              ],
+              [
+                6,
+                1023891373
+              ]
+            ],
+            "ticks": {
+              "spawn1": 713,
+              "spawn2": 655,
+              "both_waited": 22534,
+              "close": 1033,
+              "close_to_wait": 19969,
+              "post_wait_drain": 41996,
+              "close_to_drained": 61965,
+              "queue_after_wait": 3,
+              "through_drain": 64530
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                9,
+                1106012297
+              ],
+              [
+                8,
+                432633480
+              ]
+            ],
+            "ticks": {
+              "spawn1": 752,
+              "spawn2": 698,
+              "both_waited": 45598,
+              "close": 494,
+              "close_to_wait": 43492,
+              "post_wait_drain": 41487,
+              "close_to_drained": 84979,
+              "queue_after_wait": 3,
+              "through_drain": 87085
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                2058330124
+              ],
+              [
+                11,
+                1785929739
+              ]
+            ],
+            "ticks": {
+              "spawn1": 746,
+              "spawn2": 786,
+              "both_waited": 1681552,
+              "close": 908,
+              "close_to_wait": 1678938,
+              "post_wait_drain": 34727,
+              "close_to_drained": 1713665,
+              "queue_after_wait": 3,
+              "through_drain": 1716279
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                14,
+                177939086
+              ],
+              [
+                15,
+                851317903
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1568,
+              "spawn2": 1470,
+              "both_waited": 50158,
+              "close": 853,
+              "close_to_wait": 45876,
+              "post_wait_drain": 911,
+              "close_to_drained": 46787,
+              "queue_after_wait": 0,
+              "through_drain": 51069
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                17,
+                1042201148
+              ],
+              [
+                18,
+                1043865673
+              ]
+            ],
+            "ticks": {
+              "spawn1": 683,
+              "spawn2": 641,
+              "both_waited": 14995,
+              "close": 445,
+              "close_to_wait": 13062,
+              "post_wait_drain": 48829,
+              "close_to_drained": 61891,
+              "queue_after_wait": 3,
+              "through_drain": 63824
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                20,
+                2070728340
+              ],
+              [
+                21,
+                596623509
+              ]
+            ],
+            "ticks": {
+              "spawn1": 690,
+              "spawn2": 637,
+              "both_waited": 40253,
+              "close": 454,
+              "close_to_wait": 38315,
+              "post_wait_drain": 38957,
+              "close_to_drained": 77272,
+              "queue_after_wait": 3,
+              "through_drain": 79210
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                24,
+                1032167448
+              ],
+              [
+                23,
+                759767063
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 643,
+              "both_waited": 1708964,
+              "close": 453,
+              "close_to_wait": 1707013,
+              "post_wait_drain": 34531,
+              "close_to_drained": 1741544,
+              "queue_after_wait": 3,
+              "through_drain": 1743495
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                27,
+                341929115
+              ],
+              [
+                26,
+                1816033946
+              ]
+            ],
+            "ticks": {
+              "spawn1": 666,
+              "spawn2": 634,
+              "both_waited": 44487,
+              "close": 408,
+              "close_to_wait": 42619,
+              "post_wait_drain": 1327,
+              "close_to_drained": 43946,
+              "queue_after_wait": 0,
+              "through_drain": 45814
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                30,
+                1063839973
+              ],
+              [
+                29,
+                1062175448
+              ]
+            ],
+            "ticks": {
+              "spawn1": 681,
+              "spawn2": 1041,
+              "both_waited": 14291,
+              "close": 446,
+              "close_to_wait": 11963,
+              "post_wait_drain": 43509,
+              "close_to_drained": 55472,
+              "queue_after_wait": 3,
+              "through_drain": 57800
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1561339552
+              ],
+              [
+                33,
+                87234721
+              ]
+            ],
+            "ticks": {
+              "spawn1": 683,
+              "spawn2": 635,
+              "both_waited": 40648,
+              "close": 448,
+              "close_to_wait": 38630,
+              "post_wait_drain": 43437,
+              "close_to_drained": 82067,
+              "queue_after_wait": 3,
+              "through_drain": 84085
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                35,
+                1881088035
+              ],
+              [
+                36,
+                6004772
+              ]
+            ],
+            "ticks": {
+              "spawn1": 704,
+              "spawn2": 652,
+              "both_waited": 1683434,
+              "close": 459,
+              "close_to_wait": 1681458,
+              "post_wait_drain": 34083,
+              "close_to_drained": 1715541,
+              "queue_after_wait": 3,
+              "through_drain": 1717517
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                1306645158
+              ],
+              [
+                39,
+                1980023975
+              ]
+            ],
+            "ticks": {
+              "spawn1": 674,
+              "spawn2": 625,
+              "both_waited": 39985,
+              "close": 422,
+              "close_to_wait": 38106,
+              "post_wait_drain": 880,
+              "close_to_drained": 38986,
+              "queue_after_wait": 0,
+              "through_drain": 40865
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1083814273
+              ],
+              [
+                41,
+                1082149748
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1115,
+              "spawn2": 993,
+              "both_waited": 19429,
+              "close": 443,
+              "close_to_wait": 16705,
+              "post_wait_drain": 33386,
+              "close_to_drained": 50091,
+              "queue_after_wait": 3,
+              "through_drain": 52815
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                44,
+                1051950764
+              ],
+              [
+                45,
+                1725329581
+              ]
+            ],
+            "ticks": {
+              "spawn1": 762,
+              "spawn2": 632,
+              "both_waited": 39114,
+              "close": 448,
+              "close_to_wait": 37108,
+              "post_wait_drain": 37681,
+              "close_to_drained": 74789,
+              "queue_after_wait": 3,
+              "through_drain": 76795
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                854925359
+              ],
+              [
+                48,
+                1127325744
+              ]
+            ],
+            "ticks": {
+              "spawn1": 708,
+              "spawn2": 649,
+              "both_waited": 1695144,
+              "close": 453,
+              "close_to_wait": 1693163,
+              "post_wait_drain": 34577,
+              "close_to_drained": 1727740,
+              "queue_after_wait": 3,
+              "through_drain": 1729721
+            }
+          }
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              2,
+              3
+            ],
+            "exits": [
+              [
+                2,
+                687327874
+              ],
+              [
+                3,
+                1360706691
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1922,
+              "spawn2": 664,
+              "both_waited": 56597,
+              "close": 800,
+              "close_to_wait": 52917,
+              "post_wait_drain": 1040,
+              "close_to_drained": 53957,
+              "queue_after_wait": 0,
+              "through_drain": 57637
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              5,
+              6
+            ],
+            "exits": [
+              [
+                5,
+                1022226848
+              ],
+              [
+                6,
+                1023891373
+              ]
+            ],
+            "ticks": {
+              "spawn1": 703,
+              "spawn2": 659,
+              "both_waited": 24733,
+              "close": 1412,
+              "close_to_wait": 21799,
+              "post_wait_drain": 240929,
+              "close_to_drained": 262728,
+              "queue_after_wait": 3,
+              "through_drain": 265662
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              8,
+              9
+            ],
+            "exits": [
+              [
+                9,
+                1106012297
+              ],
+              [
+                8,
+                432633480
+              ]
+            ],
+            "ticks": {
+              "spawn1": 751,
+              "spawn2": 711,
+              "both_waited": 50233,
+              "close": 504,
+              "close_to_wait": 48102,
+              "post_wait_drain": 261285,
+              "close_to_drained": 309387,
+              "queue_after_wait": 3,
+              "through_drain": 311518
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              11,
+              12
+            ],
+            "exits": [
+              [
+                12,
+                2058330124
+              ],
+              [
+                11,
+                1785929739
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1213,
+              "spawn2": 1245,
+              "both_waited": 1716784,
+              "close": 488,
+              "close_to_wait": 1713677,
+              "post_wait_drain": 204279,
+              "close_to_drained": 1917956,
+              "queue_after_wait": 3,
+              "through_drain": 1921063
+            }
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              14,
+              15
+            ],
+            "exits": [
+              [
+                15,
+                851317903
+              ],
+              [
+                14,
+                177939086
+              ]
+            ],
+            "ticks": {
+              "spawn1": 697,
+              "spawn2": 651,
+              "both_waited": 45360,
+              "close": 988,
+              "close_to_wait": 42851,
+              "post_wait_drain": 894,
+              "close_to_drained": 43745,
+              "queue_after_wait": 0,
+              "through_drain": 46254
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              17,
+              18
+            ],
+            "exits": [
+              [
+                17,
+                1042201148
+              ],
+              [
+                18,
+                1043865673
+              ]
+            ],
+            "ticks": {
+              "spawn1": 694,
+              "spawn2": 640,
+              "both_waited": 14578,
+              "close": 795,
+              "close_to_wait": 12287,
+              "post_wait_drain": 232759,
+              "close_to_drained": 245046,
+              "queue_after_wait": 3,
+              "through_drain": 247337
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              20,
+              21
+            ],
+            "exits": [
+              [
+                21,
+                596623509
+              ],
+              [
+                20,
+                2070728340
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1060,
+              "spawn2": 638,
+              "both_waited": 59632,
+              "close": 449,
+              "close_to_wait": 57327,
+              "post_wait_drain": 212913,
+              "close_to_drained": 270240,
+              "queue_after_wait": 3,
+              "through_drain": 272545
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              23,
+              24
+            ],
+            "exits": [
+              [
+                23,
+                759767063
+              ],
+              [
+                24,
+                1032167448
+              ]
+            ],
+            "ticks": {
+              "spawn1": 687,
+              "spawn2": 647,
+              "both_waited": 1721263,
+              "close": 454,
+              "close_to_wait": 1719313,
+              "post_wait_drain": 206234,
+              "close_to_drained": 1925547,
+              "queue_after_wait": 3,
+              "through_drain": 1927497
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              26,
+              27
+            ],
+            "exits": [
+              [
+                26,
+                1816033946
+              ],
+              [
+                27,
+                341929115
+              ]
+            ],
+            "ticks": {
+              "spawn1": 652,
+              "spawn2": 607,
+              "both_waited": 50802,
+              "close": 406,
+              "close_to_wait": 48974,
+              "post_wait_drain": 948,
+              "close_to_drained": 49922,
+              "queue_after_wait": 0,
+              "through_drain": 51750
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              29,
+              30
+            ],
+            "exits": [
+              [
+                30,
+                1063839973
+              ],
+              [
+                29,
+                1062175448
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1030,
+              "spawn2": 645,
+              "both_waited": 17736,
+              "close": 443,
+              "close_to_wait": 15455,
+              "post_wait_drain": 233963,
+              "close_to_drained": 249418,
+              "queue_after_wait": 3,
+              "through_drain": 251699
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              32,
+              33
+            ],
+            "exits": [
+              [
+                32,
+                1561339552
+              ],
+              [
+                33,
+                87234721
+              ]
+            ],
+            "ticks": {
+              "spawn1": 725,
+              "spawn2": 657,
+              "both_waited": 40267,
+              "close": 452,
+              "close_to_wait": 38270,
+              "post_wait_drain": 229772,
+              "close_to_drained": 268042,
+              "queue_after_wait": 3,
+              "through_drain": 270039
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              35,
+              36
+            ],
+            "exits": [
+              [
+                36,
+                6004772
+              ],
+              [
+                35,
+                1881088035
+              ]
+            ],
+            "ticks": {
+              "spawn1": 699,
+              "spawn2": 653,
+              "both_waited": 1719676,
+              "close": 459,
+              "close_to_wait": 1717704,
+              "post_wait_drain": 212791,
+              "close_to_drained": 1930495,
+              "queue_after_wait": 3,
+              "through_drain": 1932467
+            }
+          }
+        },
+        {
+          "case": [
+            1,
+            2000000
+          ],
+          "result": {
+            "policy": 1,
+            "iterations": 2000000,
+            "spawns": [
+              38,
+              39
+            ],
+            "exits": [
+              [
+                38,
+                1306645158
+              ],
+              [
+                39,
+                1980023975
+              ]
+            ],
+            "ticks": {
+              "spawn1": 669,
+              "spawn2": 620,
+              "both_waited": 41126,
+              "close": 407,
+              "close_to_wait": 39268,
+              "post_wait_drain": 868,
+              "close_to_drained": 40136,
+              "queue_after_wait": 0,
+              "through_drain": 41994
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            1
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 1,
+            "spawns": [
+              41,
+              42
+            ],
+            "exits": [
+              [
+                42,
+                1083814273
+              ],
+              [
+                41,
+                1082149748
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1066,
+              "spawn2": 631,
+              "both_waited": 15673,
+              "close": 437,
+              "close_to_wait": 13384,
+              "post_wait_drain": 228185,
+              "close_to_drained": 241569,
+              "queue_after_wait": 3,
+              "through_drain": 243858
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            2000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 2000000,
+            "spawns": [
+              44,
+              45
+            ],
+            "exits": [
+              [
+                45,
+                1725329581
+              ],
+              [
+                44,
+                1051950764
+              ]
+            ],
+            "ticks": {
+              "spawn1": 1053,
+              "spawn2": 658,
+              "both_waited": 40992,
+              "close": 448,
+              "close_to_wait": 38673,
+              "post_wait_drain": 234374,
+              "close_to_drained": 273047,
+              "queue_after_wait": 3,
+              "through_drain": 275366
+            }
+          }
+        },
+        {
+          "case": [
+            9,
+            128000000
+          ],
+          "result": {
+            "policy": 9,
+            "iterations": 128000000,
+            "spawns": [
+              47,
+              48
+            ],
+            "exits": [
+              [
+                47,
+                854925359
+              ],
+              [
+                48,
+                1127325744
+              ]
+            ],
+            "ticks": {
+              "spawn1": 688,
+              "spawn2": 649,
+              "both_waited": 1704480,
+              "close": 817,
+              "close_to_wait": 1702163,
+              "post_wait_drain": 209800,
+              "close_to_drained": 1911963,
+              "queue_after_wait": 3,
+              "through_drain": 1914280
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "both_waited",
+      "old_ms": 1.5581,
+      "new_ms": 1.4954,
+      "paired_percent": -4.984312493138004,
+      "range_percent": [
+        -5.757077856420622,
+        10.8641289247013
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 22.03805,
+      "new_ms": 3.7026,
+      "paired_percent": -82.87959457736424,
+      "range_percent": [
+        -85.41094424428353,
+        -81.30727490666312
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "through_drain",
+      "old_ms": 23.5938,
+      "new_ms": 5.4187,
+      "paired_percent": -77.07442348505924,
+      "range_percent": [
+        -80.09045443576237,
+        -75.55990470445796
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0697,
+      "new_ms": 0.0684,
+      "paired_percent": -2.0099544919851056,
+      "range_percent": [
+        -33.68932038834952,
+        2.9585798816567976
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0637,
+      "new_ms": 0.06395,
+      "paired_percent": 0.7053291536050166,
+      "range_percent": [
+        -0.6289308176100628,
+        55.15624999999999
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "close",
+      "old_ms": 0.0445,
+      "new_ms": 0.04445,
+      "paired_percent": 0.22371364653244186,
+      "range_percent": [
+        -1.552106430155209,
+        0.4514672686230181
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 4.17455,
+      "new_ms": 4.11745,
+      "paired_percent": 0.1950464601663815,
+      "range_percent": [
+        -1.8027907884465288,
+        1.7437299683976892
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 21.5876,
+      "new_ms": 3.69285,
+      "paired_percent": -82.89672125627465,
+      "range_percent": [
+        -84.11095710600956,
+        -82.6120093890567
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 25.694,
+      "new_ms": 7.9234,
+      "paired_percent": -69.89052777175584,
+      "range_percent": [
+        -71.32177930481053,
+        -68.08957394438764
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0694,
+      "new_ms": 0.06945,
+      "paired_percent": 0.1434720229555264,
+      "range_percent": [
+        -34.47293447293447,
+        1.591895803183796
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.06525,
+      "new_ms": 0.0644,
+      "paired_percent": -1.5971165229156148,
+      "range_percent": [
+        -35.33533533533534,
+        0.7849293563579218
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "close",
+      "old_ms": 0.0448,
+      "new_ms": 0.0448,
+      "paired_percent": -0.11135857461024301,
+      "range_percent": [
+        -0.4424778761061954,
+        0.4484304932735439
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 170.40055,
+      "new_ms": 169.61535,
+      "paired_percent": -0.4564686632156034,
+      "range_percent": [
+        -1.4265477915607394,
+        0.31127675034572366
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 21.82115,
+      "new_ms": 3.60575,
+      "paired_percent": -83.27040524521013,
+      "range_percent": [
+        -84.72587087951634,
+        -76.36514769460814
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 191.91175,
+      "new_ms": 173.7754,
+      "paired_percent": -9.540431428534529,
+      "range_percent": [
+        -10.578179252879927,
+        -8.159544940906272
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0703,
+      "new_ms": 0.0702,
+      "paired_percent": 1.4501470195135036,
+      "range_percent": [
+        -32.7536231884058,
+        26.901408450704235
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0653,
+      "new_ms": 0.06515,
+      "paired_percent": -0.15243902439024404,
+      "range_percent": [
+        -1.0769230769230753,
+        0.0
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "close",
+      "old_ms": 0.0456,
+      "new_ms": 0.04585,
+      "paired_percent": 0.5453345753764993,
+      "range_percent": [
+        -1.3071895424836555,
+        1.9736842105263053
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 4.49935,
+      "new_ms": 4.64315,
+      "paired_percent": 6.45499777951607,
+      "range_percent": [
+        -1.9246031746031789,
+        8.704663212435237
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 0.0923,
+      "new_ms": 0.09525,
+      "paired_percent": 3.4717914011242135,
+      "range_percent": [
+        -2.466598150051391,
+        8.022598870056497
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 4.58905,
+      "new_ms": 4.7595,
+      "paired_percent": 6.448618152290852,
+      "range_percent": [
+        -0.9512690794309719,
+        8.743939331150807
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.06645,
+      "new_ms": 0.068,
+      "paired_percent": 2.763798701298703,
+      "range_percent": [
+        0.7473841554558991,
+        4.414003044140036
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0617,
+      "new_ms": 0.06305,
+      "paired_percent": 1.9394050295393872,
+      "range_percent": [
+        0.9756097560975618,
+        6.807131280388989
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "close",
+      "old_ms": 0.04105,
+      "new_ms": 0.0422,
+      "paired_percent": 2.2838259909233716,
+      "range_percent": [
+        1.2195121951219523,
+        3.6855036855036882
+      ]
+    }
+  ]
+}

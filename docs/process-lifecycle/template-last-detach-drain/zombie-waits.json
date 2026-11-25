@@ -1,0 +1,373 @@
+{
+  "sha256": {
+    "old": "f51ec78a4092886b8917ed9f6f8af75e7d664eeff85ed3b6eeefecde20c83594",
+    "new": "c8ce20de659a64671e444ca0dcc39d7da89a4509695e02e86f70c5b05bdf570b",
+    "disk": "57cbcfeb904dbcf6d8e289c81c501e3228c4fa25e364d09745cb6d284374c0ba"
+  },
+  "timebase_hz": 10000000,
+  "boots": [
+    {
+      "pair": 1,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 4377,
+            "last_wait": 1079,
+            "drain": 217300
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1303,
+            "last_wait": 1099,
+            "drain": 217621
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1218,
+            "last_wait": 1149,
+            "drain": 258565
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1286,
+            "last_wait": 1167,
+            "drain": 248520
+          }
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "build": "new",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 4938,
+            "last_wait": 1538,
+            "drain": 37384
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1164,
+            "last_wait": 1098,
+            "drain": 34978
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1577,
+            "last_wait": 1449,
+            "drain": 42893
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1689,
+            "last_wait": 1203,
+            "drain": 36409
+          }
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "build": "new",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 3886,
+            "last_wait": 1545,
+            "drain": 36863
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1230,
+            "last_wait": 1163,
+            "drain": 50759
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1224,
+            "last_wait": 1764,
+            "drain": 35666
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1221,
+            "last_wait": 1172,
+            "drain": 36395
+          }
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "build": "old",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 4224,
+            "last_wait": 1059,
+            "drain": 209310
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1151,
+            "last_wait": 1099,
+            "drain": 226682
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1212,
+            "last_wait": 1148,
+            "drain": 232296
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1822,
+            "last_wait": 1277,
+            "drain": 242605
+          }
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 3813,
+            "last_wait": 1446,
+            "drain": 218693
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1224,
+            "last_wait": 1102,
+            "drain": 218589
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1240,
+            "last_wait": 1151,
+            "drain": 245330
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1245,
+            "last_wait": 1155,
+            "drain": 230321
+          }
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "build": "new",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 4371,
+            "last_wait": 1580,
+            "drain": 37403
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1587,
+            "last_wait": 1107,
+            "drain": 35774
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1765,
+            "last_wait": 1204,
+            "drain": 35518
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1213,
+            "last_wait": 1167,
+            "drain": 36296
+          }
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "build": "new",
+      "owner": 0,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 3809,
+            "last_wait": 1513,
+            "drain": 37655
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1176,
+            "last_wait": 1092,
+            "drain": 36546
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1564,
+            "last_wait": 1178,
+            "drain": 36016
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1204,
+            "last_wait": 1599,
+            "drain": 35500
+          }
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "build": "old",
+      "owner": 1,
+      "warmup": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 4215,
+            "last_wait": 1064,
+            "drain": 204757
+          }
+        }
+      ],
+      "measured": [
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1147,
+            "last_wait": 1084,
+            "drain": 212645
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1214,
+            "last_wait": 1146,
+            "drain": 263778
+          }
+        },
+        {
+          "case": "zombies",
+          "result": {
+            "first_wait": 1284,
+            "last_wait": 1166,
+            "drain": 241483
+          }
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "case": "zombies",
+      "metric": "first_wait",
+      "old_ms": 0.1227,
+      "new_ms": 0.14005,
+      "paired_percent": 11.809201915525923,
+      "range_percent": [
+        -0.8237232289950547,
+        27.98387096774193
+      ]
+    },
+    {
+      "case": "zombies",
+      "metric": "last_wait",
+      "old_ms": 0.11485,
+      "new_ms": 0.1175,
+      "paired_percent": 2.4414567257116104,
+      "range_percent": [
+        1.390095569070371,
+        4.699738903394257
+      ]
+    },
+    {
+      "case": "zombies",
+      "metric": "drain",
+      "old_ms": 23.68895,
+      "new_ms": 3.62055,
+      "paired_percent": -84.77662855761982,
+      "range_percent": [
+        -85.34967004667632,
+        -84.33248958225712
+      ]
+    }
+  ]
+}

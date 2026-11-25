@@ -1,0 +1,70 @@
+OpenSBI v0.7
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name          : QEMU Virt Machine
+Platform HART Features : RV64ACDFIMSU
+Current Hart           : 0
+Firmware Base          : 0x80000000
+Firmware Size          : 128 KB
+Runtime SBI Version    : 0.2
+
+MIDELEG : 0x0000000000000222
+MEDELEG : 0x000000000000b109
+PMP0    : 0x0000000080000000-0x000000008001ffff (A)
+PMP1    : 0x0000000000000000-0xffffffffffffffff (A,R,W,X)
+cpu 0 is booting!
+memory: kernel 0x00000000802c6000-0x0000000082214000, 8014 free pages
+memory: user   0x0000000082214000-0x0000000088000000, 24044 free pages
+block: 4 MiB available
+SeeleFS: mounted root inode 1
+cpu 0 enabled Sv39 with root 0x00000000802c6000
+cpu 0 SBI timer ready: 100 Hz
+cpu 1 enabled Sv39 with root 0x00000000802c6000
+cpu 0 UART external interrupt route ready
+cpu 1 SBI timer ready: 100 Hz
+cpu 1 UART external interrupt route ready
+init: starting /bin/sh
+scheduler ready: init pid=0, slots=16, owner cpu=0
+Seele shell. Type help for commands.
+seele$ tdbench 9 600000000 pin
+PAIR START
+PAIR PIN 2 3 2038 10 1
+PAIR BATCH 1359 22695 2048 1 32 8
+PAIR OWNERSHIP 0 0 2048 2048 4086 5114
+PAIR RESULT 9 600000000 2 3 2 380325378 3 971433475
+PAIR TICKS 109860 1129 11966947 5184 11623569 1088 11624657 0
+PAIR PASS
+seele$ tdbench 9 26000000 check
+PAIR START
+PAIR BATCH 272 513 2048 1 32 8
+PAIR OWNERSHIP 0 0 2048 0 2 3066
+PAIR RESULT 9 26000000 5 6 6 868511878 5 373696133
+PAIR TICKS 1131 1092 354328 466 350325 235073 585398 3
+PAIR PASS
+seele$ byield ref9
+TRACE 256 0 2048 1
+REF 0 0 0 0 2048 0 0 1 2048 0
+SCH 256 88 168 0 8 0 0 0 0 0
+FIX 123871 1769 1164 1164 1 9 12 1
+OWNER 9 2048 2048 0 2048
+OWNER PASS
+seele$ byield sparse9
+TRACE 253 0 2022 1
+REF 0 0 0 0 2022 2022 0 1 2022 0
+SCH 253 127 126 0 8 0 0 0 0 0
+FIX 344712 5361 1431 1431 1 9 12 1
+SPARSE 2048 26 2022 2022
+SPARSE PASS
+seele$ bedges rotation
+REF 0 0 0 0 4096 0 0 2 4096 0
+SCH 513 4 509 32 8 66 0 0 0 4160
+FIX 0 0 0 0 2 18 24 1
+EDGES PASS
+seele$ QEMU: Terminated

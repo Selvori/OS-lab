@@ -1,0 +1,381 @@
+{
+  "primary": [
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "both_waited",
+      "old_ms": 1.5581,
+      "new_ms": 1.4954,
+      "paired_percent": -4.984312493138004,
+      "range_percent": [
+        -5.757077856420622,
+        10.8641289247013
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 22.03805,
+      "new_ms": 3.7026,
+      "paired_percent": -82.87959457736424,
+      "range_percent": [
+        -85.41094424428353,
+        -81.30727490666312
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "through_drain",
+      "old_ms": 23.5938,
+      "new_ms": 5.4187,
+      "paired_percent": -77.07442348505924,
+      "range_percent": [
+        -80.09045443576237,
+        -75.55990470445796
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0697,
+      "new_ms": 0.0684,
+      "paired_percent": -2.0099544919851056,
+      "range_percent": [
+        -33.68932038834952,
+        2.9585798816567976
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0637,
+      "new_ms": 0.06395,
+      "paired_percent": 0.7053291536050166,
+      "range_percent": [
+        -0.6289308176100628,
+        55.15624999999999
+      ]
+    },
+    {
+      "case": [
+        9,
+        1
+      ],
+      "metric": "close",
+      "old_ms": 0.0445,
+      "new_ms": 0.04445,
+      "paired_percent": 0.22371364653244186,
+      "range_percent": [
+        -1.552106430155209,
+        0.4514672686230181
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 4.17455,
+      "new_ms": 4.11745,
+      "paired_percent": 0.1950464601663815,
+      "range_percent": [
+        -1.8027907884465288,
+        1.7437299683976892
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 21.5876,
+      "new_ms": 3.69285,
+      "paired_percent": -82.89672125627465,
+      "range_percent": [
+        -84.11095710600956,
+        -82.6120093890567
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 25.694,
+      "new_ms": 7.9234,
+      "paired_percent": -69.89052777175584,
+      "range_percent": [
+        -71.32177930481053,
+        -68.08957394438764
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0694,
+      "new_ms": 0.06945,
+      "paired_percent": 0.1434720229555264,
+      "range_percent": [
+        -34.47293447293447,
+        1.591895803183796
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.06525,
+      "new_ms": 0.0644,
+      "paired_percent": -1.5971165229156148,
+      "range_percent": [
+        -35.33533533533534,
+        0.7849293563579218
+      ]
+    },
+    {
+      "case": [
+        9,
+        2000000
+      ],
+      "metric": "close",
+      "old_ms": 0.0448,
+      "new_ms": 0.0448,
+      "paired_percent": -0.11135857461024301,
+      "range_percent": [
+        -0.4424778761061954,
+        0.4484304932735439
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 170.40055,
+      "new_ms": 169.61535,
+      "paired_percent": -0.4564686632156034,
+      "range_percent": [
+        -1.4265477915607394,
+        0.31127675034572366
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 21.82115,
+      "new_ms": 3.60575,
+      "paired_percent": -83.27040524521013,
+      "range_percent": [
+        -84.72587087951634,
+        -76.36514769460814
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 191.91175,
+      "new_ms": 173.7754,
+      "paired_percent": -9.540431428534529,
+      "range_percent": [
+        -10.578179252879927,
+        -8.159544940906272
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.0703,
+      "new_ms": 0.0702,
+      "paired_percent": 1.4501470195135036,
+      "range_percent": [
+        -32.7536231884058,
+        26.901408450704235
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0653,
+      "new_ms": 0.06515,
+      "paired_percent": -0.15243902439024404,
+      "range_percent": [
+        -1.0769230769230753,
+        0.0
+      ]
+    },
+    {
+      "case": [
+        9,
+        128000000
+      ],
+      "metric": "close",
+      "old_ms": 0.0456,
+      "new_ms": 0.04585,
+      "paired_percent": 0.5453345753764993,
+      "range_percent": [
+        -1.3071895424836555,
+        1.9736842105263053
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "both_waited",
+      "old_ms": 4.49935,
+      "new_ms": 4.64315,
+      "paired_percent": 6.45499777951607,
+      "range_percent": [
+        -1.9246031746031789,
+        8.704663212435237
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "post_wait_drain",
+      "old_ms": 0.0923,
+      "new_ms": 0.09525,
+      "paired_percent": 3.4717914011242135,
+      "range_percent": [
+        -2.466598150051391,
+        8.022598870056497
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "through_drain",
+      "old_ms": 4.58905,
+      "new_ms": 4.7595,
+      "paired_percent": 6.448618152290852,
+      "range_percent": [
+        -0.9512690794309719,
+        8.743939331150807
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "spawn1",
+      "old_ms": 0.06645,
+      "new_ms": 0.068,
+      "paired_percent": 2.763798701298703,
+      "range_percent": [
+        0.7473841554558991,
+        4.414003044140036
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "spawn2",
+      "old_ms": 0.0617,
+      "new_ms": 0.06305,
+      "paired_percent": 1.9394050295393872,
+      "range_percent": [
+        0.9756097560975618,
+        6.807131280388989
+      ]
+    },
+    {
+      "case": [
+        1,
+        2000000
+      ],
+      "metric": "close",
+      "old_ms": 0.04105,
+      "new_ms": 0.0422,
+      "paired_percent": 2.2838259909233716,
+      "range_percent": [
+        1.2195121951219523,
+        3.6855036855036882
+      ]
+    }
+  ],
+  "zombies": [
+    {
+      "case": "zombies",
+      "metric": "first_wait",
+      "old_ms": 0.1227,
+      "new_ms": 0.14005,
+      "paired_percent": 11.809201915525923,
+      "range_percent": [
+        -0.8237232289950547,
+        27.98387096774193
+      ]
+    },
+    {
+      "case": "zombies",
+      "metric": "last_wait",
+      "old_ms": 0.11485,
+      "new_ms": 0.1175,
+      "paired_percent": 2.4414567257116104,
+      "range_percent": [
+        1.390095569070371,
+        4.699738903394257
+      ]
+    },
+    {
+      "case": "zombies",
+      "metric": "drain",
+      "old_ms": 23.68895,
+      "new_ms": 3.62055,
+      "paired_percent": -84.77662855761982,
+      "range_percent": [
+        -85.34967004667632,
+        -84.33248958225712
+      ]
+    }
+  ],
+  "ablation_ms": {
+    "old": 24.55525,
+    "terminal": 22.1554,
+    "donor": 8.6668,
+    "both": 3.5913000000000004
+  }
+}

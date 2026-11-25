@@ -1,0 +1,25 @@
+{
+  "owner": 0,
+  "kernel_sha256": "c8ce20de659a64671e444ca0dcc39d7da89a4509695e02e86f70c5b05bdf570b",
+  "disk_sha256_before": "b70c533d723b166fbbe961a9314fb4b9bd23d2163be2c02b5ee8e6713614a441",
+  "tdbench 9 600000000 pin": [
+    "PAIR PIN 2 3 2038 10 1",
+    "PAIR BATCH 1359 22695 2048 1 32 8",
+    "PAIR OWNERSHIP 0 0 2048 2048 4086 5114",
+    "PAIR PASS"
+  ],
+  "tdbench 9 26000000 check": [
+    "PAIR BATCH 272 513 2048 1 32 8",
+    "PAIR OWNERSHIP 0 0 2048 0 2 3066",
+    "PAIR PASS"
+  ],
+  "byield ref9": [
+    "OWNER PASS"
+  ],
+  "byield sparse9": [
+    "SPARSE PASS"
+  ],
+  "bedges rotation": [
+    "EDGES PASS"
+  ]
+}

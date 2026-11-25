@@ -1,0 +1,5 @@
+scheduler ready: init pid=0, slots=16, owner cpu=1
+Seele shell. Type help for commands.
+seele$ help
+help  ls [path]  cat path  cd [dir]  pwd  mkdir dir  rm path
+seele$ QEMU: Terminated

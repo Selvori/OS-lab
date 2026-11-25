@@ -1,0 +1,14 @@
+--- a/kernel/mm/template.c
++++ b/kernel/mm/template.c
+@@ -782,11 +782,6 @@
+             job->scan_slot = 0;
+             for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
+                 allow_window(job, w);
+-            struct proc *owner = proc_current();
+-            if (job->remaining && owner && !owner->yield_reclaim) {
+-                job->yield_owner = owner;
+-                owner->yield_reclaim = job;
+-            }
+         } else if (job->policy != TEMPLATE_WINDOW_BATCH) {
+             for (unsigned w = 0; w < HEAP_WINDOWS; ++w)
+                 dirty_words(job, w, job->blocked[w]);
